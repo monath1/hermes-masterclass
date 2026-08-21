@@ -402,6 +402,32 @@ def test_final_mode_requires_canonical_complete_appendix_metadata(
     assert diagnostic in result.stdout
 
 
+@pytest.mark.parametrize(
+    ("appendix_index", "expected_target"),
+    [
+        (0, "2000–2800"),
+        (1, "3000–3800"),
+        (2, "2500–3200"),
+        (3, "3000–3600"),
+    ],
+)
+def test_final_mode_rejects_valid_but_noncanonical_appendix_word_targets(
+    tmp_path: Path, appendix_index: int, expected_target: str
+) -> None:
+    appendices = [entry.copy() for entry in CANONICAL_APPENDICES]
+    appendices[appendix_index]["word_target"] = "1–999999"
+    write_book(tmp_path, appendices=appendices)
+
+    result = run_check(tmp_path, "--final")
+
+    path = appendices[appendix_index]["path"]
+    assert result.returncode == 1
+    assert (
+        f"invalid final appendix word_target: {path}: "
+        f"expected canonical {expected_target}"
+    ) in result.stdout
+
+
 def test_final_mode_requires_appendix_contract_sections_and_sources(tmp_path: Path) -> None:
     appendix_path = "docs/appendices/appendix-a-command-reference.md"
     write_book(

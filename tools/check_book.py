@@ -62,6 +62,12 @@ EXPECTED_APPENDIX_TITLES = (
     "Curated native skill/plugin/MCP stack",
     "Troubleshooting, glossary, bibliography, version ledger, and source provenance",
 )
+EXPECTED_APPENDIX_WORD_TARGETS = (
+    "2000–2800",
+    "3000–3800",
+    "2500–3200",
+    "3000–3600",
+)
 REQUIRED_APPENDIX_SECTIONS = {
     EXPECTED_APPENDIX_PATHS[0]: (
         "## How to use this reference",
@@ -290,9 +296,17 @@ def validate_manifest(
             if entry.get("status") != "complete":
                 failures.append(f"invalid final appendix status: {label}: expected complete")
             target = entry.get("word_target")
-            match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
-            if match is None or int(match.group(1)) > int(match.group(2)):
-                failures.append(f"invalid final appendix word_target: {label}")
+            if index < len(EXPECTED_APPENDIX_WORD_TARGETS):
+                expected_target = EXPECTED_APPENDIX_WORD_TARGETS[index]
+                if target != expected_target:
+                    failures.append(
+                        f"invalid final appendix word_target: {label}: "
+                        f"expected canonical {expected_target}"
+                    )
+            else:
+                match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
+                if match is None or int(match.group(1)) > int(match.group(2)):
+                    failures.append(f"invalid final appendix word_target: {label}")
     return (
         chapter_paths,
         appendix_paths,
