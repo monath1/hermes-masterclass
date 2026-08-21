@@ -14,3 +14,6 @@ All assets in `hermes/` are unmodified copies from [Nous Research Hermes Agent](
 | `feature-memory.webp` | `apps/desktop/src/assets/tiers/feature-memory.webp` | `v2026.8.19` | MIT | 7 | Hermes feature illustration for memory and continuity. |
 
 The validator checks that every copied asset has a filename entry here when the final manuscript is checked.
+
+`favicon.svg` is a net-new H monogram created for this book from simple geometric
+paths. It has no upstream dependency and is distributed under the repository license.

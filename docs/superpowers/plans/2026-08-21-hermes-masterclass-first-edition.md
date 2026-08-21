@@ -6,7 +6,7 @@
 
 **Architecture:** The manuscript is divided into 22 independent chapter files and four appendix files, all governed by one chapter contract and one pinned Hermes source baseline. A lightweight Python validator enforces structure, word-count, links, assets, source labels, and placeholder hygiene; MkDocs Material provides the local reading experience. Content tasks are grouped by coherent parts so fresh sub-agents can research and write bounded files while a reviewer enforces the shared editorial and safety contract.
 
-**Tech Stack:** Markdown, MkDocs Material, Python 3.11+, pytest, PyYAML, Mermaid via `mkdocs-mermaid2-plugin`, GitHub Actions, Codespell, markdownlint, Lychee.
+**Tech Stack:** Markdown, MkDocs Material, Python 3.11+, pytest, PyYAML, self-hosted Mermaid, GitHub Actions, Codespell, markdownlint, Lychee.
 
 **Spec:** `docs/superpowers/specs/2026-08-21-hermes-masterclass-design.md`
 
@@ -39,7 +39,8 @@
 - `README.md` — project overview, local preview, contents, status, and private-publishing note.
 - `LICENSE` — MIT license with 2026 credit.
 - `CONTRIBUTING.md` — editorial rules, source policy, checks, and update procedure.
-- `requirements.txt` — pinned documentation and validation dependencies.
+- `requirements.txt` — concise human-edited documentation and validation dependencies.
+- `requirements.lock` — hash-locked transitive environment used by CI and release verification.
 - `mkdocs.yml` — theme, extensions, Mermaid, explicit final navigation, and exclusions.
 - `.gitignore` — virtual environments, site output, caches, and SDD workspace.
 - `.markdownlint.json` — prose-aware Markdown lint configuration.
@@ -147,7 +148,7 @@
 
   ```bash
   python3 -m venv .venv
-  .venv/bin/pip install -r requirements.txt
+  .venv/bin/pip install --require-hashes -r requirements.lock
   .venv/bin/pytest -q
   .venv/bin/mkdocs build --strict
   .venv/bin/python tools/check_book.py

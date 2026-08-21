@@ -400,13 +400,11 @@ def validate_project_guides(root: Path, words: int, failures: list[str]) -> None
             "contents": ("22 chapters", "four appendices"),
             "local environment setup": (
                 "python3 -m venv .venv",
-                ".venv/bin/pip install -r requirements.txt",
+                ".venv/bin/pip install --require-hashes -r requirements.lock",
                 ".venv/bin/mkdocs serve",
             ),
             "release checks": (
-                ".venv/bin/pytest -q",
-                ".venv/bin/python tools/check_book.py --final",
-                ".venv/bin/mkdocs build --strict",
+                "tools/verify_release.sh",
             ),
         }
         for label, needles in required_readme_contracts.items():

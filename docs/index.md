@@ -1,10 +1,86 @@
+---
+description: A practical operating handbook for a capable, bounded personal agent.
+---
+
+<section class="hermes-hero" markdown>
+
+<p class="hermes-kicker">The complete first edition · Hermes Agent v0.20.5</p>
+
 # Hermes Agent Masterclass
 
-## A practical operating handbook for a capable, bounded personal agent
+<p class="hermes-promise">Turn an always-on AI agent into a capable, bounded colleague for career, family, and a small business—without handing away human authority.</p>
 
-This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
+<p class="hermes-byline">Curated by <strong>Moumita Nath</strong> · Built for an Apple-silicon Mac mini · Source-verified and recovery-first</p>
 
-The complete first edition lives inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV applies that trust envelope to daily rhythms, an ethical job-search and career-brand system, and a minimized Canadian family operating system with professional handoffs. Part V applies those controls to a one- or two-person business, nine bounded functional playbooks, and supervised specialist delegation. Part VI closes the numbered manuscript with operational evaluation and an evidence-gated 90-day capstone. Four appendices turn the chapter field kits and primary evidence into compact operating references.
+<div class="hermes-hero-actions" markdown>
+
+[Start reading](part-1/01-meet-hermes.md){ .md-button .md-button--primary }
+[View the repository](https://github.com/monath1/hermes-masterclass){ .md-button }
+[Meet the curator](https://github.com/monath1){ .md-button }
+
+</div>
+
+</section>
+
+<div class="hermes-stat-grid">
+  <div class="hermes-stat"><strong>22</strong><span>chapters</span></div>
+  <div class="hermes-stat"><strong>6</strong><span>parts</span></div>
+  <div class="hermes-stat"><strong>4</strong><span>appendices</span></div>
+  <div class="hermes-stat"><strong>110,253</strong><span>measured words</span></div>
+</div>
+
+This book is for people who can see the promise in AI agents but want a dependable
+way to use one in everyday life. It follows a Canadian family operating Hermes Agent
+from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a
+personal chief of staff, then as a carefully bounded partner for career, family, and
+a small business.
+
+## Your route through the book
+
+<div class="hermes-part-grid" markdown>
+<article class="hermes-part-card" markdown="1">
+
+### [Part I · From Chatbot to Colleague](part-1/01-meet-hermes.md)
+
+Build the mental model, operating contract, and evidence-based handback.
+
+</article>
+<article class="hermes-part-card" markdown="1">
+
+### [Part II · The Mac mini Foundation](part-2/05-install-hermes-on-mac-mini.md)
+
+Install the host, route models, preserve context, and control extensions and channels.
+
+</article>
+<article class="hermes-part-card" markdown="1">
+
+### [Part III · The Trust Envelope](part-3/11-family-safe-security.md)
+
+Make OS isolation, scoped identity, approvals, audit, backup, and recovery real.
+
+</article>
+<article class="hermes-part-card" markdown="1">
+
+### [Part IV · Personal Chief of Staff](part-4/15-daily-weekly-operating-rhythms.md)
+
+Apply the controls to daily rhythms, career work, and Canadian family operations.
+
+</article>
+<article class="hermes-part-card" markdown="1">
+
+### [Part V · Your First Digital Employee](part-5/19-one-two-person-business-os.md)
+
+Operate a small-business system and delegate bounded work to supervised specialists.
+
+</article>
+<article class="hermes-part-card" markdown="1">
+
+### [Part VI · Advanced Operations](part-6/22-evaluation-observability-capstone.md)
+
+Measure correctness, learn from incidents, and earn authority through a 90-day capstone.
+
+</article>
+</div>
 
 ## How to read this book
 
@@ -81,13 +157,13 @@ Use Chapter 22's operational evidence and capstone card before expanding any tas
 3. [Appendix C: Curated Hermes extension stack](appendices/appendix-c-curated-stack.md) — Hermes-native skills and plugins plus clearly identified external MCP categories, rated for value, permission, exposure, effort, cost, maintenance, and phase.
 4. [Appendix D: Troubleshooting, glossary, bibliography, and provenance](appendices/appendix-d-troubleshooting-glossary-bibliography.md) — safe recovery order, symptom diagnosis, definitions, primary sources, version ledger, screenshot pointer, and release checklist.
 
-The first edition contains exactly 22 numbered chapters and four appendices, totaling **110,266 measured Markdown words**. Fenced code blocks are excluded from that count.
+The first edition contains exactly 22 numbered chapters and four appendices, totaling **110,253 measured Markdown words**. Fenced code blocks are excluded from that count.
 
 ## Local preview
 
 ```shell
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install --require-hashes -r requirements.lock
 .venv/bin/mkdocs serve
 ```
 

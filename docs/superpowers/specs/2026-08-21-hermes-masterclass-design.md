@@ -1,10 +1,10 @@
 # Hermes Agent Masterclass — First Edition Design
 
-**Status:** Approved on 2026-08-21  
-**Curator:** Moumita Nath  
-**Repository:** `monath1/hermes-masterclass` (private)  
-**Product baseline:** Nous Research Hermes Agent `v0.20.5` / tag `v2026.8.19`  
-**Primary platform:** macOS on an Apple silicon Mac mini  
+**Status:** Approved on 2026-08-21
+**Curator:** Moumita Nath
+**Repository:** `monath1/hermes-masterclass` (private)
+**Product baseline:** Nous Research Hermes Agent `v0.20.5` / tag `v2026.8.19`
+**Primary platform:** macOS on an Apple silicon Mac mini
 **License:** MIT
 
 ## Purpose
@@ -134,9 +134,9 @@ Financial, tax, health, employment, and privacy chapters teach preparation and r
 
 ### Appendices
 
-A. Commands and interface reference.  
-B. Copy-ready charters, policies, prompts, checklists, and playbooks.  
-C. Curated native skill/plugin/MCP stack with value, risk, cost, and maintenance ratings.  
+A. Commands and interface reference.
+B. Copy-ready charters, policies, prompts, checklists, and playbooks.
+C. Curated native skill/plugin/MCP stack with value, risk, cost, and maintenance ratings.
 D. Troubleshooting, glossary, bibliography, version ledger, and source provenance.
 
 ## Chapter Contract

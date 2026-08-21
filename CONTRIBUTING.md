@@ -42,18 +42,23 @@ Appendix D contains the detailed release checklist. Do not change only the displ
 ## Local checks
 
 ```shell
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/pytest -q
-.venv/bin/mkdocs build --strict
-.venv/bin/python tools/check_book.py
-.venv/bin/python tools/check_task6.py --hermes-source /tmp/hermes-agent-v2026.8.19
-.venv/bin/python tools/check_task7.py --hermes-source /tmp/hermes-agent-v2026.8.19
-.venv/bin/python tools/check_task8.py --hermes-source /tmp/hermes-agent-v2026.8.19
-.venv/bin/python tools/check_task9.py --hermes-source /tmp/hermes-agent-v2026.8.19
-.venv/bin/python tools/check_task10.py --hermes-source /tmp/hermes-agent-v2026.8.19
-.venv/bin/python tools/check_task11.py --hermes-source /tmp/hermes-agent-v2026.8.19
+tools/verify_release.sh
 ```
+
+This is the canonical release entry point. It installs the complete transitive Python
+environment from `requirements.lock` with `--require-hashes`, obtains and verifies the
+exact Hermes tag and commit when `HERMES_SOURCE` is not supplied, and runs source and
+built-site link checks plus a Chrome/Chromium smoke test with external DNS denied.
+`requirements.txt` remains the concise human-edited input. Regenerate the lock with
+the exact command recorded at its top, review the dependency diff, and verify it in a
+clean Python 3.11 environment before accepting an update.
+
+The verifier excludes only the immutable, hash-verified minified Mermaid bundle
+from Codespell. Generated identifiers in that exact vendor file are not editorial
+prose; `tools/check_release.py` enforces its version, license, and SHA-256 instead.
+Lychee excludes only the exact private book-repository URL, which correctly returns
+404 to an unauthenticated release runner; all other source and built-site links stay
+in scope.
 
 The Task 11 audit reconstructs the deduplicated external-citation set and affected chapter/appendix mappings from the manuscript, excluding local links and Appendix D's ledger carrier block. It requires every ledger URL to have an explicit title, publisher, ISO verification date, affected-unit list, and version-sensitive label. Against the exact pinned Hermes commit, it also checks Appendix A command families and the named Appendix C official skills, bundled plugins, and approved-catalog MCP entries. Keep the audit deterministic; live-page authority and content review remain release-editor responsibilities.
 
@@ -71,7 +76,7 @@ The Task 9 audit is a bounded manuscript lint for Chapters 19–20. It checks th
 The ordinary Task 8 audit is deterministic and network-free: it checks the selected official URLs, visible observation dates, declared content contracts, dated Canadian amounts/deadlines/thresholds, and pinned Hermes source text. Run the separate live verification to exercise the load-bearing content assertions when preparing a release or substantively revising Chapters 17–18:
 
 ```shell
-.venv/bin/python tools/check_task8.py --hermes-source /tmp/hermes-agent-v2026.8.19 --live
+HERMES_TASK8_LIVE=1 tools/verify_release.sh
 ```
 
 Live mode requires a terminal 2xx response, follows a bounded number of redirects one hop at a time, rejects non-HTTPS or off-domain hops before following them, and checks factual anchors in the returned page. It is intentionally excluded from push and pull-request runs because external availability is nondeterministic. To run it in CI, open the **Quality** workflow manually and enable **Verify Task 8 official pages, redirect domains, and content anchors**.

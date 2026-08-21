@@ -10,7 +10,7 @@ This private repository contains the complete first-edition manuscript. Its cont
 
 The product baseline is **Nous Research Hermes Agent v0.20.5, tag `v2026.8.19`**. Version-sensitive instructions use the label “Verified against Hermes Agent v0.20.5 (2026-08-19).” The pinned [source map](research/hermes-v2026.8.19-source-map.md) routes claims to primary evidence.
 
-Current measured manuscript word count: **110,266 words**. The repository validator excludes fenced code blocks and counts the 22 chapter files plus four appendix files listed in `book-manifest.yml`.
+Current measured manuscript word count: **110,253 words**. The repository validator excludes fenced code blocks and counts the 22 chapter files plus four appendix files listed in `book-manifest.yml`.
 
 ## Contents
 
@@ -28,7 +28,7 @@ From the repository root on macOS:
 
 ```shell
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install --require-hashes -r requirements.lock
 .venv/bin/mkdocs serve
 ```
 
@@ -36,18 +36,21 @@ Open <http://127.0.0.1:8000/>. This is the supported private local preview; the 
 
 ## Quality checks
 
-Run the release checks from the repository root:
+Run the complete fresh-clone release gate from the repository root:
 
 ```shell
-.venv/bin/pytest -q
-.venv/bin/python tools/check_book.py --final
-.venv/bin/mkdocs build --strict
-.venv/bin/codespell docs README.md CONTRIBUTING.md
-python3 -m py_compile tools/*.py tests/*.py
-git diff --check
+tools/verify_release.sh
 ```
 
-The final validator enforces the canonical 22+4 file set, appendix and chapter word contracts, the 100,000–120,000 total, required structures, source/version labels, local links, provenance, project-guide promises, and private-data hygiene. Contributor-specific audits are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+The script creates the locked Python environment when needed, bootstraps and verifies
+the pinned Hermes checkout, and runs every manuscript audit, test, strict build,
+linter, source and built-site link check, compilation check, whitespace check, and
+network-denied browser diagram smoke test. It requires Git, Python 3.11 or newer,
+Node/npm, `curl`, and Chrome or Chromium. The final validator enforces the canonical
+22+4 file set, appendix and chapter word contracts, the 100,000–120,000 total,
+required structures, source/version labels, local links, provenance, project-guide
+promises, and private-data hygiene. Contributor-specific audits are documented in
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credit and license
 

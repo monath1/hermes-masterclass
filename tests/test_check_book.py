@@ -475,10 +475,9 @@ def test_final_mode_rejects_a_stale_readme_word_count(tmp_path: Path) -> None:
         "Private repository. Curated by Moumita Nath. MIT License.\n\n"
         "Baseline: Hermes Agent v0.20.5, tag v2026.8.19.\n\n"
         "Audience and promise. Contents: 22 chapters and four appendices.\n\n"
-        "python3 -m venv .venv\n.venv/bin/pip install -r requirements.txt\n"
-        ".venv/bin/mkdocs serve\n.venv/bin/pytest -q\n"
-        ".venv/bin/python tools/check_book.py --final\n"
-        ".venv/bin/mkdocs build --strict\n"
+        "python3 -m venv .venv\n"
+        ".venv/bin/pip install --require-hashes -r requirements.lock\n"
+        ".venv/bin/mkdocs serve\ntools/verify_release.sh\n"
         "Current measured manuscript word count: **999999 words**.\n",
         encoding="utf-8",
     )

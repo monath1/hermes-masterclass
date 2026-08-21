@@ -196,7 +196,7 @@ hermes --continue
 
 Ask, “What was the read-only rule in my previous request?” A correct answer shows that the same profile persisted and resumed the session. It does not prove memory, gateway delivery, or host security.
 
-Now test the classic CLI with `hermes` if desired. The CLI and TUI share state; choose by ergonomics, not by assuming one is a different agent.
+The classic `hermes` CLI shares TUI state; choose between them by ergonomics.
 
 ### Add Desktop without inventing a second system
 
@@ -206,11 +206,16 @@ If the Desktop installer was used, open the application while logged in as the d
 hermes desktop
 ```
 
-Desktop should show the existing model and session. Start one harmless conversation in Desktop, then verify it appears in `hermes sessions list`. The native app launches its own local `hermes serve` backend; it does not require the web dashboard.
+Desktop should show the existing model and session. Start a harmless conversation, then confirm it in `hermes sessions list`. Desktop launches its own local `hermes serve` backend; it does not need the dashboard.
+
+<figure markdown>
+  ![Hermes Desktop view grouping session sources into folders.](../assets/images/hermes/desktop-session-source-folders.png)
+  <figcaption>Official Hermes Desktop session view at pinned tag v2026.8.19.</figcaption>
+</figure>
 
 Check the current profile before changing settings. Desktop can manage multiple profiles, and an attractive interface does not remove the possibility of editing the wrong one. Keep per-session YOLO off. YOLO bypasses dangerous-command approval prompts and is not appropriate for the probation phase.
 
-If Desktop cannot find its backend, run `hermes doctor` and a CLI chat first. A healthy Desktop icon with a broken provider is not a healthy agent. Conversely, if the CLI works but Desktop does not, inspect Desktop's gateway/backend logs from its settings instead of rebuilding the runtime.
+If Desktop cannot find its backend, run `hermes doctor` and a CLI chat. If CLI works but Desktop does not, inspect Desktop's gateway/backend logs in settings before rebuilding the runtime.
 
 ### Add the local web dashboard
 
@@ -222,9 +227,14 @@ hermes dashboard
 
 At the pinned release it opens `http://127.0.0.1:9119`. Confirm the browser address uses `127.0.0.1` or `localhost`. The dashboard reads and writes secrets and configuration, so the default loopback boundary is valuable.
 
-Do not use `--host 0.0.0.0` merely so another household device can reach it. A non-loopback bind engages Hermes's authentication gate and expands the network threat surface. The deprecated `--insecure` flag does not bypass that gate. Remote access belongs behind an authenticated, deliberately designed network path and will be treated as an architecture change later in the book.
+Do not use `--host 0.0.0.0` for household access. A non-loopback bind engages Hermes's authentication gate and expands the threat surface. The deprecated `--insecure` flag does not bypass it. Treat remote access as a later, authenticated architecture change.
 
-Use the dashboard to inspect **Status**, **Models**, **Sessions**, and **System**. Do not add keys or integrations yet. Verify that its version, selected profile, and recent session match the CLI evidence. Close the dashboard process after the test if it is not part of the chosen operating surface.
+Use the dashboard to inspect **Status**, **Models**, **Sessions**, and **System**. Do not add keys or integrations yet. Verify its version, selected profile, and recent session against the CLI. Close it after the test unless it is the chosen operating surface.
+
+<figure markdown>
+  ![Hermes web dashboard administration screen showing top-level system controls.](../assets/images/hermes/dashboard-admin-system-top.png)
+  <figcaption>Official Hermes administration dashboard at pinned tag v2026.8.19.</figcaption>
+</figure>
 
 ### Install the gateway only after local chat passes
 

@@ -19,6 +19,12 @@ source, command, extension, Canadian-fact, delegation, and appendix-ledger
 contracts against the immutable Hermes checkout. Pytest exercised the validator
 mutation cases.
 
+The final review also built from the hash-locked transitive Python environment,
+checked source and built HTML links separately, and loaded every Mermaid-bearing
+page in a browser process that blocked non-loopback requests. The browser assertion
+required all 24 source diagrams to become non-empty SVG elements and recorded any
+attempted third-party script, font, image, stylesheet, or API request as a failure.
+
 The editorial pass compared every opening, Definitions section, Hermes mechanism,
 professional and personal example, authority table, recovery section, field kit,
 exercise/rubric, checklist, and reference list in manuscript order. It separately
@@ -34,9 +40,9 @@ for a dated source and human or professional decision owner.
 | --- | ---: |
 | Numbered chapters | 22 |
 | Appendices | 4 |
-| Chapter words | 99,667 |
+| Chapter words | 99,654 |
 | Appendix words | 10,599 |
-| Total measured Markdown words | 110,266 |
+| Total measured Markdown words | 110,253 |
 | Required chapter-section checks | 264 of 264 |
 | Mermaid blocks in numbered chapters | 24 |
 | Chapter reference URL occurrences | 261 |
@@ -70,6 +76,16 @@ distorting Appendix D's prose contract.
 - Placed all eight pinned, provenance-tracked Hermes screenshots and feature
   illustrations in their intended chapters, with version captions and meaningful
   alt text; added one rendered warning admonition for the OS-boundary rule.
+- Placed the official Desktop session and administration-dashboard screenshots
+  directly beside their Chapter 5 interface explanations for beginner orientation.
+- Replaced remote Mermaid and font dependencies with exact hash-verified local
+  assets, built the unlisted image-provenance page, pinned every GitHub Action to a
+  reviewed commit with checkout credentials disabled, and added the single
+  `tools/verify_release.sh` clean-release entry point.
+- Created an original editorial theme and cover using self-hosted OFL Newsreader,
+  Space Grotesk, and JetBrains Mono fonts; made curator and repository identity
+  persistent; and corrected desktop title wrapping plus mobile table/code overflow
+  found during light, dark, 390-by-844, and print review.
 - Preserved the Chen–Patel family, Priya's career transition, Alex's business role,
   children Leena and Ben, and Harbourlight Learning without introducing real data.
   Later chapters progressively move from concepts and installation to controls,
@@ -94,10 +110,10 @@ source check remains an explicit manual workflow option for release editors.
 
 The semantic Task 6–11 linters are finite regression guards, not general natural-
 language safety proofs. Lychee can prove reachability at one moment, not continuing
-authority or factual support. Its release configuration excludes only loopback preview
-URLs, generated or installed trees, 11 exact Canada.ca endpoints that return HTTP/2
-protocol errors to Lychee 0.24.2, and the exact OpenAI pricing URL that returns HTTP
-403 to that client; those pages remain browser-review obligations. A future baseline
-update must repeat the coordinated source, command, screenshot, model, manuscript,
-ledger, test, build, link, and visual review described in the contributor guide and
-Appendix D.
+authority or factual support. Its deterministic release configuration excludes
+loopback preview URLs, generated or installed trees where appropriate, and only the
+exact private book-repository URL, which returns 404 to unauthenticated runners.
+The built HTML is checked from the `site/` root rather than excluded. A future
+baseline update must repeat the coordinated source, command, screenshot, model,
+manuscript, ledger, test, build, link, offline-network, and visual review described
+in the contributor guide and Appendix D.
