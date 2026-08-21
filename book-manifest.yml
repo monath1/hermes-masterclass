@@ -112,10 +112,14 @@ chapters:
     title: The One- or Two-Person Business OS
     path: docs/part-5/19-one-two-person-business-os.md
     part: Part V — Your First Digital Employee
+    word_target: 4200–4800
+    status: complete
   - number: 20
     title: Research, Sales, Marketing, Support, and Finance
     path: docs/part-5/20-business-functions.md
     part: Part V — Your First Digital Employee
+    word_target: 4600–5200
+    status: complete
   - number: 21
     title: Hermes as Manager
     path: docs/part-5/21-hermes-as-manager.md

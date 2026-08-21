@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV applies that trust envelope to daily rhythms, an ethical job-search and career-brand system, and a minimized Canadian family operating system with professional handoffs. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV applies that trust envelope to daily rhythms, an ethical job-search and career-brand system, and a minimized Canadian family operating system with professional handoffs. Part V now applies those controls to a one- or two-person business operating system and nine bounded functional playbooks. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -60,9 +60,16 @@ Complete these chapters before giving later workflow chapters sensitive data or 
 
 Complete the trust envelope before operating these workflows with personal or employment data. Chapter 15's chief-of-staff card, Chapter 16's ethical opportunity-pipeline card, Chapter 17's evidence-and-interview card, and Chapter 18's Canadian family operating card preserve the profile, source, approval, professional-handoff, and recovery interfaces used by later chapters.
 
+## Part V — Your First Digital Employee
+
+19. [The One- or Two-Person Business OS](part-5/19-one-two-person-business-os.md) — establish mission, offers, customer promises, roles, records, projects, Kanban, meetings, decisions, SOPs, risks, finance handoff, and an explicit owner/co-owner/Hermes responsibility map.
+20. [Research, Sales, Marketing, Support, and Finance](part-5/20-business-functions.md) — operate research, sales, CRM, marketing, content, support, project, operations, and bookkeeping-preparation playbooks with approval objects, evidence, receipts, metrics, and complete lead-to-customer and content-to-campaign trajectories.
+
+Complete Part III before connecting these business workflows to customer or financial data. Chapter 19's business operating card and Chapter 20's functional playbook card preserve human authority over contracts, commercial terms, money, customer promises, external communication, public claims, and professional decisions.
+
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–18 are complete; later chapters remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–20 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

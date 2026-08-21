@@ -23,7 +23,10 @@ python3 -m venv .venv
 .venv/bin/python tools/check_task6.py --hermes-source /tmp/hermes-agent-v2026.8.19
 .venv/bin/python tools/check_task7.py --hermes-source /tmp/hermes-agent-v2026.8.19
 .venv/bin/python tools/check_task8.py --hermes-source /tmp/hermes-agent-v2026.8.19
+.venv/bin/python tools/check_task9.py --hermes-source /tmp/hermes-agent-v2026.8.19
 ```
+
+The Task 9 audit is a bounded manuscript lint for Chapters 19–20. It checks their word contracts, named business-OS and functional-playbook artifacts, owner/co-owner/Hermes responsibility coverage, approval-bearing lead and campaign trajectories, the finite list of prohibited business authorizations, and pinned Hermes source assertions. When changing the checker, keep semantic tests focused on those declared contracts and include safe negations plus structural mutation cases; do not grow it into a general NLP policy engine.
 
 The ordinary Task 8 audit is deterministic and network-free: it checks the selected official URLs, visible observation dates, declared content contracts, dated Canadian amounts/deadlines/thresholds, and pinned Hermes source text. Run the separate live verification to exercise the load-bearing content assertions when preparing a release or substantively revising Chapters 17–18:
 

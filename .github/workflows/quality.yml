@@ -43,5 +43,6 @@ jobs:
       - run: python tools/check_task6.py --hermes-source .pinned-hermes-source
       - run: python tools/check_task7.py --hermes-source .pinned-hermes-source
       - run: python tools/check_task8.py --hermes-source .pinned-hermes-source
+      - run: python tools/check_task9.py --hermes-source .pinned-hermes-source
       - if: ${{ github.event_name == 'workflow_dispatch' && inputs.live_task8_sources }}
         run: python tools/check_task8.py --hermes-source .pinned-hermes-source --live
