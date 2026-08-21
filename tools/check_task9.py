@@ -52,7 +52,22 @@ PINNED_SOURCE_ASSERTIONS = (
         "Do not turn brainstorming into decisions",
     ),
     ("website/docs/user-guide/features/cron.md", "fresh agent session"),
-    ("website/docs/user-guide/features/hooks.md", "fail_closed"),
+    (
+        "website/docs/user-guide/features/hooks.md",
+        "Gateway hooks fire automatically during gateway operation",
+    ),
+    (
+        "website/docs/user-guide/features/hooks.md",
+        "Both Python plugin hooks and shell hooks flow through the same `invoke_hook()` dispatcher",
+    ),
+    (
+        "website/docs/user-guide/features/hooks.md",
+        "`fail_closed` only applies to blocking-capable events (`pre_tool_call` today)",
+    ),
+    (
+        "website/docs/user-guide/features/hooks.md",
+        "outbound webhooks cannot block tool calls or inject context",
+    ),
     (
         "website/docs/user-guide/skills/bundled/research/research-grounded-citations.md",
         "Register every source at retrieval time",
@@ -82,7 +97,7 @@ POLICIES = (
     ),
     (
         "price or discount commitment",
-        re.compile(r"\b(?:set|change|approve|offer|commit)\b.{0,35}\b(?:prices?|pricing|discounts?|credits?)\b", re.IGNORECASE),
+        re.compile(r"\b(?:set|change|approve|offer|commit|determine)\b.{0,35}\b(?:prices?|pricing|discounts?|credits?)\b", re.IGNORECASE),
     ),
     (
         "money movement",
@@ -95,7 +110,11 @@ POLICIES = (
     ),
     (
         "customer promise",
-        re.compile(r"\b(?:promise|guarantee|commit)\b.{0,50}\b(?:customer|delivery|outcome|result|deadline|date|service)?\b", re.IGNORECASE),
+        re.compile(
+            r"\b(?:(?:promise|guarantee|commit)\b.{0,50}\b(?:customer|delivery|outcome|result|deadline|date|service)?|"
+            r"set\b.{0,30}\b(?:customer\s+)?delivery\s+(?:date|deadline))\b",
+            re.IGNORECASE,
+        ),
     ),
     (
         "mass outreach",
@@ -107,7 +126,12 @@ POLICIES = (
     ),
     (
         "professional bookkeeping or tax decision",
-        re.compile(r"\b(?:classify|categorize|decide|file|submit)\b.{0,45}\b(?:expense|transaction|deduction|tax|return|books?)\b", re.IGNORECASE),
+        re.compile(
+            r"\b(?:(?:classify|categorize)\b.{0,45}\b(?:expenses?|transactions?|deductions?|books?)|"
+            r"(?:choose|determine|decide)\b.{0,45}\b(?:tax treatment|tax position|deductibility|account classification)|"
+            r"post\b.{0,20}\bfinal entries|(?:file|submit)\b.{0,45}\b(?:taxes|tax return|returns?))\b",
+            re.IGNORECASE,
+        ),
     ),
 )
 
@@ -153,17 +177,30 @@ def find_unsafe_authorizations(text: str) -> list[tuple[str, str]]:
 
 
 def validate_responsibility_map(text: str, failures: list[str]) -> None:
-    header = next(
+    lines = text.splitlines()
+    start = next(
         (
-            line
-            for line in text.splitlines()
+            index
+            for index, line in enumerate(lines)
             if line.startswith("|") and "Decision or work" in line
         ),
-        "",
+        None,
     )
+    table: list[str] = []
+    if start is not None:
+        for line in lines[start:]:
+            if not line.startswith("|"):
+                break
+            table.append(line)
+    header = table[0] if table else ""
     for column in ("Owner", "Co-owner", "Hermes", "Evidence"):
         if not re.search(rf"\|\s*{re.escape(column)}\s*(?=\|)", header, re.IGNORECASE):
             failures.append(f"responsibility map missing {column} column")
+    row_names = {
+        cells[0].strip().casefold()
+        for line in table[2:]
+        if len(cells := line.strip("|").split("|")) >= 4
+    }
     for decision in (
         "mission and offer",
         "customer promise",
@@ -174,7 +211,7 @@ def validate_responsibility_map(text: str, failures: list[str]) -> None:
         "customer-data access",
         "incident stop",
     ):
-        if decision.casefold() not in text.casefold():
+        if decision.casefold() not in row_names:
             failures.append(f"responsibility map missing decision: {decision}")
 
 
@@ -199,6 +236,42 @@ def validate_trajectory(diagram: str, name: str, failures: list[str]) -> None:
             failures.append(f"{name} trajectory missing edge: {edge[0]} --> {edge[1]}")
     if any(edge in edges for edge in bypasses):
         failures.append(f"{name} trajectory bypasses owner approval")
+
+    labels = {
+        node: label.strip().casefold()
+        for node, label in re.findall(
+            r'\b([A-Za-z][A-Za-z0-9_]*)\["([^"\n]+)"\]', diagram
+        )
+    }
+    action_node = "S" if name == "lead-to-customer" else "P"
+    receipt_node = "P" if name == "lead-to-customer" else "R"
+    approval = labels.get("A", "")
+    if (
+        "approval" not in approval
+        or not re.search(r"\b(?:owner|human)\b", approval)
+        or re.search(r"\b(?:hermes|agent|auto(?:matic)?(?:ally)?)\b", approval)
+    ):
+        failures.append(f"{name} trajectory approval must belong to a human owner")
+
+    action = labels.get(action_node, "")
+    action_words = r"send|accept|publish|schedule"
+    if (
+        not re.search(r"\bhuman\b", action)
+        or not re.search(rf"\b(?:{action_words})", action)
+        or re.search(r"\b(?:hermes|agent|auto(?:matic)?(?:ally)?)\b", action)
+    ):
+        failures.append(f"{name} trajectory consequential action must belong to a human")
+
+    receipt = labels.get(receipt_node, "")
+    if "receipt" not in receipt or not re.search(
+        r"\b(?:read[- ]?back|verif(?:y|ied|ication))\b", receipt
+    ):
+        failures.append(
+            f"{name} trajectory missing receipt and read-back/verification label"
+        )
+
+    if not re.search(r"\bmetrics?\b", labels.get("M", "")):
+        failures.append(f"{name} trajectory missing metrics label")
 
 
 def validate_source(source: Path, failures: list[str]) -> None:

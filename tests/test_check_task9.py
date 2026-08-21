@@ -65,6 +65,11 @@ def test_task9_business_contract() -> None:
         ("mass outreach", "Hermes can blast cold emails to every scraped lead."),
         ("deceptive marketing", "Hermes may fabricate testimonials for the campaign."),
         ("professional bookkeeping or tax decision", "The agent may classify expenses and file the tax return."),
+        ("professional bookkeeping or tax decision", "Hermes may classify expenses."),
+        ("professional bookkeeping or tax decision", "Hermes can choose tax treatment."),
+        ("professional bookkeeping or tax decision", "The agent may post final entries."),
+        ("price or discount commitment", "Hermes may determine pricing."),
+        ("customer promise", "Hermes can set the customer delivery date."),
     ],
 )
 def test_business_safety_scanner_rejects_forbidden_authority(
@@ -85,6 +90,11 @@ def test_business_safety_scanner_rejects_forbidden_authority(
         "The agent must not send mass outreach or scrape personal addresses.",
         "Hermes cannot fabricate testimonials or impersonate a customer.",
         "Hermes may organize receipts, but it may not classify expenses or file taxes.",
+        "Hermes may prepare expense questions, but it may not classify expenses.",
+        "Hermes may compare owner-supplied tax options, but it cannot choose tax treatment.",
+        "The agent may draft proposed entries, but it must not post final entries.",
+        "Hermes may research the approved price schedule, but it may not determine pricing.",
+        "Hermes may draft delivery options, but it cannot set the customer delivery date.",
     ],
 )
 def test_business_safety_scanner_accepts_explicit_refusals(safe_boundary: str) -> None:
@@ -152,6 +162,38 @@ def test_responsibility_map_rejects_missing_co_owner_column() -> None:
 
 
 @pytest.mark.parametrize(
+    "decision",
+    [
+        "Mission and offer",
+        "Customer promise",
+        "Contract acceptance",
+        "Price or discount",
+        "Payment or refund",
+        "Bookkeeping classification and tax",
+        "Customer-data access",
+        "Incident stop",
+    ],
+)
+def test_task9_audit_rejects_each_removed_responsibility_row(
+    tmp_path: Path, decision: str
+) -> None:
+    chapter_19, _chapter_20 = copy_task9_chapters(tmp_path)
+    lines = chapter_19.read_text(encoding="utf-8").splitlines()
+    chapter_19.write_text(
+        "\n".join(
+            line for line in lines if not line.startswith(f"| {decision} |")
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert f"responsibility map missing decision: {decision.casefold()}" in result.stdout
+
+
+@pytest.mark.parametrize(
     ("name", "diagram"),
     [
         (
@@ -163,7 +205,7 @@ flowchart LR
     R --> D["Draft"]
     D --> A["Owner approval"]
     A --> S["Human send or acceptance"]
-    S --> P["Provider receipt"]
+    S --> P["Provider receipt + read-back verification"]
     P --> M["Metrics and review"]
 ```""",
         ),
@@ -176,7 +218,7 @@ flowchart LR
     D --> F["Fact and policy review"]
     F --> A["Owner approval"]
     A --> P["Human publish or schedule"]
-    P --> R["Platform receipt"]
+    P --> R["Platform receipt + read-back verification"]
     R --> M["Metrics and review"]
 ```""",
         ),
@@ -198,7 +240,7 @@ flowchart LR
     R --> D["Draft"]
     D --> A["Owner approval"]
     D --> S["Human send or acceptance"]
-    S --> P["Provider receipt"]
+    S --> P["Provider receipt + read-back verification"]
     P --> M["Metrics and review"]
 ```"""
     failures: list[str] = []
@@ -206,6 +248,91 @@ flowchart LR
     validate_trajectory(diagram, "lead-to-customer", failures)
 
     assert "lead-to-customer trajectory bypasses owner approval" in failures
+
+
+@pytest.mark.parametrize(
+    ("name", "source", "replacement", "diagnostic"),
+    [
+        (
+            "lead-to-customer",
+            "Owner approval",
+            "Hermes auto-approval",
+            "approval must belong to a human owner",
+        ),
+        (
+            "lead-to-customer",
+            "Human send or acceptance",
+            "Hermes sends automatically",
+            "consequential action must belong to a human",
+        ),
+        (
+            "lead-to-customer",
+            "Provider receipt + read-back verification",
+            "Delivery complete",
+            "missing receipt and read-back/verification label",
+        ),
+        (
+            "lead-to-customer",
+            "Metrics and review",
+            "Archive",
+            "missing metrics label",
+        ),
+        (
+            "content-to-campaign",
+            "Owner approval",
+            "Hermes auto-approval",
+            "approval must belong to a human owner",
+        ),
+        (
+            "content-to-campaign",
+            "Human publish or schedule",
+            "Hermes publishes automatically",
+            "consequential action must belong to a human",
+        ),
+        (
+            "content-to-campaign",
+            "Platform receipt + read-back verification",
+            "Campaign complete",
+            "missing receipt and read-back/verification label",
+        ),
+        (
+            "content-to-campaign",
+            "Metrics and review",
+            "Archive",
+            "missing metrics label",
+        ),
+    ],
+)
+def test_trajectory_rejects_unsafe_or_missing_semantic_labels(
+    name: str, source: str, replacement: str, diagnostic: str
+) -> None:
+    if name == "lead-to-customer":
+        diagram = """```mermaid
+flowchart LR
+    I["Permitted lead intake"] --> Q["Qualification"]
+    Q --> R["Research and evidence"]
+    R --> D["Draft"]
+    D --> A["Owner approval"]
+    A --> S["Human send or acceptance"]
+    S --> P["Provider receipt + read-back verification"]
+    P --> M["Metrics and review"]
+```"""
+    else:
+        diagram = """```mermaid
+flowchart LR
+    B["Approved brief"] --> E["Evidence"]
+    E --> D["Draft"]
+    D --> F["Fact and policy review"]
+    F --> A["Owner approval"]
+    A --> P["Human publish or schedule"]
+    P --> R["Platform receipt + read-back verification"]
+    R --> M["Metrics and review"]
+```"""
+    failures: list[str] = []
+
+    validate_trajectory(diagram.replace(source, replacement), name, failures)
+
+    assert f"{name} trajectory {diagnostic}" in failures
 
 
 def test_task9_audit_rejects_an_unsafe_customer_promise_mutation(tmp_path: Path) -> None:

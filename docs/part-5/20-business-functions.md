@@ -6,7 +6,7 @@
 
 Monday gives Harbourlight one of everything. A referral introduces a possible customer. An existing customer asks whether a delivery date is guaranteed. Priya wants a short campaign about a new guide. Alex needs the support backlog cleaned before a project review. The bookkeeper requests missing receipt context. Nine small jobs look like one invitation: “Hermes, handle the business.”
 
-Hermes could research the lead, write a persuasive email, update the CRM, schedule content, answer support, move cards, and classify expenses. The tools to perform pieces of that chain may exist. The authority to perform the chain does not.
+A single broad prompt could combine lead research, persuasive email, CRM updates, scheduled content, support answers, card movement, and expense classification. The tools to perform pieces of that chain may exist. The authority to perform the chain does not.
 
 The owners run playbooks instead. Research ends in a sourced evidence packet. Sales separates qualification from contact and customer commitment. CRM updates preserve provenance and await approval when a provider record changes. Content passes a fact and policy gate. Support answers are drafts unless an exact low-risk action class has been approved. Projects and operations use visible records and receipts. Finance work ends at the owner and bookkeeper.
 
@@ -201,7 +201,7 @@ Operations keeps repeated service reliable.
 2. Run the approved SOP manually with synthetic or low-risk data.
 3. Record exceptions, dependencies, failure signals, and recovery time.
 4. Automate only stable Green preparation. Cron prompts carry full context because each run starts fresh.
-5. Use hooks only for narrow observed events and review in-process code as trusted software.
+5. Use hooks only for documented events. Treat Python gateway/plugin code as trusted in-process software, shell hooks as credentialed subprocesses, and outbound webhooks as notify-only observers; only a blocking-capable `pre_tool_call` gate can enforce before execution.
 6. Reconcile every external effect through the destination, not the agent narrative.
 7. Sample output and access regularly; pause on drift, repeated failure, or missing receipts.
 8. Version the SOP and roll back capability, not merely prose, after an incident.
@@ -258,7 +258,7 @@ flowchart LR
     R --> D["Draft"]
     D --> A["Owner approval"]
     A --> S["Human send or acceptance"]
-    S --> P["Provider receipt"]
+    S --> P["Provider receipt + read-back verification"]
     P --> M["Metrics and review"]
 ```
 
@@ -277,7 +277,7 @@ flowchart LR
     D --> F["Fact and policy review"]
     F --> A["Owner approval"]
     A --> P["Human publish or schedule"]
-    P --> R["Platform receipt"]
+    P --> R["Platform receipt + read-back verification"]
     R --> M["Metrics and review"]
 ```
 
