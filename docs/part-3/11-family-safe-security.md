@@ -124,15 +124,45 @@ Some sites combine unrelated powers in one session. If a business administrator 
 
 ### Choose terminal isolation or whole-process isolation honestly
 
-Hermes supports Docker as a terminal backend. In that posture, terminal and file-tool operations occur in a hardened container. Hermes's main Python interpreter stays on the host, so code execution, MCP subprocesses, plugins, hooks, and skill loading remain outside that container. This posture is useful for a trusted operator who wants shell/file mistake containment. It is not enough for hostile email, web pages, multi-user channels, or untrusted extensions.
+Hermes supports Docker as a terminal backend. In that posture, terminal and file-tool operations occur in a hardened container. A remote `execute_code` child script and its generated tool stubs also run inside the selected Docker, SSH, Modal, Daytona, or other remote backend. When that script calls an allowed Hermes tool, however, it writes an RPC request that the host parent polls and dispatches; the resulting tool may route back through the terminal backend or use a host/external implementation. The main Hermes interpreter, RPC dispatcher, MCP subprocesses, plugins, hooks, and skill loading remain on the host. The script's container boundary therefore does not become whole-agent containment.
 
-For those inputs, wrap the entire Hermes process. The official Hermes Docker image is the lighter supported route: run it as the image's non-root `hermes` user, mount only its data directory and required workspaces, publish no unnecessary ports, set resource limits, and recreate from a pinned reviewed image. An advanced operator may instead use NVIDIA OpenShell, which Hermes documents as a whole-process sandbox with filesystem, network, process/syscall, and inference policy. Do not claim either is “perfect.” Kernel, runtime, mount, network-policy, and configuration defects still matter.
+This posture is useful for a trusted operator who wants shell, file, and child-script mistake containment. It is not enough for hostile email, web pages, multi-user channels, or untrusted extensions because the host orchestrator and in-process components remain privileged parts of the path.
+
+For those inputs, wrap the entire Hermes process. The official Hermes Docker image is the lighter supported route. Retain its supplied entrypoint: s6 initialization begins as root so it can prepare ownership and state, then drops every supervised service and the main program to the non-root `hermes` user. Verify the runtime user; do not force a replacement `--user` or bypass the entrypoint. Mount only the data directory and required workspaces, publish no unnecessary ports, set resource limits, and recreate from a pinned reviewed image. An advanced operator may instead use NVIDIA OpenShell, which Hermes documents as a whole-process sandbox with filesystem, network, process/syscall, and inference policy. Do not claim either is “perfect.” Kernel, runtime, mount, network-policy, and configuration defects still matter.
 
 If only the terminal backend is containerized, state that limitation on the deployment card. If the whole agent runs in Docker, do not quietly add host mounts or `--network host` later. Each new mount, port, device, capability, and socket enlarges the boundary.
 
+### Copy-ready Codex delegation prompt for isolation
+
+Container and firewall work is easy to misconfigure. A non-coder can give this bounded request to Codex, inspect its proposed diff, and keep the final decision:
+
+```text
+Act as a supervised infrastructure specialist for one Hermes Agent deployment.
+Use only the local Hermes checkout pinned at v2026.8.19 and the current official
+Docker/Apple documentation. First inspect SECURITY.md, the Docker guide, the
+current deployment files, runtime user, mounts, published ports, networks,
+resource limits, and stop/rebuild procedure. Do not change anything yet.
+
+Return a threat statement and a reviewable configuration diff that wraps the
+whole Hermes process. Preserve the official image entrypoint so setup can begin
+as root and services/main drop to the hermes user. Never mount the Docker socket,
+use host networking, mount an adult's home/primary browser/password-manager data,
+publish an unnecessary port, add a real credential, or weaken a failing control.
+Use a read-only synthetic intake mount, a disposable writable output, explicit
+resource limits, and the narrowest practical outbound destinations.
+
+For every proposed line, cite the pinned source that supports it and state its
+security effect. Include exact prerequisites, files touched, commands that would
+run only after my approval, a backup/rollback and clean-rebuild path, and tests
+for runtime user, allowed input/output, denied canary files, allowed provider,
+denied destination, closed ports, resource stop, persistent gateway stop, and
+secret absence. Test only synthetic data. Stop if the current runtime, mount,
+network, or rollback state cannot be proven; do not guess or apply the diff.
+```
+
 ### Control ingress and egress as different problems
 
-Sender allowlists and pairing constrain who can invoke a gateway. They are authorization controls, not model containment. A paired person's compromised phone still sends authorized input; an allowlisted email can forward malicious content. Hermes treats callers inside one adapter's authorized set as equally trusted. Run separate instances when adult administrators, children, or customers need different capabilities.
+Sender allowlists and pairing constrain who can invoke a gateway. They are authorization controls, not model containment. A paired person's compromised phone still sends authorized input; an allowlisted email can forward malicious content. Hermes can distinguish administrator and regular-user slash-command lists, but ordinary authorized chat callers routed to one profile share that profile's agent-tool authority; those command roles are not per-caller tool sandboxes. Run separate instances when adult administrators, children, or customers need different capabilities.
 
 Egress tiers make data escape harder:
 
@@ -211,7 +241,7 @@ Security guidance does not replace qualified legal, privacy, employment, or inci
 
 **Dedicated user can read too much.** A shared/cloud directory or browser account silently widened the envelope. Stop Hermes, inventory access as that user, remove shares and sessions, relocate approved copies, rotate exposed credentials, and retest with canary files owned by other users.
 
-**Terminal sandbox mistaken for whole-process isolation.** A plugin, MCP subprocess, hook, or code-execution path remains on the host. Disable those components, stop untrusted intake, move the whole process into an OS wrapper, and test each execution path—not only shell commands.
+**Terminal sandbox mistaken for whole-process isolation.** Plugins, MCP subprocesses, hooks, skill imports, the main interpreter, and the `execute_code` RPC dispatcher remain on the host; only a remote child script is inside its backend. Disable exposed components, stop untrusted intake, move the whole process into an OS wrapper, and test child execution plus every RPC-dispatched tool—not only shell commands.
 
 **Container has a dangerous mount or socket.** Stop and remove the affected container after preserving evidence. Rebuild with explicit mounts. Treat host Docker-socket exposure as possible host compromise and rotate credentials reachable from the host.
 

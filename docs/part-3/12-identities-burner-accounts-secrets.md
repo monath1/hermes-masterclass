@@ -128,16 +128,31 @@ Use one of these patterns:
 | --- | --- | --- |
 | Profile `.env` with mode `0600` | One low-complexity Mac mini and a few scoped keys | Plaintext on disk; process and same-user compromise expose it |
 | 1Password secret references | Existing 1Password operation needing mapped items and central rotation | Service-account token or desktop session is a powerful bootstrap secret; successful values may be cached |
-| Bitwarden Secrets Manager project | Machine-oriented project with central rotation and revocation | Machine token reads every granted project secret and cannot wait for human 2FA |
+| Bitwarden Secrets Manager project | Machine-oriented project with central rotation and revocation | Machine token reads every granted project secret; default resolved-value disk cache is plaintext |
 | Command helper | Existing trusted local vault CLI or tmpfs injection | Runs configured shell command; output shape and helper security are operator responsibility |
 
 For 1Password, install and trust the official `op` CLI separately, then use `hermes secrets onepassword setup`, `set`, `sync`, and `status`. Map environment names to `op://` references. A server/gateway normally needs a service-account token available to every non-interactive process; grant that service account only the family or business vault items it needs. Pin an absolute CLI path if PATH substitution is a concern. Set cache lifetime according to the exposure and availability trade-off; a zero cache disables resolved-value disk writes.
 
-For Bitwarden, use a read-only machine account scoped to one Secrets Manager project. `hermes secrets bitwarden setup` configures the token, region, and project; `status` and `sync` verify resolution. The machine access token is the credential and cannot be protected by an interactive second factor during unattended use. Do not give it write permission or unrelated projects. Hermes may use an encrypted cache only if explicitly enabled; authentication failure does not use stale secrets.
+For Bitwarden, use a read-only machine account scoped to one Secrets Manager project. At the pinned defaults, `cache_ttl_seconds` is 300 and encrypted caching is off. A successful fetch writes resolved values to mode-`0600` plaintext `~/.hermes/cache/bws_cache.json`. Fresh entries can be reused for 300 seconds; after a live network or timeout failure, that plaintext cache can be reused without an age limit. Rejected or expired authentication and malformed/internal responses never use stale values. With encryption off, `cache_ttl_seconds: 0` disables cache reads and writes.
+
+The beginner-safe policy is no cache when live retrieval is required. If brief offline startup is necessary, use an encrypted last-good cache with a finite window:
+
+```yaml
+secrets:
+  bitwarden:
+    cache_ttl_seconds: 0
+    encrypted_cache:
+      enabled: true
+      max_stale_seconds: 3600
+```
+
+This keeps no fresh-cache reuse while allowing the encrypted entry after network/timeouts for at most one hour; authentication failures still fail. Encryption protects cache data at rest, not secrets in Hermes memory or a compromised host.
+
+After vault rotation, a cache may still supply the previous provider value. Verify the cache policy, restore live Bitwarden access, restart every consumer, confirm which source resolved, perform a synthetic least-privilege call, revoke the old provider credential, and prove it fails. A successful call alone does not prove that Hermes fetched the new vault value.
 
 The command source runs a configured non-interactive helper once through `/bin/sh -c` and accepts `KEY=VALUE` lines. It discards helper standard error and enforces timeout/output limits, but the command itself is trusted configuration. Prefer a short, audited helper; a long shell pipeline is executable policy that deserves code review.
 
-All bundled secret sources continue startup on failure with existing environment credentials. This favors availability and can surprise an operator who expected fail-closed rotation. Remove stale fallback values when central storage becomes authoritative, keep `override_existing` behavior explicit, check startup warnings, and run a synthetic provider call after restart.
+Secret-source startup favors availability: Bitwarden may supply a permitted cache, and unresolved sources otherwise leave existing environment credentials available. This can surprise an operator expecting fail-closed rotation. Remove stale fallback values when central storage becomes authoritative, keep `override_existing` explicit, inspect startup warnings and provenance, and run a synthetic provider call after restart.
 
 ### Partition secrets by profile, domain, and purpose
 
