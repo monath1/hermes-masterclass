@@ -62,11 +62,11 @@ flowchart TD
 
 ### Establish the family data ceiling
 
-Write the exclusion list before importing a calendar. No raw child dossier belongs in Hermes. Keep children's portal credentials, student numbers unless narrowly necessary, grades, discipline, private messages, detailed health records, identity documents, photographs of identification, signatures, and complete activity histories outside the ordinary family workspace. Keep adult primary email, banking, CRA, My Service Canada Account, health, passport, and password-manager access outside too: **no primary credentials**.
+Write the exclusion list before importing a calendar. No raw child dossier belongs in Hermes. Keep children's portal credentials, student numbers unless narrowly necessary, grades, discipline, private messages, detailed health records, identity documents, photographs of identification, signatures, and activity histories outside the family workspace. Keep adult primary email, banking, CRA, My Service Canada Account, health, passport, and password-manager access outside too: **no primary credentials**.
 
-Use aliases such as `Child A` in shared indexes when names add no value. Store the authoritative form or health record in the adult-controlled system that already owns it. The index may say `FORM-026 / Child A / asthma-plan update / guardian review / restricted source`, but the clinical content remains with the guardian and care/school channel. Apply the strictest classification when school, health, travel, and identity fields overlap.
+Use aliases such as `Child A` in shared indexes when names add no value. Store the authoritative form or health record in the adult-controlled system that already owns it. The index may say `FORM-026 / Child A / provider-plan update / guardian review / restricted source`, but the condition and clinical content remain with the guardian and care/school channel. Apply the strictest classification when school, health, travel, and identity fields overlap.
 
-Hermes memory is a poor place for household dossiers. The pinned built-in memory is small, persistent, loaded into future sessions, and designed for compact preferences and operating facts—not raw data dumps. For the family profile, enable write approval or disable built-in memory if the operating policy requires it. Store durable procedure in a reviewed context file; store changing family facts in the indexed source with retention.
+Hermes memory does not hold household dossiers. The memory is loaded into sessions and designed for preferences and operating facts—not raw data dumps. For the family profile, enable write approval or disable built-in memory if the operating policy requires it. Store procedure in a context file; store family facts in the indexed source with retention.
 
 ### Build the school-year map from the local board
 
@@ -253,7 +253,7 @@ The packet states what Hermes did not verify. Professionals receive authoritativ
 Use the minimum capability layer:
 
 - **Native Hermes:** file tools maintain minimal indexes; `web_search` and `web_extract` research named public sources; `read_file` extracts adult-supplied documents with coverage warnings; cron can schedule proved public checks and internal reviews.
-- **Bundled Hermes skills:** grounded citations can anchor changeable public claims; document or spreadsheet skills can prepare reviewed handoff packets when the format adds value.
+- **Bundled Hermes skills:** grounded citations can anchor changeable public claims; document or XLSX skills can prepare reviewed handoff packets when the format adds value.
 - **MCP or custom work:** a municipal recreation feed, family calendar provider, or expense export requires a named, terms-compatible, scoped read-only interface with removal tests. It is optional.
 - **Human/manual:** primary inboxes and portals, banking, government and health accounts, signatures, consent, payments, bookings, applications, filing, investment decisions, and professional communication remain controlled by adults.
 
@@ -410,6 +410,7 @@ After sensitive memory exposure, stop the profile and jobs, remove/revoke the cr
 - Nous Research, [Document extraction](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/document-extraction.md).
 - Nous Research, [Web search and extraction](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/web-search.md).
 - Nous Research, [Grounded citations bundled skill](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/research/research-grounded-citations.md).
+- Nous Research, [XLSX bundled skill](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-xlsx.md).
 - Ontario Ministry of Education, [School year calendars](https://www.ontario.ca/page/school-year-calendars) (accessed 2026-08-21).
 - Health Canada, [Canada's Food Guide](https://food-guide.canada.ca/en/) (accessed 2026-08-21).
 - Public Health Agency of Canada, [Physical activity for your health](https://www.canada.ca/en/public-health/services/being-active/physical-activity-your-health.html) (accessed 2026-08-21).

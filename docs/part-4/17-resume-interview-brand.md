@@ -46,19 +46,24 @@ The chapter's production line keeps evidence upstream of prose:
 
 ```mermaid
 flowchart LR
-    B["Candidate-approved evidence bank"] --> G{"Claim evidence gate"}
-    P["Verified posting + requirement map"] --> G
-    G -->|Hold| Q["Question, weaken, remove, or mark unknown"]
+    B["Candidate-approved evidence bank"] --> M["Draft master résumé"]
+    P["Verified posting + requirement map"] --> T["Draft role-tailored résumé"]
+    M --> T
+    M --> X["Draft bio + LinkedIn About + portfolio"]
+    M --> GM{"Master claim-evidence gate"}
+    T --> GT{"Tailored claim-evidence gate"}
+    X --> GX{"Bio/About/portfolio claim-evidence gate"}
+    GM -->|Hold| Q["Question, weaken, remove, or mark unknown"]
+    GT -->|Hold| Q
+    GX -->|Hold| Q
     Q --> B
-    G -->|Pass| M["Master résumé"]
-    M --> T["Role-tailored résumé"]
-    M --> X["Bio + LinkedIn About + portfolio"]
+    GM -->|Pass| H["Human artifact review and manual submission"]
+    GT -->|Pass| H
+    GX -->|Pass| H
     B --> I["Interview question bank"]
     I --> V["Voice mock interview"]
     V --> S["Scorecard + candidate review"]
     S --> I
-    T --> H["Human artifact review and manual submission"]
-    X --> H
     H --> R["Post-interview review + approved evidence updates"]
 ```
 
