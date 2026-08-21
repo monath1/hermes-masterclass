@@ -136,12 +136,20 @@ appendices:
   - letter: A
     title: Commands and interface reference
     path: docs/appendices/appendix-a-command-reference.md
+    word_target: 2000–2800
+    status: complete
   - letter: B
     title: Copy-ready charters, policies, prompts, checklists, and playbooks
     path: docs/appendices/appendix-b-templates-playbooks.md
+    word_target: 3000–3800
+    status: complete
   - letter: C
     title: Curated native skill/plugin/MCP stack
     path: docs/appendices/appendix-c-curated-stack.md
+    word_target: 2500–3200
+    status: complete
   - letter: D
     title: Troubleshooting, glossary, bibliography, version ledger, and source provenance
     path: docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md
+    word_target: 3000–3600
+    status: complete

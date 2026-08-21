@@ -42,7 +42,10 @@ def chapter(number: int = 1, *, body: str = "") -> str:
     )
 
 
-def manifest(chapters: list[dict[str, object]] | None = None) -> dict[str, object]:
+def manifest(
+    chapters: list[dict[str, object]] | None = None,
+    appendices: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
     return {
         "product_baseline": "Hermes Agent v0.20.5 (2026-08-19)",
         "chapters": chapters
@@ -54,7 +57,7 @@ def manifest(chapters: list[dict[str, object]] | None = None) -> dict[str, objec
                 "part": "Part I",
             }
         ],
-        "appendices": [],
+        "appendices": appendices or [],
     }
 
 
@@ -62,10 +65,11 @@ def write_book(
     tmp_path: Path,
     *,
     chapters: list[dict[str, object]] | None = None,
+    appendices: list[dict[str, object]] | None = None,
     files: dict[str, str] | None = None,
 ) -> None:
     (tmp_path / "book-manifest.yml").write_text(
-        yaml.safe_dump(manifest(chapters), sort_keys=False), encoding="utf-8"
+        yaml.safe_dump(manifest(chapters, appendices), sort_keys=False), encoding="utf-8"
     )
     fixture_files = {"docs/part-1/01-meet-hermes.md": chapter()} if files is None else files
     for relative_path, contents in fixture_files.items():
@@ -255,6 +259,121 @@ def test_incremental_mode_reports_a_missing_completed_chapter(tmp_path: Path) ->
 
     assert result.returncode == 1
     assert "missing completed chapter: docs/part-1/01-meet-hermes.md" in result.stdout
+
+
+def test_completed_appendix_enforces_its_manifest_word_target(tmp_path: Path) -> None:
+    appendix_path = "docs/appendices/appendix-a-command-reference.md"
+    appendix = {
+        "letter": "A",
+        "title": "Commands and interface reference",
+        "path": appendix_path,
+        "word_target": "2000–2800",
+        "status": "complete",
+    }
+    write_book(
+        tmp_path,
+        appendices=[appendix],
+        files={
+            "docs/part-1/01-meet-hermes.md": chapter(),
+            appendix_path: "# Appendix A: Commands and interface reference\n\nToo short.\n",
+        },
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert (
+        "word count outside manifest target: docs/appendices/appendix-a-command-reference.md: "
+        "2000–2800"
+    ) in result.stdout
+
+
+def test_completed_appendix_requires_a_valid_manifest_word_target(tmp_path: Path) -> None:
+    appendix_path = "docs/appendices/appendix-a-command-reference.md"
+    appendix = {
+        "letter": "A",
+        "title": "Commands and interface reference",
+        "path": appendix_path,
+        "word_target": "many",
+        "status": "complete",
+    }
+    write_book(
+        tmp_path,
+        appendices=[appendix],
+        files={
+            "docs/part-1/01-meet-hermes.md": chapter(),
+            appendix_path: "# Appendix A: Commands and interface reference\n",
+        },
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert (
+        "invalid completed appendix word_target: "
+        "docs/appendices/appendix-a-command-reference.md"
+    ) in result.stdout
+
+
+def test_final_mode_requires_appendix_contract_sections_and_sources(tmp_path: Path) -> None:
+    appendix_path = "docs/appendices/appendix-a-command-reference.md"
+    write_book(
+        tmp_path,
+        appendices=[
+            {
+                "letter": "A",
+                "title": "Commands and interface reference",
+                "path": appendix_path,
+            }
+        ],
+        files={
+            "docs/part-1/01-meet-hermes.md": chapter(),
+            appendix_path: "# Appendix A: Commands and interface reference\n",
+        },
+    )
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert (
+        "missing required appendix section: "
+        "docs/appendices/appendix-a-command-reference.md: ## Setup and status"
+    ) in result.stdout
+    assert "missing appendix reference URL: docs/appendices/appendix-a-command-reference.md" in result.stdout
+    assert "missing appendix version label: docs/appendices/appendix-a-command-reference.md" in result.stdout
+
+
+def test_final_mode_requires_project_guide_promises(tmp_path: Path) -> None:
+    write_book(tmp_path)
+    (tmp_path / "README.md").write_text("# Hermes Agent Masterclass\n", encoding="utf-8")
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert "missing project-guide contract: README.md: private repository status" in result.stdout
+    assert "missing project-guide contract: README.md: curator credit" in result.stdout
+    assert "missing project-guide contract: README.md: measured word count" in result.stdout
+
+
+def test_final_mode_rejects_a_stale_readme_word_count(tmp_path: Path) -> None:
+    write_book(tmp_path)
+    (tmp_path / "README.md").write_text(
+        "# Hermes Agent Masterclass\n\n"
+        "Private repository. Curated by Moumita Nath. MIT License.\n\n"
+        "Baseline: Hermes Agent v0.20.5, tag v2026.8.19.\n\n"
+        "Audience and promise. Contents: 22 chapters and four appendices.\n\n"
+        "python3 -m venv .venv\n.venv/bin/pip install -r requirements.txt\n"
+        ".venv/bin/mkdocs serve\n.venv/bin/pytest -q\n"
+        ".venv/bin/python tools/check_book.py --final\n"
+        ".venv/bin/mkdocs build --strict\n"
+        "Current measured manuscript word count: **999999 words**.\n",
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert "stale README word count" in result.stdout
 
 
 def test_final_mode_reports_a_missing_planned_chapter(tmp_path: Path) -> None:

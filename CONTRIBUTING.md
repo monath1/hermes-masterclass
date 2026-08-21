@@ -1,16 +1,43 @@
 # Contributing
 
-## Editorial contract
+## Style
 
-Write original, compact prose for a beginner-to-intermediate reader. Every numbered chapter must include the chapter-contract sections validated by `tools/check_book.py`, one substantive Mermaid diagram, Green/Amber/Red authority boundaries, failure and recovery guidance, a reusable field kit, an exercise with a separated answer or rubric, and primary references.
+Write original, compact prose for a beginner-to-intermediate reader. Define unavoidable technical vocabulary before relying on it, lead with observable outcomes, distinguish prompts from executable commands and tool calls, and prefer short concrete examples over feature lists. Preserve the Canadian family and one- or two-person business running case without turning its fictional details into product facts.
+
+## Chapter contract
+
+Every numbered chapter must include the chapter-contract sections validated by `tools/check_book.py`, one substantive Mermaid diagram, Green/Amber/Red authority boundaries, failure and recovery guidance, a reusable field kit, an exercise with a separated answer or rubric, and primary references. Appendices use their manifest word contracts and required section contracts instead of the numbered-chapter structure.
 
 Use the Canadian family and small-business running case only as a fictional operating case. Never add real family information, credentials, API keys, or screenshots from personal accounts. Financial, health, tax, legal, employment, and privacy material must prepare readers for review or professional handoff; it must not present professional advice.
 
-## Source and version discipline
+## Source hierarchy
 
-Begin research at `research/hermes-v2026.8.19-source-map.md`. Commands, settings, model names, prices, laws, and interface labels require a primary source. Version-sensitive Hermes statements must carry the exact label: `Verified against Hermes Agent v0.20.5 (2026-08-19).` Use the official identifier `gpt-5.6-sol`; the validator rejects the common incorrect spelling.
+Begin research at `research/hermes-v2026.8.19-source-map.md`, then read the exact cited source. Use this hierarchy:
+
+1. the pinned Hermes repository, official Hermes documentation, security policy, and release material;
+2. official OpenAI documentation for OpenAI models, APIs, and Codex;
+3. official Apple, Canadian government, messaging, identity, and service-provider material for platform or jurisdiction claims;
+4. primary standards and research where the product and government sources do not answer the question.
+
+Commands, settings, model names, prices, laws, and interface labels require a primary source. Version-sensitive Hermes statements must carry the exact label: `Verified against Hermes Agent v0.20.5 (2026-08-19).` Use the official identifier `gpt-5.6-sol`; the validator rejects the common incorrect spelling. Record an ISO observation date for mutable external facts. Paraphrase sources; do not reproduce documentation passages as manuscript prose.
+
+## Screenshot policy
 
 Copy screenshots only from the pinned official Hermes checkout, preserve their local filename, and add a complete entry to `docs/assets/images/PROVENANCE.md`. Do not use external image hotlinks or placeholders.
+
+Every screenshot also needs a matching `docs/assets/images/provenance.yml` entry with exact upstream path, `v2026.8.19` tag, MIT license, chapter usage, and meaningful alt text. Captions identify the pinned release when the interface is version evidence. Never capture personal accounts, credentials, private family/business data, or live provider tokens. A replacement updates the image, both provenance records, captions, and every use together.
+
+## Version-update procedure
+
+Treat a baseline update as one coordinated editorial change:
+
+1. identify the candidate Hermes tag and commit, then diff the pinned command, tool, model, profile, messaging, automation, security, secret, skill, plugin, MCP, update, and recovery sources;
+2. inventory changed commands, defaults, trust assumptions, extension entries, screenshots, provider behavior, and external dated facts;
+3. update the source map, verification label, affected chapters and appendices, manifest, README, About page, provenance, and tests together;
+4. run every bounded task audit against the candidate checkout, plus declared live primary-source checks where applicable;
+5. run the full release suite and record deliberate pinned exceptions rather than mixing releases silently.
+
+Appendix D contains the detailed release checklist. Do not change only the displayed version string.
 
 ## Local checks
 

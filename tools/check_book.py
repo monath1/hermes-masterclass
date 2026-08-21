@@ -55,6 +55,54 @@ EXPECTED_APPENDIX_PATHS = (
     "docs/appendices/appendix-c-curated-stack.md",
     "docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md",
 )
+REQUIRED_APPENDIX_SECTIONS = {
+    EXPECTED_APPENDIX_PATHS[0]: (
+        "## How to use this reference",
+        "## Setup and status",
+        "## Models",
+        "## Tools, skills, plugins, and MCP",
+        "## Profiles and gateways",
+        "## Cron and goals",
+        "## Sessions and checkpoints",
+        "## Secrets",
+        "## Update and recovery",
+        "## Sources",
+    ),
+    EXPECTED_APPENDIX_PATHS[1]: (
+        "## Safe defaults",
+        "## Job Charter",
+        "## Authority matrix",
+        "## Approval request",
+        "## Task brief",
+        "## Daily briefing",
+        "## Weekly review",
+        "## Job-fit rubric",
+        "## Interview rubric",
+        "## Business SOP",
+        "## Incident record",
+        "## Data-retention schedule",
+        "## 90-day scorecard",
+        "## Sources and adaptation notes",
+    ),
+    EXPECTED_APPENDIX_PATHS[2]: (
+        "## How the ratings work",
+        "## Recommended deployment stack",
+        "## Hermes-native skills",
+        "## Hermes plugins",
+        "## MCP categories and examples",
+        "## Installation and review gate",
+        "## Sources",
+    ),
+    EXPECTED_APPENDIX_PATHS[3]: (
+        "## Safe recovery order",
+        "## Symptom-to-cause troubleshooting",
+        "## Glossary",
+        "## Consolidated bibliography",
+        "## Source and version ledger",
+        "## Screenshot provenance",
+        "## Release update checklist",
+    ),
+}
 PLACEHOLDER_PATTERN = re.compile(r"\b(TODO|TBD|FIXME)\b")
 WORD_TARGET_PATTERN = re.compile(r"^\s*(\d+)\s*[–-]\s*(\d+)\s*$")
 LOCAL_LINK_PATTERN = re.compile(r"!?(?:\[[^\]]*\])\(([^)\s]+)(?:\s+['\"][^)]*['\"])?\)")
@@ -150,7 +198,12 @@ def manifest_paths(entries: object, key: str) -> list[str]:
 
 def validate_manifest(
     manifest: dict[str, object], final: bool, failures: list[str]
-) -> tuple[list[str], list[str], dict[str, tuple[int, int]]]:
+) -> tuple[
+    list[str],
+    list[str],
+    dict[str, tuple[int, int]],
+    dict[str, tuple[int, int]],
+]:
     chapters = manifest.get("chapters", [])
     appendices = manifest.get("appendices", [])
     if not isinstance(chapters, list):
@@ -186,6 +239,29 @@ def validate_manifest(
             continue
         completed_word_targets[path] = (int(match.group(1)), int(match.group(2)))
 
+    completed_appendix_word_targets: dict[str, tuple[int, int]] = {}
+    for entry in appendices:
+        if not isinstance(entry, dict) or entry.get("status") != "complete":
+            continue
+        path = entry.get("path")
+        appendix_label = f"appendix {entry.get('letter', '?')}"
+        if not isinstance(path, str) or not path.strip():
+            failures.append(
+                f"invalid completed appendix path: {appendix_label}: expected a non-empty string"
+            )
+            continue
+        target = entry.get("word_target")
+        match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
+        if match is None or int(match.group(1)) > int(match.group(2)):
+            failures.append(
+                f"invalid completed appendix word_target: {path}: expected MIN–MAX with MIN <= MAX"
+            )
+            continue
+        completed_appendix_word_targets[path] = (
+            int(match.group(1)),
+            int(match.group(2)),
+        )
+
     if final:
         if numbers != list(range(1, 23)):
             failures.append("invalid chapter order: expected chapter numbers 1 through 22")
@@ -193,7 +269,12 @@ def validate_manifest(
             failures.append("invalid chapter paths or order: expected canonical 22-chapter manifest")
         if appendix_paths != list(EXPECTED_APPENDIX_PATHS):
             failures.append("invalid appendix paths or order: expected canonical appendices A through D")
-    return chapter_paths, appendix_paths, completed_word_targets
+    return (
+        chapter_paths,
+        appendix_paths,
+        completed_word_targets,
+        completed_appendix_word_targets,
+    )
 
 
 def relative_path(root: Path, path: Path) -> str:
@@ -251,7 +332,79 @@ def validate_file(root: Path, path: Path, final: bool, is_chapter: bool, failure
                 failures.append(f"missing reference URL: {rel_path}")
             if "Verified against Hermes Agent v0.20.5 (2026-08-19)." not in content:
                 failures.append(f"missing version label: {rel_path}")
+    elif final and rel_path in REQUIRED_APPENDIX_SECTIONS:
+        for section in REQUIRED_APPENDIX_SECTIONS[rel_path]:
+            if section not in content:
+                failures.append(
+                    f"missing required appendix section: {rel_path}: {section}"
+                )
+        if not re.search(r"https?://", content):
+            failures.append(f"missing appendix reference URL: {rel_path}")
+        if "Verified against Hermes Agent v0.20.5 (2026-08-19)." not in content:
+            failures.append(f"missing appendix version label: {rel_path}")
+        if rel_path == EXPECTED_APPENDIX_PATHS[3] and "../assets/images/PROVENANCE.md" not in content:
+            failures.append(f"missing screenshot provenance pointer: {rel_path}")
     return markdown_words(content)
+
+
+def validate_project_guides(root: Path, words: int, failures: list[str]) -> None:
+    readme_path = root / "README.md"
+    if not readme_path.is_file():
+        failures.append("missing project guide: README.md")
+    else:
+        readme = readme_path.read_text(encoding="utf-8")
+        required_readme_contracts = {
+            "private repository status": ("private repository",),
+            "curator credit": ("Curated by Moumita Nath",),
+            "MIT license": ("MIT",),
+            "product baseline": ("Hermes Agent v0.20.5", "v2026.8.19"),
+            "audience": ("beginner-to-intermediate",),
+            "contents": ("22 chapters", "four appendices"),
+            "local environment setup": (
+                "python3 -m venv .venv",
+                ".venv/bin/pip install -r requirements.txt",
+                ".venv/bin/mkdocs serve",
+            ),
+            "release checks": (
+                ".venv/bin/pytest -q",
+                ".venv/bin/python tools/check_book.py --final",
+                ".venv/bin/mkdocs build --strict",
+            ),
+        }
+        for label, needles in required_readme_contracts.items():
+            if not all(needle.casefold() in readme.casefold() for needle in needles):
+                failures.append(f"missing project-guide contract: README.md: {label}")
+        count_match = re.search(
+            r"Current measured manuscript word count:\s*\*\*([\d,]+) words\*\*",
+            readme,
+            flags=re.IGNORECASE,
+        )
+        if count_match is None:
+            failures.append("missing project-guide contract: README.md: measured word count")
+        else:
+            declared = int(count_match.group(1).replace(",", ""))
+            if declared != words:
+                failures.append(
+                    f"stale README word count: declared {declared}, measured {words}"
+                )
+
+    contributing_path = root / "CONTRIBUTING.md"
+    if not contributing_path.is_file():
+        failures.append("missing contributor guide: CONTRIBUTING.md")
+    else:
+        contributing = contributing_path.read_text(encoding="utf-8").casefold()
+        contributor_contracts = {
+            "source hierarchy": "source hierarchy",
+            "style": "style",
+            "chapter contract": "chapter contract",
+            "screenshot policy": "screenshot policy",
+            "version-update procedure": "version-update procedure",
+        }
+        for label, needle in contributor_contracts.items():
+            if needle not in contributing:
+                failures.append(
+                    f"missing contributor-guide contract: CONTRIBUTING.md: {label}"
+                )
 
 
 def validate_provenance(root: Path, failures: list[str]) -> None:
@@ -322,7 +475,12 @@ def main() -> int:
     root = args.root.resolve()
     failures: list[str] = []
     manifest = load_manifest(root, failures)
-    chapter_paths, appendix_paths, completed_word_targets = validate_manifest(
+    (
+        chapter_paths,
+        appendix_paths,
+        completed_word_targets,
+        completed_appendix_word_targets,
+    ) = validate_manifest(
         manifest, args.final, failures
     )
 
@@ -342,7 +500,11 @@ def main() -> int:
         existing_files += 1
         file_words = validate_file(root, path, args.final, is_chapter, failures)
         words += file_words
-        target = completed_word_targets.get(rel_path) if is_chapter else None
+        target = (
+            completed_word_targets.get(rel_path)
+            if is_chapter
+            else completed_appendix_word_targets.get(rel_path)
+        )
         if target is not None and not target[0] <= file_words <= target[1]:
             failures.append(
                 f"word count outside manifest target: {rel_path}: "
@@ -367,6 +529,7 @@ def main() -> int:
         if not 100_000 <= words <= 120_000:
             failures.append(f"word count out of range: 100000–120000 (found {words})")
         validate_provenance(root, failures)
+        validate_project_guides(root, words, failures)
 
     for failure in failures:
         print(f"ERROR: {failure}")

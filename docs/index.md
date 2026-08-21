@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV applies that trust envelope to daily rhythms, an ethical job-search and career-brand system, and a minimized Canadian family operating system with professional handoffs. Part V applies those controls to a one- or two-person business, nine bounded functional playbooks, and supervised specialist delegation. Part VI closes the numbered manuscript with operational evaluation and an evidence-gated 90-day capstone. The navigation deliberately grows only as complete chapters are added.
+The complete first edition lives inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV applies that trust envelope to daily rhythms, an ethical job-search and career-brand system, and a minimized Canadian family operating system with professional handoffs. Part V applies those controls to a one- or two-person business, nine bounded functional playbooks, and supervised specialist delegation. Part VI closes the numbered manuscript with operational evaluation and an evidence-gated 90-day capstone. Four appendices turn the chapter field kits and primary evidence into compact operating references.
 
 ## How to read this book
 
@@ -74,9 +74,14 @@ Complete Part III before connecting these business workflows to customer or fina
 
 Use Chapter 22's operational evidence and capstone card before expanding any task family. Time elapsed and a high completion count never substitute for sampled correctness, boundary compliance, recovery evidence, or human approval.
 
-## What this edition will cover
+## Appendices
 
-The numbered manuscript has 22 complete chapters: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, supervised specialist management, and a 90-day capstone. Four reference appendices remain unavailable until authored and reviewed.
+1. [Appendix A: Commands and interface reference](appendices/appendix-a-command-reference.md) — source-verified setup, status, model, tool, skill, plugin, MCP, profile, gateway, automation, session, secret, update, and recovery surfaces.
+2. [Appendix B: Copy-ready templates and playbooks](appendices/appendix-b-templates-playbooks.md) — conservative charters, approval and task contracts, reviews, rubrics, SOP, incident, retention, and capstone artifacts.
+3. [Appendix C: Curated Hermes extension stack](appendices/appendix-c-curated-stack.md) — Hermes-native skills and plugins plus clearly identified external MCP categories, rated for value, permission, exposure, effort, cost, maintenance, and phase.
+4. [Appendix D: Troubleshooting, glossary, bibliography, and provenance](appendices/appendix-d-troubleshooting-glossary-bibliography.md) — safe recovery order, symptom diagnosis, definitions, primary sources, version ledger, screenshot pointer, and release checklist.
+
+The first edition contains exactly 22 numbered chapters and four appendices, totaling **110,111 measured Markdown words**. Fenced code blocks are excluded from that count.
 
 ## Local preview
 
