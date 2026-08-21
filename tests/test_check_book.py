@@ -27,6 +27,36 @@ REQUIRED_SECTIONS = [
     "## Mastery checklist",
     "## References",
 ]
+CANONICAL_APPENDICES = [
+    {
+        "letter": "A",
+        "title": "Commands and interface reference",
+        "path": "docs/appendices/appendix-a-command-reference.md",
+        "word_target": "2000–2800",
+        "status": "complete",
+    },
+    {
+        "letter": "B",
+        "title": "Copy-ready charters, policies, prompts, checklists, and playbooks",
+        "path": "docs/appendices/appendix-b-templates-playbooks.md",
+        "word_target": "3000–3800",
+        "status": "complete",
+    },
+    {
+        "letter": "C",
+        "title": "Curated native skill/plugin/MCP stack",
+        "path": "docs/appendices/appendix-c-curated-stack.md",
+        "word_target": "2500–3200",
+        "status": "complete",
+    },
+    {
+        "letter": "D",
+        "title": "Troubleshooting, glossary, bibliography, version ledger, and source provenance",
+        "path": "docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md",
+        "word_target": "3000–3600",
+        "status": "complete",
+    },
+]
 
 
 def chapter(number: int = 1, *, body: str = "") -> str:
@@ -313,6 +343,63 @@ def test_completed_appendix_requires_a_valid_manifest_word_target(tmp_path: Path
         "invalid completed appendix word_target: "
         "docs/appendices/appendix-a-command-reference.md"
     ) in result.stdout
+
+
+def test_incremental_mode_reports_a_missing_completed_appendix(tmp_path: Path) -> None:
+    appendix = CANONICAL_APPENDICES[0].copy()
+    write_book(tmp_path, appendices=[appendix])
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "missing completed appendix: docs/appendices/appendix-a-command-reference.md" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "diagnostic"),
+    [
+        ("letter", None, "invalid appendix letters or order: expected canonical A through D"),
+        ("letter", 1, "invalid appendix letters or order: expected canonical A through D"),
+        ("title", None, "invalid appendix titles or order: expected canonical appendix titles"),
+        ("title", 1, "invalid appendix titles or order: expected canonical appendix titles"),
+        ("path", None, "invalid appendix paths or order: expected canonical appendices A through D"),
+        ("path", 1, "invalid appendix paths or order: expected canonical appendices A through D"),
+        (
+            "status",
+            None,
+            "invalid final appendix status: docs/appendices/appendix-a-command-reference.md: expected complete",
+        ),
+        (
+            "status",
+            "draft",
+            "invalid final appendix status: docs/appendices/appendix-a-command-reference.md: expected complete",
+        ),
+        (
+            "word_target",
+            None,
+            "invalid final appendix word_target: docs/appendices/appendix-a-command-reference.md",
+        ),
+        (
+            "word_target",
+            2000,
+            "invalid final appendix word_target: docs/appendices/appendix-a-command-reference.md",
+        ),
+    ],
+)
+def test_final_mode_requires_canonical_complete_appendix_metadata(
+    tmp_path: Path, field: str, value: object, diagnostic: str
+) -> None:
+    appendices = [entry.copy() for entry in CANONICAL_APPENDICES]
+    if value is None:
+        appendices[0].pop(field)
+    else:
+        appendices[0][field] = value
+    write_book(tmp_path, appendices=appendices)
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert diagnostic in result.stdout
 
 
 def test_final_mode_requires_appendix_contract_sections_and_sources(tmp_path: Path) -> None:

@@ -397,6 +397,7 @@ Award two points each for data minimization, correct lane selection, exact front
 
 ## References
 
+- Nous Research, [CLI commands](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/cli-commands.md).
 - Nous Research, [Configuring models](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/configuring-models.md).
 - Nous Research, [AI providers](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/integrations/providers.md).
 - Nous Research, [Provider routing](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/provider-routing.md).

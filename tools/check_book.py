@@ -55,6 +55,13 @@ EXPECTED_APPENDIX_PATHS = (
     "docs/appendices/appendix-c-curated-stack.md",
     "docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md",
 )
+EXPECTED_APPENDIX_LETTERS = ("A", "B", "C", "D")
+EXPECTED_APPENDIX_TITLES = (
+    "Commands and interface reference",
+    "Copy-ready charters, policies, prompts, checklists, and playbooks",
+    "Curated native skill/plugin/MCP stack",
+    "Troubleshooting, glossary, bibliography, version ledger, and source provenance",
+)
 REQUIRED_APPENDIX_SECTIONS = {
     EXPECTED_APPENDIX_PATHS[0]: (
         "## How to use this reference",
@@ -269,6 +276,23 @@ def validate_manifest(
             failures.append("invalid chapter paths or order: expected canonical 22-chapter manifest")
         if appendix_paths != list(EXPECTED_APPENDIX_PATHS):
             failures.append("invalid appendix paths or order: expected canonical appendices A through D")
+        appendix_letters = [entry.get("letter") for entry in appendices if isinstance(entry, dict)]
+        appendix_titles = [entry.get("title") for entry in appendices if isinstance(entry, dict)]
+        if appendix_letters != list(EXPECTED_APPENDIX_LETTERS):
+            failures.append("invalid appendix letters or order: expected canonical A through D")
+        if appendix_titles != list(EXPECTED_APPENDIX_TITLES):
+            failures.append("invalid appendix titles or order: expected canonical appendix titles")
+        for index, entry in enumerate(appendices):
+            if not isinstance(entry, dict):
+                continue
+            path = entry.get("path")
+            label = path if isinstance(path, str) and path else f"appendix {index + 1}"
+            if entry.get("status") != "complete":
+                failures.append(f"invalid final appendix status: {label}: expected complete")
+            target = entry.get("word_target")
+            match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
+            if match is None or int(match.group(1)) > int(match.group(2)):
+                failures.append(f"invalid final appendix word_target: {label}")
     return (
         chapter_paths,
         appendix_paths,
@@ -493,6 +517,8 @@ def main() -> int:
         if not path.is_file():
             if is_chapter and rel_path in completed_word_targets:
                 failures.append(f"missing completed chapter: {rel_path}")
+            elif not is_chapter and rel_path in completed_appendix_word_targets:
+                failures.append(f"missing completed appendix: {rel_path}")
             elif args.final:
                 kind = "chapter" if is_chapter else "appendix"
                 failures.append(f"missing {kind}: {rel_path}")

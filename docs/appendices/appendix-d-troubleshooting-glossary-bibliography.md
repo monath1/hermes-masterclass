@@ -124,50 +124,195 @@ When the table offers several causes, test the least invasive discriminating che
 
 ## Consolidated bibliography
 
-### Hermes Agent
+The machine-readable ledger below is the consolidated bibliography for the release manuscript. Its scope is exact: every distinct HTTP or HTTPS destination in a Markdown citation in Chapters 1–22 or Appendices A–D is included once. Local relative links, image paths, anchor links, plain-text examples, build configuration, and the URLs inside the ledger itself are excluded. Excluding the ledger carrier prevents its rows from citing themselves. A URL linked elsewhere in Appendix D remains in scope. For example, the pinned [Hermes FAQ](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/faq.md) is a normal external citation and therefore has a row whose affected field includes D.
 
-- Nous Research, [Hermes Agent repository README](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/README.md), [Security Policy](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/SECURITY.md), and [architecture](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/architecture.md).
-- Nous Research, [CLI commands](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/cli-commands.md), [slash commands](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/slash-commands.md), [tools](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/tools-reference.md), and [profiles](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profiles.md).
-- Nous Research, [models](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/configuring-models.md), [provider routing](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/provider-routing.md), and [fallback providers](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/fallback-providers.md).
-- Nous Research, [sessions](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/sessions.md), [memory](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/memory.md), [goals](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/goals.md), [cron](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/cron.md), and [checkpoints](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/checkpoints-and-rollback.md).
-- Nous Research, [skills](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md), [plugins](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/plugins.md), [MCP](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mcp.md), and [toolsets](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/toolsets-reference.md).
-- Nous Research, [messaging gateway](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/index.md), [secrets](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/secrets/index.md), [updating](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/updating.md), and [FAQ](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/faq.md).
+“Affected” means that the chapter or appendix contains that exact URL outside the ledger. It does not speculate about every chapter that could benefit from a source, and it does not collapse different pages from one publisher into a family. Numeric labels identify chapters; letters identify appendices. Multiple occurrences in one manuscript unit still produce one label. The audit sorts chapters numerically before appendices, so a mapping such as `6, 14, A` is stable and reviewable. If a link is moved, added, replaced, or removed, the ledger must change in the same commit.
 
-### Platform, protocol, and provider sources
+Each row supplies six explicit fields: URL, human-readable title, publisher, verification date, affected manuscript units, and version-sensitive status. `Yes—pinned` means the destination is tied to an immutable tag, commit, dated specification, or versioned artifact used by this edition. `Yes—mutable` means the publisher can change the page without this repository changing; re-open it during an edition update and record a new verification date. `No—stable` is reserved for unusually durable material, but still requires link and applicability review. The label describes drift risk, not authority or correctness.
 
-- Apple, [Apple Platform Security](https://support.apple.com/guide/security/welcome/web), [FileVault](https://support.apple.com/en-ca/guide/mac-help/flvlt003/mac), [Firewall](https://support.apple.com/en-ca/guide/mac-help/mh11783/mac), and [Time Machine](https://support.apple.com/guide/mac-help/back-up-files-mh35860/mac) (accessed 2026-08-21).
-- OpenAI, [`gpt-5.6-sol`](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [API pricing](https://platform.openai.com/pricing), and [Codex documentation](https://developers.openai.com/codex/) (accessed 2026-08-21).
-- Model Context Protocol, [specification 2025-06-18](https://modelcontextprotocol.io/specification/2025-06-18) (accessed 2026-08-21).
-- Meta, [WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api/); Telegram, [Bot API](https://core.telegram.org/bots/api); Twilio, [Canada SMS pricing](https://www.twilio.com/en-us/sms/pricing/ca) (accessed 2026-08-21).
-- 1Password, [service accounts](https://developer.1password.com/docs/service-accounts/); Bitwarden, [machine accounts](https://bitwarden.com/help/machine-accounts/) (accessed 2026-08-21).
+The title and publisher help a reviewer recognize substitutions, redirects, mirrors, and misleading domains. The verification date records the editorial observation date, not a claim that the page will remain available. Government, legal, pricing, model, product, OAuth, platform, and provider documentation is treated as mutable unless a versioned artifact makes the cited content immutable. Hermes repository pages are pinned to `v2026.8.19`; their contents were also checked against commit `fcbd1076a93841fa88855acce810e342a5b78101`. External MCP examples remain third-party sources even when a matching manifest appears in the pinned Nous-approved catalog.
 
-### Canadian and risk authorities
+Treat a redirect as a source change: confirm ownership, destination, scope, and retained version evidence before accepting it.
 
-- Office of the Privacy Commissioner of Canada, [PIPEDA fair information principles](https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/) and [privacy-breach containment](https://www.priv.gc.ca/en/privacy-topics/business-privacy/breaches-and-safeguards/privacy-breaches-at-your-business/contain_pb/) (accessed 2026-08-21).
-- Government of Canada Job Bank, [job search](https://www.jobbank.gc.ca/jobsearch/) and [terms for job seekers](https://www.jobbank.gc.ca/termsofuse-seeker.xhtml) (accessed 2026-08-21).
-- Canada Revenue Agency, [individual record retention](https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/long-should-you-keep-your-income-tax-records.html) and [business records](https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/keeping-records.html) (accessed 2026-08-21).
-- Health Canada, [Canada’s Food Guide](https://food-guide.canada.ca/en/); Financial Consumer Agency of Canada, [making a budget](https://www.canada.ca/en/financial-consumer-agency/services/make-budget.html); Global Affairs Canada, [travel advisories](https://travel.gc.ca/travelling/advisories) (accessed 2026-08-21).
-- National Institute of Standards and Technology, [AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) and [Digital Identity Guidelines](https://pages.nist.gov/800-63-4/) (accessed 2026-08-21).
-- Payment Card Industry Security Standards Council, [PCI DSS standards](https://www.pcisecuritystandards.org/standards/pci-dss/) (accessed 2026-08-21); Competition Bureau Canada, [deceptive marketing practices](https://competition-bureau.canada.ca/deceptive-marketing-practices) (accessed 2026-08-21).
+Use the ledger with the nearby claim, not instead of it. Start from a chapter reference, inspect the source’s publisher and version status here, then verify the claim against the cited page. A source may support several claims without validating the surrounding recommendation. When a page disappears, do not silently substitute a search result or archive: identify the current primary source, reassess the claim, update every affected unit, and preserve the edition’s pinned evidence where reproducibility matters.
+
+The repository audit reconstructs the URL set and affected mappings directly from the manuscript, parses every CSV row, rejects duplicates and orphan rows, and requires all fields. This catches omissions and incorrect mappings but cannot decide whether a title is editorially precise, a publisher remains authoritative, a live page changed meaning, or a source is sufficient for a claim. Those remain source-review duties. During a release, run the audit after editing references, then sample high-risk mutable sources and every changed row manually.
 
 ## Source and version ledger
 
-| Source, title, publisher | Verified | Affected chapters/appendices | Version-sensitive? |
-| --- | --- | --- | --- |
-| [Hermes Agent tag `v2026.8.19`](https://github.com/NousResearch/hermes-agent/tree/v2026.8.19), Nous Research | 2026-08-21; commit `fcbd1076a93841fa88855acce810e342a5b78101` | 1–22, A–D | Yes: entire product baseline |
-| [Hermes CLI commands](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/cli-commands.md), Nous Research | 2026-08-21 | 5, 7–10, 12–14, 22, A, D | Yes: names, flags, defaults |
-| [Hermes skills catalog](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/skills-catalog.md), Nous Research | 2026-08-21 | 8, 15–21, C | Yes: entries and behavior |
-| [Hermes built-in plugins](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/built-in-plugins.md), Nous Research | 2026-08-21 | 8, 22, C | Yes: inventory and hooks |
-| [Hermes MCP](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mcp.md), Nous Research | 2026-08-21 | 8, 16, 19–20, C | Yes: protocol support, filters, catalog |
-| [Hermes Security Policy](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/SECURITY.md), Nous Research | 2026-08-21 | 1–4, 8–14, 19–22, B–D | Yes: trust and scope statements |
-| [Apple Platform Security](https://support.apple.com/guide/security/welcome/web), Apple | 2026-08-21 | 5, 11, 14 | Yes: macOS controls evolve |
-| [`gpt-5.6-sol`](https://developers.openai.com/api/docs/models/gpt-5.6-sol), OpenAI | 2026-08-21 | 6, 10, 21, D | Yes: model, service behavior, pricing elsewhere |
-| [PIPEDA fair information principles](https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/), Office of the Privacy Commissioner of Canada | 2026-08-21 | 7, 12–14, 18, 20, B, D | Yes: law/guidance may change |
-| [Canada Revenue Agency](https://www.canada.ca/en/revenue-agency.html), Government of Canada | 2026-08-21 | 18–20, B, D | Yes: tax-year rules and dates |
-| [Government of Canada Job Bank](https://www.jobbank.gc.ca/), Government of Canada | 2026-08-21 | 16–17, D | Yes: postings, terms, labour information |
-| [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework), NIST | 2026-08-21 | 2, 13, 22, B, D | Lower drift, but verify current publication |
+The CSV is intentionally copyable and excluded from the prose word count. Every row remains visible in the appendix and every field is explicit; no publisher family, URL prefix, range, or source bundle stands in for an individual citation.
 
-The chapter reference sections remain the granular ledger for individual claims. This table identifies load-bearing families and update scope; it does not replace those citations.
+```csv
+url,title,publisher,verified,affected,version_sensitive
+"https://antifraudcentre-centreantifraude.ca/scams-fraudes/job-emploi-eng.htm","Job fraud","Canadian Anti-Fraud Centre","2026-08-21","16","Yes—mutable"
+"https://bitwarden.com/help/machine-accounts/","Machine accounts","Bitwarden","2026-08-21","12","Yes—mutable"
+"https://bitwarden.com/help/setup-two-step-login/","Two-step login methods","Bitwarden","2026-08-21","12","Yes—mutable"
+"https://bitwarden.com/help/two-step-recovery-code/","Two-step login recovery code","Bitwarden","2026-08-21","12","Yes—mutable"
+"https://competition-bureau.canada.ca/deceptive-marketing-practices","Deceptive marketing practices","Competition Bureau Canada","2026-08-21","20","Yes—mutable"
+"https://core.telegram.org/bots/api","Bot API","Telegram","2026-08-21","9","Yes—mutable"
+"https://core.telegram.org/bots/faq","Bots FAQ and broadcast limits","Telegram","2026-08-21","9","Yes—mutable"
+"https://developer.1password.com/docs/service-accounts/","Use service accounts","1Password","2026-08-21","12","Yes—mutable"
+"https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/","Install the Command Line Tools for Xcode","Apple","2026-08-21","5","Yes—mutable"
+"https://developers.asana.com/docs/using-asanas-mcp-server","Asana MCP","Asana","2026-08-21","C","Yes—mutable"
+"https://developers.facebook.com/docs/whatsapp/cloud-api/","WhatsApp Cloud API","Meta","2026-08-21","12","Yes—mutable"
+"https://developers.intercom.com/docs/guides/mcp","Intercom MCP","Intercom","2026-08-21","C","Yes—mutable"
+"https://developers.notion.com/docs/mcp","Notion MCP","Notion","2026-08-21","C","Yes—mutable"
+"https://developers.openai.com/api/docs/guides/latest-model","Model guidance for GPT-5.6","OpenAI","2026-08-21","6","Yes—mutable"
+"https://developers.openai.com/api/docs/guides/webhooks","Webhooks","OpenAI","2026-08-21","22","Yes—mutable"
+"https://developers.openai.com/api/docs/models/gpt-5.6-sol","gpt-5.6-sol model","OpenAI","2026-08-21","6, 10","Yes—mutable"
+"https://developers.openai.com/api/reference/resources/webhooks","Webhook events","OpenAI","2026-08-21","22","Yes—mutable"
+"https://docs.stripe.com/mcp","Stripe MCP","Stripe","2026-08-21","C","Yes—mutable"
+"https://food-guide.canada.ca/en/","Canada's Food Guide","Health Canada","2026-08-21","18","Yes—mutable"
+"https://github.com/CyberSamuraiX/hermes-n8n-mcp","n8n bridge","CyberSamuraiX","2026-08-21","C","Yes—mutable"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/README.md","Hermes Agent README at tag v2026.8.19","Nous Research","2026-08-21","1","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/SECURITY.md","Hermes Agent Security Policy","Nous Research","2026-08-21","11, 13, 14","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/agent-loop.md","Agent loop internals","Nous Research","2026-08-21","2, 3, 4","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/architecture.md","Architecture","Nous Research","2026-08-21","1, 2, 3","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/cron-internals.md","Cron internals","Nous Research","2026-08-21","10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/prompt-assembly.md","Prompt assembly","Nous Research","2026-08-21","2, 3, 4","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/session-storage.md","Session storage","Nous Research","2026-08-21","2, 3","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/subagent-lifecycle-api.md","Public subagent lifecycle API","Nous Research","2026-08-21","21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/trajectory-format.md","Trajectory format","Nous Research","2026-08-21","1, 2, 3, 13, 22","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/installation.md","Installation","Nous Research","2026-08-21","5","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/learning-path.md","Hermes Agent learning path","Nous Research","2026-08-21","1","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/quickstart.md","Quickstart","Nous Research","2026-08-21","5","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/updating.md","Updating and uninstalling","Nous Research","2026-08-21","5, 14, A","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/automation-blueprints.md","Automation blueprints","Nous Research","2026-08-21","10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/cron-troubleshooting.md","Cron troubleshooting","Nous Research","2026-08-21","10, 22","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/daily-briefing-bot.md","Daily briefing bot","Nous Research","2026-08-21","10, 15","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/delegation-patterns.md","Delegation and parallel-work patterns","Nous Research","2026-08-21","21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/local-llm-on-mac.md","Run local LLMs on Mac","Nous Research","2026-08-21","5, 6","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/local-ollama-setup.md","Run Hermes locally with Ollama","Nous Research","2026-08-21","6","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/run-hermes-with-nous-portal.md","Run Hermes with Nous Portal","Nous Research","2026-08-21","6","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/troubleshooting-agent-quality.md","Troubleshooting agent quality","Nous Research","2026-08-21","22","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/integrations/providers.md","AI providers","Nous Research","2026-08-21","6, 10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/cli-commands.md","CLI commands","Nous Research","2026-08-21","6, 14, A","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/faq.md","Hermes FAQ","Nous Research","2026-08-21","D","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/model-catalog.md","Model catalog","Nous Research","2026-08-21","6","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/optional-skills-catalog.md","Official optional skills catalog","Nous Research","2026-08-21","8, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/profile-commands.md","profile commands reference at tag v2026.8.19","Nous Research","2026-08-21","A","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/skills-catalog.md","Bundled skills catalog","Nous Research","2026-08-21","8, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/slash-commands.md","slash commands reference at tag v2026.8.19","Nous Research","2026-08-21","A","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/tools-reference.md","built-in tools reference at tag v2026.8.19","Nous Research","2026-08-21","A","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/toolsets-reference.md","Toolsets reference","Nous Research","2026-08-21","8, 21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/bot-mode.md","Bot Mode","Nous Research","2026-08-21","7, 19, 21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/checkpoints-and-rollback.md","Checkpoints and rollback","Nous Research","2026-08-21","10, 13, 14, 22, A, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/cli.md","CLI","Nous Research","2026-08-21","5","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/configuring-models.md","Configuring models","Nous Research","2026-08-21","6","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/desktop.md","Desktop app","Nous Research","2026-08-21","5","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/docker.md","Docker guide","Nous Research","2026-08-21","11","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/egress/index.md","Egress proxy overview","Nous Research","2026-08-21","11, 13","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/egress/iron-proxy.md","Iron Proxy integration","Nous Research","2026-08-21","11, 13","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/browser.md","Browser automation","Nous Research","2026-08-21","15, 16, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/built-in-plugins.md","Built-in plugins","Nous Research","2026-08-21","8, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/codex-app-server-runtime.md","Codex app-server runtime","Nous Research","2026-08-21","21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/context-files.md","Context files","Nous Research","2026-08-21","7","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/credential-pools.md","Credential pools","Nous Research","2026-08-21","12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/cron.md","Scheduled tasks","Nous Research","2026-08-21","10, 13, 14, 15, 16, 18, 19, 22, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/delegation.md","Subagent delegation","Nous Research","2026-08-21","4, 21, 22","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/deliverable-mode.md","Deliverable Mode","Nous Research","2026-08-21","19, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/document-extraction.md","Document extraction","Nous Research","2026-08-21","16, 17, 18, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/fallback-providers.md","Fallback providers","Nous Research","2026-08-21","6, 21, 22","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/goals.md","Persistent goals","Nous Research","2026-08-21","2, 3, 4, 10, 19, 22, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/heartbeat.md","Session heartbeats","Nous Research","2026-08-21","10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/hooks.md","Event hooks","Nous Research","2026-08-21","10, 13, 19","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/kanban.md","Kanban multi-agent board","Nous Research","2026-08-21","19, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/loops.md","Recurring loops","Nous Research","2026-08-21","10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mcp.md","MCP client and server support","Nous Research","2026-08-21","8, 16, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/memory-providers.md","Memory providers","Nous Research","2026-08-21","7","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/memory.md","Persistent memory","Nous Research","2026-08-21","7, 18","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mixture-of-agents.md","Mixture of Agents","Nous Research","2026-08-21","21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/overview.md","Features overview","Nous Research","2026-08-21","1","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/personality.md","Personality and SOUL.md","Nous Research","2026-08-21","4, 7","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/plugins.md","Plugins","Nous Research","2026-08-21","8, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/provider-routing.md","Provider routing","Nous Research","2026-08-21","6, 21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md","Skills system and Skills Hub","Nous Research","2026-08-21","8, 16, 19, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/tools.md","Tools and toolsets","Nous Research","2026-08-21","8, 16, 18, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/voice-mode.md","Voice mode","Nous Research","2026-08-21","9, 17","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/web-dashboard.md","Web dashboard","Nous Research","2026-08-21","5","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/web-search.md","Web search and extraction","Nous Research","2026-08-21","15, 16, 17, 18, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/managed-scope.md","Managed scope","Nous Research","2026-08-21","11, 13","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/email.md","Email setup","Nous Research","2026-08-21","9, 15, 18, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/index.md","Messaging gateway","Nous Research","2026-08-21","9, 10","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/sms.md","SMS through Twilio","Nous Research","2026-08-21","9","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/telegram.md","Telegram setup","Nous Research","2026-08-21","9","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/whatsapp-cloud.md","WhatsApp Business Cloud API setup","Nous Research","2026-08-21","9, 12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/whatsapp.md","WhatsApp Baileys bridge","Nous Research","2026-08-21","9","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/multi-profile-gateways.md","macOS gateway LaunchAgent","Nous Research","2026-08-21","5, 12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profile-distributions.md","Profile exports and distributions","Nous Research","2026-08-21","14","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profiles.md","Profiles","Nous Research","2026-08-21","5, 7, 10, 15, 16, 19","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/secrets/bitwarden.md","Bitwarden Secrets Manager provider","Nous Research","2026-08-21","12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/secrets/command.md","Command-helper secret provider","Nous Research","2026-08-21","12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/secrets/index.md","Secrets overview","Nous Research","2026-08-21","12, 14","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/secrets/onepassword.md","1Password secret provider","Nous Research","2026-08-21","12","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/security.md","Security","Nous Research","2026-08-21","1, 3, 4, 8, 9, 11, 12, 13, 15, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/sessions.md","Sessions","Nous Research","2026-08-21","7, 13, 14, 22, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex.md","Bundled Codex skill","Nous Research","2026-08-21","21","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-docx.md","DOCX bundled skill","Nous Research","2026-08-21","17","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-google-workspace.md","Google Workspace bundled skill","Nous Research","2026-08-21","15, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-meeting-action-items.md","Meeting action items bundled skill","Nous Research","2026-08-21","15, 19","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-pdf.md","PDF bundled skill","Nous Research","2026-08-21","17","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-weekly-review-planning.md","Weekly review and planning bundled skill","Nous Research","2026-08-21","15","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-xlsx.md","XLSX bundled skill","Nous Research","2026-08-21","15, 16, 18","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/research/research-grounded-citations.md","Grounded citations bundled skill","Nous Research","2026-08-21","16, 17, 18, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/tree/v2026.8.19/optional-mcps","pinned optional MCP manifests","Nous Research","2026-08-21","C","Yes—pinned"
+"https://help.twilio.com/articles/46871410243099-Understanding-SMS-Message-Fees-Carrier-Fees-and-Phone-Number-Fees","SMS, carrier, and phone-number fees","Twilio","2026-08-21","9","Yes—mutable"
+"https://learn.chatgpt.com/docs/agent-configuration/subagents","Codex subagents","OpenAI","2026-08-21","21","Yes—mutable"
+"https://learn.chatgpt.com/docs/app-server","Codex App Server","OpenAI","2026-08-21","21","Yes—mutable"
+"https://learn.chatgpt.com/docs/build-skills","Build skills for ChatGPT and Codex","OpenAI","2026-08-21","21","Yes—mutable"
+"https://learn.chatgpt.com/docs/sandboxing","Sandbox","OpenAI","2026-08-21","21","Yes—mutable"
+"https://modelcontextprotocol.io/specification/2025-06-18","Specification","Model Context Protocol","2026-08-21","8, C","Yes—pinned"
+"https://pages.nist.gov/800-63-4/","Digital Identity Guidelines","National Institute of Standards and Technology","2026-08-21","12","Yes—mutable"
+"https://platform.openai.com/pricing","API pricing","OpenAI","2026-08-21","6","Yes—mutable"
+"https://support.1password.com/recovery-codes/","Generate and use recovery codes","1Password","2026-08-21","12","Yes—mutable"
+"https://support.1password.com/recovery/","Recover accounts for family or team members","1Password","2026-08-21","12","Yes—mutable"
+"https://support.1password.com/secret-key/","Find your Secret Key or Setup Code","1Password","2026-08-21","12","Yes—mutable"
+"https://support.airtable.com/docs/using-the-airtable-mcp-server","Airtable MCP","Airtable","2026-08-21","C","Yes—mutable"
+"https://support.apple.com/en-ca/102316","Automatic login and FileVault","Apple","2026-08-21","5","Yes—mutable"
+"https://support.apple.com/en-ca/guide/mac-help/flvlt003/mac","Set up your Mac to be secure","Apple","2026-08-21","5","Yes—mutable"
+"https://support.apple.com/en-ca/guide/mac-help/mh11783/mac","Change Firewall settings on Mac","Apple","2026-08-21","5","Yes—mutable"
+"https://support.apple.com/en-gb/guide/findmy-mac/fmmbe7bb71f4/mac","Erase a device in Find My on Mac","Apple","2026-08-21","14","Yes—mutable"
+"https://support.apple.com/en-la/104978","Use Find My to locate or erase a lost Apple device","Apple","2026-08-21","14","Yes—mutable"
+"https://support.apple.com/en-us/104984","Back up your Mac with Time Machine","Apple","2026-08-21","14","Yes—mutable"
+"https://support.apple.com/guide/mac-help/add-a-user-or-group-mchl3e281fc9/mac","Add a user or group on Mac","Apple","2026-08-21","11","Yes—mutable"
+"https://support.apple.com/guide/mac-help/back-up-files-mh35860/mac","Back up your files with Time Machine","Apple","2026-08-21","5","Yes—mutable"
+"https://support.apple.com/guide/mac-help/set-up-your-mac-to-be-secure-flvlt003/mac","Set up your Mac to be secure","Apple","2026-08-21","11","Yes—mutable"
+"https://support.apple.com/guide/mac-help/software-update-settings-on-mac-mchla7037245/mac","Software Update settings on Mac","Apple","2026-08-21","5","Yes—mutable"
+"https://support.apple.com/guide/mac-help/verify-your-backup-disk-mh26840/mac","Verify your backup disk on Mac","Apple","2026-08-21","14","Yes—mutable"
+"https://support.apple.com/guide/security/sec4c6dc1b6e/web","Volume encryption with FileVault in macOS","Apple","2026-08-21","14","Yes—mutable"
+"https://support.apple.com/guide/security/welcome/web","Apple Platform Security","Apple","2026-08-21","11","Yes—mutable"
+"https://support.google.com/accounts/answer/185833","Sign in with app passwords","Google","2026-08-21","9","Yes—mutable"
+"https://travel.gc.ca/travelling/advisories","Travel Advice and Advisories","Global Affairs Canada","2026-08-21","18","Yes—mutable"
+"https://travel.gc.ca/travelling/children/consent-letter","Recommended consent letter for children travelling abroad","Global Affairs Canada","2026-08-21","18","Yes—mutable"
+"https://whatsappbusiness.com/developers/developer-hub/","Developer Hub","Meta","2026-08-21","9","Yes—mutable"
+"https://whatsappbusiness.com/products/platform-pricing/","Business Platform pricing","Meta","2026-08-21","9","Yes—mutable"
+"https://www.canada.ca/en/financial-consumer-agency/services/make-budget.html","Making a budget","Financial Consumer Agency of Canada","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/public-health/services/being-active/physical-activity-your-health.html","Physical activity for your health","Public Health Agency of Canada","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/revenue-agency/news/newsroom/tax-tips/tax-tips-2026/tax-slips-what-they-are-where-find-why-waiting-can-help-avoid-mistakes.html","Tax slips at tax time","Canada Revenue Agency","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/revenue-agency/news/newsroom/tax-tips/tax-tips-2026/what-you-need-for-2026-tax-filing-season.html","What you need to know for the 2026 tax-filing season","Canada Revenue Agency","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/keeping-records.html","Business records","Canada Revenue Agency","2026-08-21","20","Yes—mutable"
+"https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/long-should-you-keep-your-income-tax-records.html","How long should you keep your income tax records?","Canada Revenue Agency","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/services/benefits/calendar.html","Benefits payment dates","Government of Canada","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/services/benefits/finder.html","Benefits Finder","Government of Canada","2026-08-21","18","Yes—mutable"
+"https://www.canada.ca/en/services/benefits/publicpensions/cpp/retirement-income-calculator.html","Canadian Retirement Income Calculator","Government of Canada","2026-08-21","18","Yes—mutable"
+"https://www.cisa.gov/securebydesign","Secure by Design","Cybersecurity and Infrastructure Security Agency","2026-08-21","11","Yes—mutable"
+"https://www.jobbank.gc.ca/jobsearch/","Job search","Government of Canada Job Bank","2026-08-21","16","Yes—mutable"
+"https://www.jobbank.gc.ca/termsofuse-seeker.xhtml","Terms of Use for job seekers","Government of Canada Job Bank","2026-08-21","16","Yes—mutable"
+"https://www.jobbank.gc.ca/trend-analysis/search-job-outlooks","Search job outlooks","Government of Canada Job Bank","2026-08-21","17","Yes—mutable"
+"https://www.linkedin.com/help/linkedin/answer/a1341387/prohibited-software-and-extensions","Prohibited software and extensions","LinkedIn","2026-08-21","16","Yes—mutable"
+"https://www.linkedin.com/legal/user-agreement","User Agreement","LinkedIn","2026-08-21","16","Yes—mutable"
+"https://www.nist.gov/itl/ai-risk-management-framework","AI Risk Management Framework","National Institute of Standards and Technology","2026-08-21","2, 13, 22, B","Yes—mutable"
+"https://www.ontario.ca/page/school-year-calendars","School year calendars","Government of Ontario","2026-08-21","18","Yes—mutable"
+"https://www.ontario.ca/page/your-health","Your health and Health811","Government of Ontario","2026-08-21","18","Yes—mutable"
+"https://www.pcisecuritystandards.org/faqs/1318/","What is the maximum period cardholder data may be stored?","PCI Security Standards Council","2026-08-21","14","Yes—mutable"
+"https://www.pcisecuritystandards.org/faqs/are-merchants-allowed-to-request-card-verification-codes-values-from-cardholders/","Are merchants allowed to request card-verification codes/values?","PCI Security Standards Council","2026-08-21","14","Yes—mutable"
+"https://www.pcisecuritystandards.org/faqs/does-pci-dss-apply-to-merchants-who-outsource-all-payment-processing-operations-and-never-store-process-or-transmit-cardholder-data/","Does PCI DSS apply when payment processing is outsourced?","PCI Security Standards Council","2026-08-21","14","Yes—mutable"
+"https://www.priv.gc.ca/en/privacy-topics/business-privacy/breaches-and-safeguards/privacy-breaches-at-your-business/contain_pb/","Contain a privacy breach at your business","Office of the Privacy Commissioner of Canada","2026-08-21","14","Yes—mutable"
+"https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/","PIPEDA fair information principles","Office of the Privacy Commissioner of Canada","2026-08-21","7, 14, B","Yes—mutable"
+"https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/principles/p_use/","Limiting use, disclosure, and retention","Office of the Privacy Commissioner of Canada","2026-08-21","7","Yes—mutable"
+"https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/r_o_p/prov-pipeda/","Provincial laws that may apply instead of PIPEDA","Office of the Privacy Commissioner of Canada","2026-08-21","14","Yes—mutable"
+"https://www.twilio.com/en-us/sms/pricing/ca","SMS pricing in Canada","Twilio","2026-08-21","9","Yes—mutable"
+```
 
 ## Screenshot provenance
 

@@ -52,7 +52,10 @@ python3 -m venv .venv
 .venv/bin/python tools/check_task8.py --hermes-source /tmp/hermes-agent-v2026.8.19
 .venv/bin/python tools/check_task9.py --hermes-source /tmp/hermes-agent-v2026.8.19
 .venv/bin/python tools/check_task10.py --hermes-source /tmp/hermes-agent-v2026.8.19
+.venv/bin/python tools/check_task11.py --hermes-source /tmp/hermes-agent-v2026.8.19
 ```
+
+The Task 11 audit reconstructs the deduplicated external-citation set and affected chapter/appendix mappings from the manuscript, excluding local links and Appendix D's ledger carrier block. It requires every ledger URL to have an explicit title, publisher, ISO verification date, affected-unit list, and version-sensitive label. Against the exact pinned Hermes commit, it also checks Appendix A command families and the named Appendix C official skills, bundled plugins, and approved-catalog MCP entries. Keep the audit deterministic; live-page authority and content review remain release-editor responsibilities.
 
 The Task 10 audit is a bounded manuscript lint for Chapters 21–22. It checks
 their word contracts, named delegation and evaluation artifacts, the flat
