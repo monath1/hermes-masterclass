@@ -284,11 +284,11 @@ The capstone uses the business operations role from Chapters 19–21 and one fam
 
 #### Days 1–15: observe and establish the baseline
 
-Create a dedicated macOS account, Hermes workspace, business profile, and separate family profile. Confirm model routing, tools, skills, identities, egress, retention, backup, and stop procedures. Select three read-only task families: source-labelled morning brief, public business research table, and school-notice extraction from supplied files. No external sends, writes to systems of record, scheduled actions, subagents, Bots, or Codex changes.
+Create a dedicated macOS account, Hermes workspace, business profile, and family profile. Confirm routing, tools, identities, egress, retention, backup, and stop procedures. Select three read-only task families: source-labelled morning brief, public business research table, and school-notice extraction. No external sends, system-of-record writes, schedules, subagents, Bots, or Codex changes.
 
 Build twenty reference cases across the three families. Record expected fields, sources, and explicit unknowns. Run Hermes manually and score input fidelity, correctness, boundary compliance, latency, and reviewer effort. Rehearse `/stop`, session identification, log inspection, and removal of a supplied document.
 
-**Gate 1:** at least fifteen completed reference cases; every consequential fact traceable to an approved source; no boundary breach; every unknown labelled; restore and deletion drill demonstrated; the owner can explain the actual model/profile/tool route. Otherwise remain read-only and fix the first failing layer.
+**Gate 1:** at least fifteen independently reviewed and accepted reference cases; every attempt dispositioned; no unresolved false completion; every consequential fact traceable to an approved source; no boundary breach; every unknown labelled; restore and deletion drill demonstrated; the owner can explain the actual route. Otherwise remain read-only and fix the first failing layer.
 
 #### Days 16–30: prepare drafts and approval objects
 
@@ -308,7 +308,7 @@ After five accepted cases for each specialist, optionally create one persistent 
 
 #### Days 46–60: schedule quiet, reversible operations
 
-Schedule two Green jobs: a local daily source brief and a weekly internal operating review. Use cron with self-contained prompts, explicit timezone, isolated output folders, named delivery targets, and no-agent/script gates where reasoning is unnecessary. Manually trigger and inspect each job. Record expected fires, run states, outputs, delivery receipts, and destination read-backs. Stagger schedules.
+Schedule two Green jobs: a local daily source brief and a weekly internal operating review. Use cron with self-contained prompts, explicit timezone, isolated output folders, named delivery targets, and no-agent/script gates where reasoning is unnecessary. Manually trigger and inspect each job. Record expected fires, run states, outputs, delivery receipts, and destination read-backs. Stagger schedules. Start the Gate 5 sampled-review cadence during this phase.
 
 Add one `/goal` workflow for a bounded multi-turn artifact with a finite turn budget and explicit acceptance test. Test pause, resume, clear, and a wait on a real background process. The goal may produce an internal draft only.
 
@@ -320,7 +320,7 @@ Choose one low-consequence function from Chapter 20, such as public-source marke
 
 Run a weekly sampled review and a memory review. Compare the everyday route with a higher-capability route or one tested MoA review only on difficult cases; adopt the more complex route only if accepted-outcome quality improves enough to justify cost and latency. Exercise checkpoint preview and restore on a synthetic local edit.
 
-**Gate 5:** four weekly reviews completed; scorecard denominators and samples are reproducible; no false completion on consequential work; escalation average at least five of six; memory sample current; cost and tail latency inside owner-selected budgets; synthetic incident restore and external-effect reconciliation passed.
+**Gate 5:** four weekly reviews completed across Days 46–75; scorecard denominators and samples are reproducible; no false completion on consequential work; escalation average at least five of six; memory sample current; cost and tail latency inside owner-selected budgets; synthetic incident restore and external-effect reconciliation passed.
 
 #### Days 76–90: qualify the bounded digital employee
 
@@ -336,7 +336,7 @@ The ninety-day outcome is not maximum autonomy. It is a role whose useful behavi
 
 ## Professional example
 
-The business content pipeline records twelve attempts in a month. Eleven finish, ten are reviewed, nine are accepted, and eight are published manually after approval. The useful figures are not “92% completion.” Verified correctness is nine of ten reviewed attempts; false completion is one of the eleven completed claims; effect fidelity is eight of eight published items with matching approval, platform receipt, and read-back. The rejected draft contains an unsupported comparison, and its escalation score is only three because Hermes named uncertainty but did not contain the scheduled campaign.
+The business content pipeline records twelve attempts. Eleven finish, ten are reviewed, nine are accepted, and eight are published manually. Verified correctness is nine of ten reviewed attempts; false completion is one of ten reviewed completed claims; the eleventh completed output is unreviewed and therefore not observable for correctness. Effect fidelity is eight of eight published items with matching approval, receipt, and read-back. The rejected draft contains an unsupported comparison; its escalation score is three because Hermes named uncertainty but did not contain the scheduled campaign.
 
 The owners pause that task family, add claim-to-source acceptance rows, and run three regression cases. They do not replace the model first. After the focused change, the same difficult case escalates before scheduling and includes the exact unsupported sentence. The task family returns to draft-only service; publication authority was never delegated.
 

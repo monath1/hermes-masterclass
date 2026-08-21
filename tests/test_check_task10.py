@@ -124,7 +124,10 @@ def test_task10_audit_rejects_each_removed_capstone_gate(
 ) -> None:
     _chapter_21, chapter_22 = copy_task10_chapters(tmp_path)
     contents = chapter_22.read_text(encoding="utf-8")
-    chapter_22.write_text(contents.replace(source, "Promotion check", 1), encoding="utf-8")
+    chapter_22.write_text(
+        contents.replace(f"**{source}:", "**Promotion check:", 1),
+        encoding="utf-8",
+    )
 
     result = run_check(tmp_path)
 
@@ -158,3 +161,145 @@ def test_task10_audit_requires_completion_correctness_separation(tmp_path: Path)
 
     assert result.returncode == 1
     assert "missing completion/correctness separation" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("source", "replacement", "label"),
+    [
+        (
+            "Prompt-declared read and write roots are instructions, not enforced capability",
+            "Prompt-declared roots enforce capability",
+            "declared/enforced boundary",
+        ),
+        (
+            "The model-facing `delegate_task` inherits the parent’s enabled toolsets",
+            "The child receives only tools listed in its prompt",
+            "model-facing tool inheritance",
+        ),
+        (
+            "the `file` toolset bundles read, search, patch, and write operations",
+            "the file toolset is read-only",
+            "file toolset read/write scope",
+        ),
+        (
+            "Per-launch tool blocks and working-directory overrides are unavailable in the model-facing call",
+            "The prompt can set per-launch tool blocks and workdir",
+            "model-facing per-launch limits",
+        ),
+        (
+            "True read-only delegation requires a constrained parent or profile with no write-capable toolset, plus OS or container read-only mounts",
+            "A read-only prompt is enough",
+            "enforced read-only boundary",
+        ),
+        (
+            "A clean worktree and `workspace-write` are not a secret-read boundary",
+            "A clean worktree prevents secret reads",
+            "Codex secret-read boundary",
+        ),
+        (
+            "`CODEX_HOME` isolates Codex authentication, configuration, and plugin state only",
+            "`CODEX_HOME` isolates the whole operating-system account",
+            "CODEX_HOME scope",
+        ),
+        (
+            "Hermes’s app-server process retains the real OS `HOME` and can read ordinary user credential state",
+            "Hermes rewrites HOME to an empty profile directory",
+            "real HOME credential exposure",
+        ),
+        (
+            "a dedicated macOS user, container, or equivalent environment with unrelated credentials and data absent",
+            "the ordinary login account is sufficient",
+            "dedicated execution environment",
+        ),
+    ],
+)
+def test_task10_audit_requires_enforced_delegation_boundaries(
+    tmp_path: Path, source: str, replacement: str, label: str
+) -> None:
+    chapter_21, _chapter_22 = copy_task10_chapters(tmp_path)
+    contents = chapter_21.read_text(encoding="utf-8")
+    chapter_21.write_text(contents.replace(source, replacement, 1), encoding="utf-8")
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert f"missing {label}" in result.stdout
+
+
+def test_task10_audit_requires_illustrative_delegate_task_label(tmp_path: Path) -> None:
+    chapter_21, _chapter_22 = copy_task10_chapters(tmp_path)
+    contents = chapter_21.read_text(encoding="utf-8")
+    chapter_21.write_text(
+        contents.replace(
+            "illustrative Hermes tool call, not pasteable Python or shell",
+            "ready-to-run Python",
+            1,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "missing illustrative tool-call label" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("source", "replacement", "expected"),
+    [
+        (
+            "at least fifteen independently reviewed and accepted reference cases",
+            "at least fifteen completed reference cases",
+            "missing Gate 1 accepted-case threshold",
+        ),
+        (
+            "every attempt dispositioned",
+            "most attempts dispositioned",
+            "missing Gate 1 attempt disposition",
+        ),
+        (
+            "no unresolved false completion",
+            "few false completions",
+            "missing Gate 1 false-completion control",
+        ),
+        (
+            "four weekly reviews completed across Days 46–75",
+            "four weekly reviews completed",
+            "missing Gate 5 feasible review window",
+        ),
+        (
+            "Start the Gate 5 sampled-review cadence during this phase",
+            "Start reviews on Day 61",
+            "missing Gate 5 review start",
+        ),
+    ],
+)
+def test_task10_audit_requires_strengthened_gate_language(
+    tmp_path: Path, source: str, replacement: str, expected: str
+) -> None:
+    _chapter_21, chapter_22 = copy_task10_chapters(tmp_path)
+    contents = chapter_22.read_text(encoding="utf-8")
+    chapter_22.write_text(contents.replace(source, replacement, 1), encoding="utf-8")
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert expected in result.stdout
+
+
+def test_task10_audit_rejects_false_completion_denominator_drift(tmp_path: Path) -> None:
+    _chapter_21, chapter_22 = copy_task10_chapters(tmp_path)
+    contents = chapter_22.read_text(encoding="utf-8")
+    chapter_22.write_text(
+        contents.replace(
+            "false completion is one of ten reviewed completed claims",
+            "false completion is one of the eleven completed claims",
+            1,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "missing reviewed false-completion denominator" in result.stdout

@@ -22,6 +22,7 @@ REQUIRED_PINNED_PATHS = {
     "website/docs/guides/cron-troubleshooting.md",
     "website/docs/guides/delegation-patterns.md",
     "website/docs/guides/troubleshooting-agent-quality.md",
+    "website/docs/reference/toolsets-reference.md",
     "website/docs/user-guide/bot-mode.md",
     "website/docs/user-guide/checkpoints-and-rollback.md",
     "website/docs/user-guide/features/codex-app-server-runtime.md",
@@ -36,10 +37,26 @@ REQUIRED_PINNED_PATHS = {
 }
 PINNED_SOURCE_ASSERTIONS = (
     ("website/docs/user-guide/features/delegation.md", "completely fresh conversation"),
+    (
+        "website/docs/user-guide/features/delegation.md",
+        "does not accept a model-facing `toolsets` parameter",
+    ),
+    (
+        "website/docs/reference/toolsets-reference.md",
+        "File reading, writing, searching, and editing.",
+    ),
     ("website/docs/guides/delegation-patterns.md", "No conversation history"),
     ("website/docs/user-guide/bot-mode.md", "A Bot is a profile"),
     ("website/docs/user-guide/features/codex-app-server-runtime.md", "This is **opt-in only**"),
+    (
+        "website/docs/user-guide/features/codex-app-server-runtime.md",
+        "Hermes does NOT rewrite `HOME`",
+    ),
     ("website/docs/developer-guide/subagent-lifecycle-api.md", "The stable states are"),
+    (
+        "website/docs/developer-guide/subagent-lifecycle-api.md",
+        "per-tool blocks, working-directory\noverrides, and per-launch timeouts are explicitly rejected",
+    ),
     ("website/docs/user-guide/features/mixture-of-agents.md", "virtual model provider"),
     (
         "website/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex.md",
@@ -190,6 +207,51 @@ def audit_task10(root: Path, hermes_source: Path | None = None) -> list[str]:
         ("handback", "handback"),
         ("Keep delegation flat", "flat-roster control"),
         ("BOUNDED SPECIALIST ASSIGNMENT CARD", "field kit"),
+        (
+            "Prompt-declared read and write roots are instructions, not enforced capability",
+            "declared/enforced boundary",
+        ),
+        (
+            "The model-facing `delegate_task` inherits the parent’s enabled toolsets",
+            "model-facing tool inheritance",
+        ),
+        (
+            "the `file` toolset bundles read, search, patch, and write operations",
+            "file toolset read/write scope",
+        ),
+        (
+            "Per-launch tool blocks and working-directory overrides are unavailable in the "
+            "model-facing call",
+            "model-facing per-launch limits",
+        ),
+        (
+            "True read-only delegation requires a constrained parent or profile with no "
+            "write-capable toolset, plus OS or container read-only mounts",
+            "enforced read-only boundary",
+        ),
+        (
+            "A clean worktree and `workspace-write` are not a secret-read boundary",
+            "Codex secret-read boundary",
+        ),
+        (
+            "`CODEX_HOME` isolates Codex authentication, configuration, and plugin state only",
+            "CODEX_HOME scope",
+        ),
+        (
+            "Hermes’s app-server process retains the real OS `HOME` and can read ordinary "
+            "user credential state",
+            "real HOME credential exposure",
+        ),
+        (
+            "a dedicated macOS user, container, or equivalent environment with unrelated "
+            "credentials and data absent",
+            "dedicated execution environment",
+        ),
+        (
+            "illustrative Hermes tool call, not pasteable Python or shell",
+            "illustrative tool-call label",
+        ),
+        ("https://learn.chatgpt.com/docs/sandboxing", "official OpenAI sandbox reference"),
     )
     for phrase, label in chapter_21_contract:
         require(chapter_21, phrase, label, failures)
@@ -206,6 +268,26 @@ def audit_task10(root: Path, hermes_source: Path | None = None) -> list[str]:
         ("Troubleshoot in a fixed order", "troubleshooting loop"),
         ("OPERATIONAL EVIDENCE AND CAPSTONE CARD", "field kit"),
         ("bounded digital employee", "bounded employee conclusion"),
+        (
+            "at least fifteen independently reviewed and accepted reference cases",
+            "Gate 1 accepted-case threshold",
+        ),
+        ("every attempt dispositioned", "Gate 1 attempt disposition"),
+        ("no unresolved false completion", "Gate 1 false-completion control"),
+        (
+            "four weekly reviews completed across Days 46–75",
+            "Gate 5 feasible review window",
+        ),
+        ("Start the Gate 5 sampled-review cadence during this phase", "Gate 5 review start"),
+        (
+            "false completion is one of ten reviewed completed claims",
+            "reviewed false-completion denominator",
+        ),
+        (
+            "the eleventh completed output is unreviewed and therefore not observable for "
+            "correctness",
+            "unreviewed-output observability",
+        ),
     )
     for phrase, label in chapter_22_contract:
         require(chapter_22, phrase, label, failures)

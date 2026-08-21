@@ -29,11 +29,12 @@ python3 -m venv .venv
 
 The Task 10 audit is a bounded manuscript lint for Chapters 21–22. It checks
 their word contracts, named delegation and evaluation artifacts, the flat
-specialist-roster control, completion-versus-correctness separation, ordered
-delegation and evidence-gate diagrams, all six 90-day capstone phases and
-gates, and pinned Hermes source assertions. Keep its semantic checks finite
-and structural; it is not a general natural-language evaluator or a claim
-that a passing chapter makes an agent safe.
+specialist-roster control, prompt-versus-enforced capability boundaries,
+completion-versus-correctness denominators, ordered delegation and evidence
+flows, the strengthened Gate 1 and feasible Gate 5 review window, all six
+90-day phases and gates, and pinned Hermes source assertions. Keep its semantic
+checks finite and structural; it is not a general natural-language evaluator
+or a claim that a passing chapter makes an agent safe.
 
 The Task 9 audit is a bounded manuscript lint for Chapters 19–20. It checks their word contracts, named business-OS and functional-playbook artifacts, required decision rows inside the owner/co-owner/Hermes responsibility table, human approval/action plus receipt/read-back/metrics labels in the lead and campaign trajectories, the finite list of prohibited business authorizations, and pinned Hermes source assertions. When changing the checker, keep semantic tests focused on those declared contracts and include safe negations plus structural mutation cases; do not grow it into a general NLP policy engine.
 

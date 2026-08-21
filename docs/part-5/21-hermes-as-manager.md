@@ -28,7 +28,7 @@ The point is not the number of agents. The point is that each worker has one job
 
 **Context boundary** states what the specialist may know. It names the exact documents, folders, prior decisions, and assumptions supplied—and what is deliberately withheld.
 
-**Tool boundary** states what the specialist may use. Tool access is capability, not decoration. A child that can read one folder and search public pages has a different job from one that can edit a repository, operate a browser, or reach a customer system.
+**Tool boundary** states what the specialist may use. Tool access is capability, not decoration. Prompt-declared read and write roots are instructions, not enforced capability; enforcement comes from configured tools and the operating environment.
 
 **Shared artifact** is the controlled object through which manager and specialist coordinate: a worktree, evidence packet, source table, draft document, checklist, or review ledger. It is preferable to relying on summaries alone.
 
@@ -104,9 +104,11 @@ The loop has no edge from specialist directly to external effect. The manager ve
 
 ### Dispatch temporary Hermes subagents carefully
 
-On the default Hermes runtime, `delegate_task` can create one child or a batch. The child knows nothing about the parent conversation. Pass exact paths, relevant facts, desired output, and verification commands in `goal` and `context`. A vague request forces the child either to guess or to spend iterations rediscovering what Hermes already knew.
+On the default Hermes runtime, `delegate_task` can create one child or a batch. The child knows nothing about the parent conversation. Pass exact paths, relevant facts, desired output, and verification commands in `goal` and `context`.
 
-```python
+This is an illustrative Hermes tool call, not pasteable Python or shell:
+
+```text
 delegate_task(
     goal="Compare the supplied job posting with Priya's approved evidence matrix.",
     context="""Read only /work/career/job-184/posting.md and
@@ -119,9 +121,11 @@ delegate_task(
 )
 ```
 
-Hermes v0.20.5 defaults to three concurrent children, configurable through `delegation.max_concurrent_children`. More is not a target. Start with one; use two or three only for independent files or evidence lanes. Batches above the configured limit fail rather than being silently truncated. Results are ordered to match the input tasks even if completion order differs.
+Hermes v0.20.5 defaults to three concurrent children, configurable through `delegation.max_concurrent_children`. Start with one; use two or three only for independent files or evidence lanes. Batches above the limit fail rather than being silently truncated. Results preserve input order.
 
-Children inherit the parent’s enabled toolsets; the model-facing `delegate_task` call cannot broaden them per task. Configure the parent narrowly before the conversation. The public plugin lifecycle API is different: a plugin or hook may use `allowed_toolsets` to narrow a fresh child, but requests that broaden the parent, forge a handle, override work directories, or add unsupported per-launch controls fail closed. Its states include `PENDING`, `RUNNING`, terminal success/failure/cancellation states, and `UNKNOWN`; cancellation is cooperative and completion must be observed rather than assumed.
+The model-facing `delegate_task` inherits the parent’s enabled toolsets, subject to Hermes’s fixed child blocks. Its call has no toolset argument: the `file` toolset bundles read, search, patch, and write operations. Per-launch tool blocks and working-directory overrides are unavailable in the model-facing call. Telling a child “read only” or naming roots in `context` does not remove write capability. True read-only delegation requires a constrained parent or profile with no write-capable toolset, plus OS or container read-only mounts. Configure that boundary before the conversation.
+
+The public plugin lifecycle API is different: a plugin or hook may use `allowed_toolsets` to narrow a fresh child, but it cannot broaden the parent or override work directories. Its states include `PENDING`, `RUNNING`, terminal success/failure/cancellation states, and `UNKNOWN`; cancellation is cooperative and completion must be observed.
 
 For model-facing delegation, use `delegate_task(action="list")` to inspect live children, `action="steer"` to queue a correction, and `action="stop"` to end one at its next boundary. A queued steer is not proof that the child saw it. Hermes preserves a missed or pending steer in the result so the manager can issue a fresh follow-up. The TUI `/agents` overlay shows the tree, per-branch cost, token use, touched files, status, and histories. Live transcripts are append-only under `~/.hermes/cache/delegation/live/<delegation_id>/`; they are operational evidence, but those directories are pruned after seven days on new dispatches, so promote any retained evidence into the case folder.
 
@@ -146,7 +150,7 @@ Leave `max_spawn_depth` at `1` and `orchestrator_enabled` off unless a tested bu
 
 Bot Mode turns profiles into a visible roster. A Research Desk Bot can hold public-source methods and a research-only model. A Family Admin Bot can hold the household checklist and family-safe routine history. A Business Operations Bot can work inside the business profile. Because a Bot is a profile, its persistent state lives with the machine that owns that profile; `hermes -p <bot> chat` opens the same agent and its routines appear in `hermes cron list`.
 
-Create a Bot only when the role recurs and needs separate state. Define its title as a service, not a personality: “Family Admin — prepares dates and checklists from supplied notices” is better than “Super Mom Bot.” Start fresh or clone only after reviewing what configuration, skills, memory, and credentials the clone would copy. Enable only the required skills, toolsets, and MCP servers. If the Bot needs separate Codex auth or plugin state under the app-server runtime, explicitly scope `CODEX_HOME`; Hermes profiles otherwise share the default `~/.codex/` state.
+Create a Bot only when the role recurs and needs separate state. Define its title as a service, not a personality. Start fresh or clone only after reviewing what configuration, skills, memory, and credentials the clone would copy. Enable only the required skills, toolsets, and MCP servers. `CODEX_HOME` isolates Codex authentication, configuration, and plugin state only; it does not isolate the OS account. Hermes’s app-server process retains the real OS `HOME` and can read ordinary user credential state such as `~/.gh/` or `~/.aws/` where its sandbox permits. Scope `CODEX_HOME` per profile when needed, but never treat that as data isolation.
 
 Groups and `@mentions` are coordination surfaces, not authority grants. Bot group rooms cap rounds and messages, but a lively discussion can still produce duplicate work and consensus theatre. Use a group to compare two named views on a prepared artifact, with one Bot assigned to synthesize and one human question to resolve. Do not put customer replies, financial actions, health choices, school disputes, or legal decisions to a Bot vote.
 
@@ -154,7 +158,9 @@ Routines are ordinary cron jobs namespaced to the Bot. They run in the Bot’s c
 
 ### Delegate to Codex at the repository boundary
 
-Codex is strongest when the job is organized around a repository, explicit artifacts, and executable checks. The bundled Hermes Codex skill launches the Codex CLI through the terminal. Use a clean git status or an isolated worktree, an exact working directory, `codex exec` for a one-shot, a workspace-write sandbox where it works, and background process monitoring for a long job. Review the diff and rerun tests outside the specialist’s own narrative.
+Codex is strongest when the job is organized around a repository, explicit artifacts, and executable checks. The bundled Hermes Codex skill launches the Codex CLI through the terminal. Use an isolated worktree, exact working directory, one-shot `codex exec`, and the narrowest sandbox. Review the diff and rerun tests independently.
+
+A clean worktree and `workspace-write` are not a secret-read boundary. They constrain changes and simplify review; OpenAI documents `workspace-write` as able to read files and edit within the workspace, while the pinned Hermes app-server retains the real OS `HOME`. For sensitive work, use a dedicated macOS user, container, or equivalent environment with unrelated credentials and data absent. Mount approved inputs read-only and expose only the required write location. A prompt saying “do not read” remains policy, not enforcement.
 
 Do not treat the Hermes Codex skill as a Hermes marketplace extension, and do not treat a Codex app plugin as a Hermes native skill. The bundled skill is Hermes-authored procedure for invoking the Codex CLI. OpenAI’s Codex/ChatGPT skills package workflow instructions and optional resources/scripts; Codex plugins distribute reusable skills and connectors through OpenAI’s plugin directory. Hermes skills, Hermes plugins, Hermes-compatible MCP servers, and Codex plugins have different installation, credential, review, and runtime boundaries.
 
@@ -289,7 +295,8 @@ Authoritative files/links/records:
 Context supplied:
 Explicitly excluded data:
 Allowed tools/toolsets/accounts:
-Allowed read roots / write roots / network destinations:
+Prompt-declared read roots / write roots / network destinations:
+Enforced tools, mounts, OS account, and sandbox profile:
 External effects: [none / prepare only with approval object]
 
 DELIVERABLE
@@ -368,6 +375,7 @@ Award two points each for mechanism selection, complete brief, context minimizat
 - Nous Research, [Subagent delegation](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/delegation.md).
 - Nous Research, [Delegation and parallel-work patterns](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/delegation-patterns.md).
 - Nous Research, [Public subagent lifecycle API](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/subagent-lifecycle-api.md).
+- Nous Research, [Toolsets reference](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/toolsets-reference.md).
 - Nous Research, [Bot Mode](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/bot-mode.md).
 - Nous Research, [Codex app-server runtime](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/codex-app-server-runtime.md).
 - Nous Research, [Bundled Codex skill](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-codex.md).
@@ -375,5 +383,6 @@ Award two points each for mechanism selection, complete brief, context minimizat
 - Nous Research, [Provider routing](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/provider-routing.md).
 - Nous Research, [Fallback providers](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/fallback-providers.md).
 - OpenAI, [Codex App Server](https://learn.chatgpt.com/docs/app-server) (accessed 2026-08-21).
+- OpenAI, [Sandbox](https://learn.chatgpt.com/docs/sandboxing) (accessed 2026-08-21).
 - OpenAI, [Build skills for ChatGPT and Codex](https://learn.chatgpt.com/docs/build-skills) (accessed 2026-08-21).
 - OpenAI, [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (accessed 2026-08-21).
