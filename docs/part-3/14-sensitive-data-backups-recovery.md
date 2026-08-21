@@ -6,9 +6,9 @@
 
 On Saturday morning, the Mac mini's external drive reports an error. Alex finds a folder named `important-backup` containing tax documents, school forms, a customer export, session transcripts, a payment-card photo, and a primary mailbox password. It syncs to a personal cloud account. Nobody knows whether Time Machine includes it or where deletion would propagate.
 
-The drive has not failed completely. That is not the good news it first appears to be. The family has copies, but no tested recovery system. Duplication enlarged exposure without proving restoration. Encryption may protect a powered-off disk from a thief, but it does not stop Hermes, malware, or a signed-in person from reading files they can already access. A checkpoint might restore a draft, but not a sent school message or a copied card image. Sync may reproduce accidental deletion instead of preserving a recoverable version.
+The family has copies, but no tested recovery system. Duplication enlarged exposure without proving restoration. Encryption may protect a powered-off disk, but not data available to a signed-in process. A checkpoint cannot retract a sent message or copied card image; sync may reproduce deletion.
 
-The Chen–Patels stop Hermes, isolate the drive, remove the card image, revoke the credential, and trace propagation. Harbourlight moves payment collection entirely to its provider's hosted interface. Priya and Alex map purpose, person, location, access, provider route, retention, deletion proof, and backup treatment. They create encrypted backups, then restore in isolation and prove that required state—not prohibited data—returns.
+The Chen–Patels stop Hermes, isolate the drive, remove the card image, revoke the credential, and trace propagation. Harbourlight moves card entry to its provider. Priya and Alex map purpose, access, copies, retention, deletion, and backup, then prove in isolation that required state—not prohibited data—restores.
 
 Recovery begins before a failure. It begins by deciding what should never be collected, what must remain accessible, which copies are authoritative, and which external effects no local restore can reverse.
 
@@ -16,37 +16,37 @@ Recovery begins before a failure. It begins by deciding what should never be col
 
 **Personal information (PII in common technical shorthand).** Information about an identifiable individual. Canadian privacy law uses *personal information*; this chapter sometimes uses PII as an operational label, not a legal determination.
 
-**Sensitive data.** Information whose unauthorized access, change, loss, or disclosure could materially harm a person or business. Context, combinations, volume, and use matter.
+**Sensitive data.** Information whose unauthorized use, change, loss, or disclosure could materially harm a person or business.
 
 **Payment-card data.** Account data connected to payment cards. The primary account number (PAN) is cardholder data. Sensitive authentication data includes full track data, card-verification codes or values, and PIN/PIN-block data. PCI SSC prohibits retaining sensitive authentication data after authorization even when encrypted.
 
-**Health data.** Symptoms, diagnoses, prescriptions, appointments, disability information, insurance details, test results, or other information about physical or mental health. Hermes may organize adult-supplied logistics and questions; it does not diagnose, choose treatment, or replace a clinician.
+**Health data.** Symptoms, diagnoses, prescriptions, appointments, disability, insurance, tests, or other physical or mental health information. Hermes may organize adult-supplied logistics, not diagnose or choose treatment.
 
 **School data.** Student identifiers, grades, plans, attendance, discipline, guardian messages, location, consent forms, and related health information.
 
-**Employment data.** Résumé evidence, applications, references, evaluations, compensation, accommodations, identity documents, background checks, and employee records. Career preparation does not authorize employer decisions or false representation.
+**Employment data.** Résumé evidence, applications, references, evaluations, compensation, accommodations, identity documents, background checks, and employee records. Preparation never authorizes false representation.
 
 **Tax data.** Slips, receipts, account identifiers, returns, assessments, and working papers used for tax preparation. Hermes can inventory and organize; a person or qualified professional determines filing position and submits.
 
-**Business-confidential data.** Customer records, contracts, prices, credentials, finances, plans, analytics, support history, and intellectual property.
+**Business-confidential data.** Customer records, contracts, credentials, finances, plans, support history, and intellectual property.
 
-**Data minimization.** Collecting, exposing, copying, and retaining only the fields and time needed for an identified purpose. Redaction after broad collection is useful cleanup, not equivalent to never collecting.
+**Data minimization.** Collecting, exposing, copying, and retaining only what an identified purpose needs. Later redaction does not equal non-collection.
 
-**Retention.** Keeping information for an approved period tied to purpose, legal or contractual requirements, and operational need. **Deletion** is a controlled process that removes required copies and verifies the result; hiding, archiving, compressing, or losing a link is not deletion.
+**Retention.** Keeping information for an approved period tied to purpose and applicable requirements. **Deletion** removes required copies and verifies the result; hiding, archiving, or losing a link does not.
 
 **Access control.** A rule and enforcement mechanism deciding who or what may read, change, or use data. Separate OS users, file permissions, provider roles, and scoped identities are access controls.
 
-**Encryption.** Cryptographic protection that makes data unreadable without the required key or credential. Encryption at rest can reduce loss from stolen media. Once an authorized process decrypts data, encryption does not restrict what that process may do.
+**Encryption.** Cryptographic protection requiring a key or credential to read data. It can protect stolen media, but does not restrict an authorized process after decryption.
 
-**Backup.** A separate recoverable copy made to restore required data after loss or corruption. A backup is useful only when its scope, integrity, credentials, and restore procedure are known.
+**Backup.** A separate recoverable copy for loss or corruption. Its scope, integrity, credentials, and restore procedure must be known.
 
-**Sync.** Replication intended to keep locations current. Sync may copy corruption, deletion, or disclosure. Version history can help, but sync is not automatically a backup.
+**Sync.** Replication that may copy corruption, deletion, or disclosure. Version history helps, but sync is not automatically backup.
 
 **Checkpoint.** Hermes's opt-in snapshot of supported local project files before certain mutations. It supports limited local rollback; it is not a complete Hermes-home backup or an external-effect undo system.
 
-**Recovery point objective (RPO).** The amount of recent data the operator is prepared to lose, expressed as time or transactions. **Recovery time objective (RTO)** is the target time to restore an acceptable service. They are planning targets, not guarantees.
+**Recovery point objective (RPO).** The tolerable data gap, in time or transactions. **Recovery time objective (RTO)** is the target restoration time. Both are targets, not guarantees.
 
-**Restore test.** A controlled recovery into a safe destination followed by evidence that selected files, state, permissions, and workflows work and prohibited material did not reappear.
+**Restore test.** Controlled recovery proving that required state and permissions work and prohibited material did not reappear.
 
 **Uncertain external effect.** An operation whose final state cannot be established from the local result—for example, a send timed out after the provider may have accepted it. Restore does not resolve this; external reconciliation does.
 
@@ -133,13 +133,13 @@ For tax preparation, index issuer, year, category, status, and restricted locati
 
 ### Account for every copy Hermes can create
 
-Hermes stores messages, tool calls, and results in profile-local `~/.hermes/state.db`; pasted text can outlive the working file. Attachments may leave paths or extracted text. Memory, context, exports, job output, logs, and downloads create other copies.
+Hermes stores messages, tool calls, and results in `~/.hermes/state.db`; pasted text can outlive a file. Memory, exports, job output, logs, and downloads create copies.
 
-Compression reduces what the model receives in active context; it is not privacy deletion. Archiving hides sessions from ordinary listings but leaves messages and search intact. `hermes sessions optimize` compacts database storage without deleting session data. Session auto-pruning is opt-in and applies to ended sessions; active sessions are not automatically pruned. Use `hermes sessions prune --dry-run` to preview a targeted cleanup and `hermes sessions delete <session_id>` for a named record after required export and review.
+Compression reduces active context, not stored privacy exposure. Archiving hides sessions but leaves messages and search intact. `hermes sessions optimize` compacts storage without deleting data. Auto-pruning is opt-in and excludes active sessions. Preview cleanup with `hermes sessions prune --dry-run`; delete a reviewed named record with `hermes sessions delete <session_id>`.
 
-Session exports can contain full messages and tool output. `--redact` cannot guarantee removal of every personal fact. Inspect before sharing. `--delete-after-verified --yes` verifies a named single-session export, but that file becomes another governed copy.
+Session exports can contain messages and tool output; `--redact` cannot guarantee every personal fact is removed. Inspect before sharing. A verified export is another governed copy.
 
-Technical trajectories, when explicitly enabled at the library/batch level, record conversations in JSONL and may include reasoning, tool requests, and results. They are not enabled by a normal CLI configuration flag. If an evaluation requires them, use synthetic or minimized data and delete the artifacts under policy.
+Library/batch trajectories can record reasoning, tool requests, and results in JSONL; no normal CLI flag enables them. Use synthetic or minimized evaluation data and delete artifacts under policy.
 
 ### Create a retention schedule that can be executed
 
@@ -183,7 +183,7 @@ Do not attach the backup volume to the Hermes runtime during ordinary work. A mo
 
 `hermes backup --quick` captures critical configuration, database, auth, and cron state, but is not a complete archive. Update-time `updates.pre_update_backup: quick` is also a local state snapshot; `full` adds a Hermes-home zip and `off` disables it.
 
-`hermes profile export` is a portable single-profile archive with credentials excluded. It is not the only recovery copy of secrets/global state. Checkpoints are excluded from Hermes backups and are not portable history.
+`hermes profile export` is portable, not sanitized. Only `.env` and `auth.json` are excluded by filename; content is not scanned for secrets or personal data. A default-profile export may include `USER.md`, sessions, and memories. A named-profile export copies the directory apart from those two filenames, so `state.db`, logs, and caches may also enter the archive. Protect and inspect every export before moving, syncing, or sharing it; filename exclusion does not make pasted credentials safe. For sharing an agent configuration, publish a reviewed profile distribution instead: distributions hard-exclude user-owned sessions, memories, state databases, logs, and caches. They still require source review. An export is not the only recovery copy of global state, and checkpoints are excluded from Hermes backups.
 
 Use a protected destination outside the live Hermes user. Record checksum, time, source version/profile, scope, exclusions, key custodian, retention, and restore test. Never email a credential-bearing backup. Backing up prohibited data creates durable exposure.
 
@@ -230,7 +230,7 @@ Cron makes this rule explicit. Hermes records attempts as `claimed`, `running`, 
 
 ### Rehearse four incident drills
 
-**Lost device.** From a trusted device, stop gateways/delivery, revoke sessions and tokens, suspend secondary identities, and preserve provider events. Use Apple's current procedure if configured; offline erase may not occur and can destroy evidence. Inventory exposed data, obtain help where needed, rebuild cleanly, restore reviewed data, issue fresh credentials, and run denial tests. FileVault does not close active sessions.
+**Lost device.** From a trusted device, stop gateways/delivery, revoke sessions and tokens, suspend secondary identities, and preserve provider events. If Find My was configured, an erase request for an offline device waits and begins the next time it connects to a Wi-Fi or mobile network; it may be cancelled while still offline, but erasure cannot be undone after it begins. Because erasure can destroy evidence and subsequent location options vary by device and OS, the incident owner weighs those consequences before acting. Inventory exposure, rebuild cleanly, restore reviewed data, issue fresh credentials, and run denial tests. FileVault does not close active sessions.
 
 **Leaked token.** Stop consumers; revoke at the provider; identify and rotate reachable secrets; clear caches/sessions; restart narrower; inspect events/spend; and prove old-value denial plus new-value success. Rotating only a leaked bootstrap token is incomplete.
 
@@ -240,11 +240,11 @@ Cron makes this rule explicit. Hermes records attempts as `claimed`, `running`, 
 
 ## Professional example
 
-Harbourlight's customer system gives Hermes a daily export containing customer record ID, support category, invoice status, currency, amount, and provider transaction reference. It excludes full card data, credentials, mailing history unrelated to the task, and raw customer database access. The payment provider handles card entry; Hermes cannot open the checkout administration or initiate refunds.
+Harbourlight gives Hermes customer ID, support category, invoice status, amount, currency, and provider transaction reference. It excludes card data, credentials, unrelated mail, and database access. The payment provider handles card entry; Hermes cannot administer checkout or refunds.
 
-Priya owns the data map; Alex is backup owner. Support drafts are retained until approved or abandoned, then superseded copies are removed. Required business records stay in their authoritative system under a professionally reviewed schedule, not in agent memory. Audit records use IDs and hashes rather than message bodies. A quarterly restore drill recovers a minimized test profile with synthetic customer rows and checks cron definitions without activating delivery.
+Priya owns the data map; Alex owns backup. Superseded support drafts are removed. Business records remain in their authoritative system under a reviewed schedule, not agent memory. Audit records use IDs and hashes. Quarterly, a minimized synthetic profile is restored without activating delivery.
 
-When a support attachment contains a card image, the agent stops processing and quarantines the incident path without redistributing the image. The owners follow their payment provider/acquirer's procedures and qualified advice. They do not save the image “for evidence” in the ordinary audit ledger or claim that encryption makes retention acceptable.
+If an attachment contains a card image, processing stops without redistributing it. The owners follow provider/acquirer procedures and qualified advice; they do not save it in the ordinary ledger or treat encryption as permission to retain it.
 
 ## Personal example
 
@@ -353,7 +353,7 @@ Award two points each for immediate containment, PCI handling, seven-class data 
 - [ ] I account for session text, tool results, memory, logs, hooks, exports, sync, checkpoints, providers, and backups as copies.
 - [ ] I know that compression, archive, optimization, and redaction are not complete deletion.
 - [ ] I distinguish encryption, access control, backup, sync, retention, and deletion.
-- [ ] I treat a full Hermes backup as credential-bearing and a profile export as credential-excluding.
+- [ ] I treat a full Hermes backup as credential-bearing and a profile export as filename-filtered but unsanitized.
 - [ ] I understand that checkpoints are opt-in, can fail non-fatally, and cover only supported local file changes.
 - [ ] I test restores in isolation with delivery disabled and prove exclusions as well as recovered contents.
 - [ ] I keep backup passwords and recovery material human-controlled and separate from the protected media.
@@ -365,6 +365,7 @@ Award two points each for immediate containment, PCI handling, seven-class data 
 - Nous Research, [Checkpoints and rollback](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/checkpoints-and-rollback.md).
 - Nous Research, [Sessions, export, pruning, and storage](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/sessions.md).
 - Nous Research, [CLI commands: backup and import](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/cli-commands.md).
+- Nous Research, [Profile exports and distributions](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profile-distributions.md).
 - Nous Research, [Updating and pre-update backups](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/updating.md).
 - Nous Research, [Cron execution history and unknown outcomes](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/cron.md).
 - Nous Research, [Hermes Agent Security Policy](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/SECURITY.md).
@@ -378,3 +379,5 @@ Award two points each for immediate containment, PCI handling, seven-class data 
 - Apple, [Back up your Mac with Time Machine](https://support.apple.com/en-us/104984) (accessed 2026-08-21).
 - Apple, [Verify your backup disk on Mac](https://support.apple.com/guide/mac-help/verify-your-backup-disk-mh26840/mac) (accessed 2026-08-21).
 - Apple, [Volume encryption with FileVault in macOS](https://support.apple.com/guide/security/sec4c6dc1b6e/web) (accessed 2026-08-21).
+- Apple, [Erase a device in Find My on Mac](https://support.apple.com/en-gb/guide/findmy-mac/fmmbe7bb71f4/mac) (accessed 2026-08-21).
+- Apple, [Use Find My to locate or erase a lost Apple device](https://support.apple.com/en-la/104978) (accessed 2026-08-21).

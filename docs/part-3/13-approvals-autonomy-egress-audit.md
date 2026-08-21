@@ -148,7 +148,7 @@ The website blocklist can prevent Hermes URL-capable tools from reaching named i
 
 ### Bind egress to the job
 
-Write a destination set for every workflow:
+Write a destination set for every workflow. These tiers are **policy targets**—they describe the network boundary the operator intends to enforce, not what a named Hermes setting necessarily enforces:
 
 - **Tier 0:** no network after staged input; local extraction, classification, or drafting.
 - **Tier 1:** selected inference/provider endpoints only.
@@ -158,9 +158,11 @@ Write a destination set for every workflow:
 
 Hermes's Iron Proxy is an optional credential-injection and allowlisting layer for the Docker terminal backend. The documented commands are `hermes egress setup`, `hermes egress start`, and `hermes egress status`. With `proxy.enforce_on_docker: true`, a missing proxy or conflicting proxy-control environment causes sandbox creation to refuse rather than fall back to direct access. Keep that fail-closed setting.
 
+At the pinned release, Iron Proxy's bundled defaults are broad: they cover OpenRouter, OpenAI, Anthropic, Google, xAI, Mistral, Groq, Together, DeepSeek, and Nous Research host families. `proxy.extra_allowed_hosts` can only expand that set; the documented configuration does not subtract a bundled host. Therefore stock Iron Proxy cannot by itself enforce a Tier 1 **selected-provider-only** target. Enforce that narrower set with a firewall or whole-process network policy, or custom proxy rules that admit only the selected provider. Test the chosen boundary with one allowed request and a denial against a different bundled provider host, before any sensitive input or live credential is present. A provider error such as `401` is not a network denial.
+
 Do not extend the claim. Iron Proxy does not cover the host agent process at this release. Raw sockets may bypass proxy variables; allowed hosts can receive inappropriate data in request bodies; mounted credential files remain readable; some signed provider credentials are uncovered. Its v0.39 per-request and daemon events share `~/.hermes/proxy/iron-proxy.log`; the documented `audit.log` is only a reserved placeholder until a later supported proxy version. A zero-byte placeholder is not evidence of zero egress.
 
-Use firewall or whole-process network policy when the whole agent needs destination enforcement. Keep provider-side scopes and budgets because “allowed destination” does not mean “allowed operation.” Rehearse one allowed provider request and one denied synthetic destination after every network-policy change.
+Use firewall or whole-process network policy when the whole agent needs destination enforcement. Keep provider-side scopes and budgets because “allowed destination” does not mean “allowed operation.” Rehearse the allow and deny cases after every network-policy change.
 
 ### Build an audit record from several sources
 

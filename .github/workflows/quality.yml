@@ -27,3 +27,10 @@ jobs:
       - uses: lycheeverse/lychee-action@v2
         with:
           args: --no-progress --exclude-mail '**/*.md'
+      - uses: actions/checkout@v4
+        with:
+          repository: NousResearch/hermes-agent
+          ref: v2026.8.19
+          path: .pinned-hermes-source
+          fetch-depth: 1
+      - run: python tools/check_task6.py --hermes-source .pinned-hermes-source
