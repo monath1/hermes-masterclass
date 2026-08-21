@@ -19,6 +19,7 @@ from check_task8 import (  # noqa: E402
     fetch_official_source,
     find_undated_changeable_claims,
     find_unsafe_authorizations,
+    validate_family_semantics,
     validate_live_sources,
 )
 
@@ -201,6 +202,18 @@ def test_authorization_scanner_accepts_local_negation_with_agent_antecedents(
             "raw child dossier",
             "Hermes may retain a raw child dossier, as long as it does not file taxes.",
         ),
+        (
+            "tax filing",
+            "Hermes may file taxes if it does not retain a raw child dossier.",
+        ),
+        (
+            "medical decision",
+            "Hermes may diagnose symptoms only if it does not file taxes.",
+        ),
+        (
+            "raw child dossier",
+            "Hermes may retain a raw child dossier so long as it does not file taxes.",
+        ),
     ],
 )
 def test_authorization_scanner_binds_modality_to_each_coordinated_predicate(
@@ -221,6 +234,9 @@ def test_authorization_scanner_binds_modality_to_each_coordinated_predicate(
         "Hermes may prepare records, provided it does not file taxes.",
         "Hermes can organize appointments unless it must not diagnose symptoms.",
         "Hermes may draft a form, as long as it cannot sign consent.",
+        "Hermes may prepare records if it does not file taxes.",
+        "Hermes can organize appointments only if it must not diagnose symptoms.",
+        "Hermes may draft a form so long as it cannot sign consent.",
     ],
 )
 def test_authorization_scanner_treats_required_refusals_as_safe(
@@ -354,6 +370,71 @@ def test_task8_audit_semantically_rejects_hermes_as_professional_decider(
     assert "unsafe Chapter 18 professional handoff decision owner" in result.stdout
 
 
+@pytest.mark.parametrize(
+    ("green_action", "diagnostic"),
+    [
+        ("determine investment allocations", "investment or benefit decision"),
+        ("sets the investment allocation", "investment or benefit decision"),
+        ("chooses investment allocations", "investment or benefit decision"),
+        ("recommended an investment allocation", "investment or benefit decision"),
+        ("makes travel reservations", "travel booking"),
+        ("booked a travel reservation", "travel booking"),
+        ("authorizes school forms", "consent or rights"),
+        ("signing school forms", "consent or rights"),
+        ("consents to school forms", "consent or rights"),
+        ("decides benefit eligibility", "sensitive inference"),
+        ("determines benefit eligibility", "sensitive inference"),
+        ("administers medication", "medical action"),
+        ("prescribed treatment", "medical action"),
+        ("transmits tax returns", "tax filing"),
+        ("files a tax return", "tax filing"),
+        ("submitting tax returns", "tax filing"),
+    ],
+)
+def test_green_authority_normalizes_prohibited_action_families(
+    green_action: str, diagnostic: str
+) -> None:
+    chapter = (PROJECT_ROOT / CHAPTER_18).read_text(encoding="utf-8")
+    chapter = chapter.replace(
+        "| **Green — may act** | Read approved",
+        f"| **Green — may act** | {green_action}; Read approved",
+        1,
+    )
+    failures: list[str] = []
+
+    validate_family_semantics(chapter, failures)
+
+    assert f"unsafe Chapter 18 Green authority: {diagnostic}" in failures
+
+
+@pytest.mark.parametrize(
+    "safe_green_action",
+    [
+        "prepare investment allocation questions",
+        "organize travel reservation options",
+        "draft school consent forms",
+        "collect tax return metadata",
+        "research benefit eligibility rules",
+        "summarize medication instructions",
+        "escalate treatment questions",
+    ],
+)
+def test_green_authority_allows_preparation_and_escalation_verbs(
+    safe_green_action: str,
+) -> None:
+    chapter = (PROJECT_ROOT / CHAPTER_18).read_text(encoding="utf-8")
+    chapter = chapter.replace(
+        "| **Green — may act** | Read approved",
+        f"| **Green — may act** | {safe_green_action}; Read approved",
+        1,
+    )
+    failures: list[str] = []
+
+    validate_family_semantics(chapter, failures)
+
+    assert not any("unsafe Chapter 18 Green authority" in item for item in failures)
+
+
 def test_task8_audit_rejects_diagnosis_bearing_shared_index_metadata(tmp_path: Path) -> None:
     _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
     contents = chapter_18.read_text(encoding="utf-8")
@@ -465,6 +546,36 @@ def test_changeable_claim_scan_requires_same_clause_and_category_marker(
     findings = find_undated_changeable_claims(wrong_category_marker)
 
     assert "Canadian dollar amount" in {label for label, _paragraph in findings}
+
+
+@pytest.mark.parametrize(
+    "separated_marker",
+    [
+        "The benefit pays C$500 — the six-year retention threshold was checked on 2026-08-21.",
+        "The benefit pays C$500 – the six-year retention threshold was checked on 2026-08-21.",
+        "The benefit pays C$500 (the six-year retention threshold was checked on 2026-08-21).",
+        "The benefit pays C$500 (a weekly review is an owner-selected operating policy).",
+    ],
+)
+def test_changeable_claim_scan_splits_dashes_and_parenthetical_assertions(
+    separated_marker: str,
+) -> None:
+    findings = find_undated_changeable_claims(separated_marker)
+
+    assert "Canadian dollar amount" in {label for label, _paragraph in findings}
+
+
+@pytest.mark.parametrize(
+    "governing_parenthetical",
+    [
+        "The benefit amount was C$500 (checked on 2026-08-21).",
+        "The owner selected a C$500 planning cap (owner-selected operating policy).",
+    ],
+)
+def test_changeable_claim_scan_accepts_governing_parenthetical_marker(
+    governing_parenthetical: str,
+) -> None:
+    assert find_undated_changeable_claims(governing_parenthetical) == []
 
 
 @pytest.mark.parametrize(

@@ -172,12 +172,30 @@ NEGATED = re.compile(
     r"is not allowed to|is prohibited from|is forbidden from)\b",
     re.IGNORECASE,
 )
+CONDITIONAL_CONNECTORS = (
+    "on condition that",
+    "provided that",
+    "as long as",
+    "so long as",
+    "only if",
+    "even if",
+    "except when",
+    "except that",
+    "provided",
+    "unless",
+    "whereas",
+    "except",
+    "if",
+)
+CONDITIONAL_CONNECTOR_PATTERN = "|".join(
+    re.escape(connector)
+    for connector in sorted(CONDITIONAL_CONNECTORS, key=len, reverse=True)
+)
 CLAUSE_BOUNDARY = re.compile(
     r"\s*(?:;|,(?=\s*(?:Hermes\b|the agent\b|it\b|may\b|can\b|could\b|"
     r"will\b|should\b|must\b))|\bbut\b|\bhowever\b|\bwhile\b|"
     r"\balthough\b|\bthough\b|\byet\b|"
-    r"\bprovided(?: that)?\b|\bunless\b|\bas long as\b|\beven if\b|"
-    r"\bwhereas\b|\bexcept(?: when| that)?\b|\bon condition that\b|"
+    rf"\b(?:{CONDITIONAL_CONNECTOR_PATTERN})\b|"
     r"\band(?=\s+(?:it\b|Hermes\b|the agent\b|may\b|can\b|could\b|will\b|"
     r"should\b|must\b|is prohibited\b|is forbidden\b|is not allowed\b|"
     r"has no permission\b)))\s*",
@@ -361,7 +379,8 @@ THRESHOLD_VALUE = re.compile(
 )
 CLAIM_MARKER_WINDOW = 220
 CLAIM_CLAUSE_BOUNDARY = re.compile(
-    r";|[.!?](?=\s|$)|,\s+(?:and|but|while|whereas|although|though|provided|unless)\b",
+    r";|[()]|\s+[—–]\s+|[.!?](?=\s|$)|"
+    r",\s+(?:and|but|while|whereas|although|though|provided|unless)\b",
     re.IGNORECASE,
 )
 CLAIM_CATEGORY_CUE = {
@@ -432,7 +451,13 @@ def _match_has_local_marker(
             clause_end : min(len(text), clause_end + CLAIM_MARKER_WINDOW)
         ]
         direct_date = re.match(
-            r"[\s,;.]*(?:accessed|checked|verified|observed|published|modified|dated)\b",
+            r"[\s,;.()—–]*(?:accessed|checked|verified|observed|published|modified|dated)\b",
+            follow_up,
+            re.IGNORECASE,
+        )
+        direct_operational = re.match(
+            r"[\s,;.()—–]*(?:(?:family|owner)-selected\s+)?"
+            r"(?:operational|operating) policy\b",
             follow_up,
             re.IGNORECASE,
         )
@@ -442,6 +467,8 @@ def _match_has_local_marker(
             re.IGNORECASE,
         )
         if direct_date and DATED_ASSERTION.search(follow_up) and category_cue.search(clause):
+            continue
+        if direct_operational and operational_cue.search(clause):
             continue
         if (
             referential
@@ -629,7 +656,7 @@ def validate_official_references(text: str, failures: list[str]) -> None:
             failures.append(f"missing visible verification date: {url}")
 
 
-GREEN_AUTHORITY_POLICIES = (
+GREEN_ACTION_FAMILIES = (
     (
         "professional advice",
         re.compile(
@@ -641,29 +668,37 @@ GREEN_AUTHORITY_POLICIES = (
     (
         "medical action",
         re.compile(
-            r"\b(?:diagnos\w*|treat\w*|prescrib\w*|dispens\w*|triag\w*|"
-            r"set therapeutic diets?|decide return-to-play)\b",
+            r"\b(?:diagnos\w*|treat(?:s|ed|ing)?|prescrib\w*|dispens\w*|"
+            r"triag\w*)\b|"
+            r"\badminist\w*.{0,30}\b(?:medication|medicine|treatment)\b|"
+            r"\bset(?:s|ting)?.{0,20}\btherapeutic diets?\b|"
+            r"\bdecid\w*.{0,20}\breturn to play\b",
             re.IGNORECASE,
         ),
     ),
     (
         "tax filing",
         re.compile(
-            r"\b(?:file|submit|e-file).{0,30}\b(?:tax(?:es)?|tax returns?|returns?)\b",
+            r"\b(?:transmit\w*|fil(?:e|es|ed|ing)|submit\w*|e fil\w*)"
+            r".{0,30}\b(?:tax(?:es)?|tax returns?|returns?)\b",
             re.IGNORECASE,
         ),
     ),
     (
         "investment or benefit decision",
         re.compile(
-            r"\b(?:choose|select|recommend).{0,35}\b(?:investments?|benefits?)\b",
+            r"\b(?:determin\w*|set(?:s|ting)?|choos\w*|select\w*|recommend\w*)"
+            r".{0,40}\b(?:investments?(?: allocations?)?|benefits?)\b",
             re.IGNORECASE,
         ),
     ),
     (
         "consent or rights",
         re.compile(
-            r"\b(?:sign.{0,25}consent|consent to|waive.{0,25}rights?)\b",
+            r"\b(?:authoriz\w*|sign\w*|consent\w*).{0,35}"
+            r"\b(?:school forms?|travel forms?|consent forms?)\b|"
+            r"\bconsent\w* to.{0,20}\b(?:school|travel)\b|"
+            r"\bwaiv\w*.{0,25}\brights?\b",
             re.IGNORECASE,
         ),
     ),
@@ -705,7 +740,11 @@ GREEN_AUTHORITY_POLICIES = (
     ),
     (
         "travel booking",
-        re.compile(r"\bbook.{0,20}\b(?:travel|flight|hotel|accommodation)\b", re.IGNORECASE),
+        re.compile(
+            r"\b(?:book\w*|mak(?:e|es|ing|de)).{0,30}"
+            r"\b(?:travel(?: reservations?)?|reservations?|flight|hotel|accommodation)\b",
+            re.IGNORECASE,
+        ),
     ),
     (
         "terms acceptance",
@@ -718,11 +757,25 @@ GREEN_AUTHORITY_POLICIES = (
     (
         "sensitive inference",
         re.compile(
-            r"\binfer.{0,45}\b(?:eligibility|custody|health|family values?)\b",
+            r"\b(?:infer\w*|decid\w*|determin\w*).{0,45}"
+            r"\b(?:benefit eligibility|eligibility|custody|health|family values?)\b",
             re.IGNORECASE,
         ),
     ),
 )
+
+
+def _normalize_action_text(text: str) -> str:
+    """Normalize punctuation and spacing while preserving action morphology."""
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", text.casefold()).split())
+
+
+def find_unsafe_green_authority(green: str) -> list[str]:
+    """Classify prohibited action families under the Green row's implied actor."""
+    normalized = _normalize_action_text(green)
+    return [
+        label for label, pattern in GREEN_ACTION_FAMILIES if pattern.search(normalized)
+    ]
 HANDOFF_DECISION_CONTRACTS = (
     (
         "health",
@@ -763,10 +816,8 @@ def validate_family_semantics(chapter: str, failures: list[str]) -> None:
     if not green_match:
         failures.append("missing Chapter 18 Green authority row")
     else:
-        green = green_match.group("body")
-        for label, pattern in GREEN_AUTHORITY_POLICIES:
-            if pattern.search(green):
-                failures.append(f"unsafe Chapter 18 Green authority: {label}")
+        for label in find_unsafe_green_authority(green_match.group("body")):
+            failures.append(f"unsafe Chapter 18 Green authority: {label}")
 
     matrix_match = re.search(
         r"```text\s+PROFESSIONAL HANDOFF MATRIX(?P<body>.*?)```",
