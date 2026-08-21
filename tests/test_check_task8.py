@@ -189,6 +189,18 @@ def test_authorization_scanner_accepts_local_negation_with_agent_antecedents(
             "raw child dossier",
             "Although it must not file taxes, Hermes may retain a raw child dossier.",
         ),
+        (
+            "tax filing",
+            "Hermes may file taxes, provided it does not retain a raw child dossier.",
+        ),
+        (
+            "medical decision",
+            "Hermes may diagnose symptoms unless it is prohibited from filing taxes.",
+        ),
+        (
+            "raw child dossier",
+            "Hermes may retain a raw child dossier, as long as it does not file taxes.",
+        ),
     ],
 )
 def test_authorization_scanner_binds_modality_to_each_coordinated_predicate(
@@ -206,6 +218,9 @@ def test_authorization_scanner_binds_modality_to_each_coordinated_predicate(
         "The agent must decline to file the family's tax return.",
         "Hermes must avoid filing taxes.",
         "Hermes may prepare records, although it must not file taxes.",
+        "Hermes may prepare records, provided it does not file taxes.",
+        "Hermes can organize appointments unless it must not diagnose symptoms.",
+        "Hermes may draft a form, as long as it cannot sign consent.",
     ],
 )
 def test_authorization_scanner_treats_required_refusals_as_safe(
@@ -271,8 +286,32 @@ def test_task8_audit_requires_professional_handoffs(tmp_path: Path) -> None:
     ("unsafe_green_action", "diagnostic"),
     [
         ("provide medical, financial, and tax advice; ", "professional advice"),
+        ("diagnose symptoms; ", "medical action"),
+        ("treat injuries; ", "medical action"),
+        ("prescribe medication; ", "medical action"),
+        ("dispense medical advice; ", "medical action"),
+        ("triage emergencies; ", "medical action"),
+        ("set therapeutic diets; ", "medical action"),
+        ("decide return-to-play; ", "medical action"),
+        ("file taxes; ", "tax filing"),
+        ("submit tax returns; ", "tax filing"),
+        ("choose investments; ", "investment or benefit decision"),
+        ("recommend investments; ", "investment or benefit decision"),
+        ("choose benefits; ", "investment or benefit decision"),
+        ("recommend benefits; ", "investment or benefit decision"),
+        ("sign consent forms; ", "consent or rights"),
+        ("consent to travel; ", "consent or rights"),
+        ("waive family rights; ", "consent or rights"),
         ("compile raw child dossiers; ", "raw child dossier"),
         ("use primary credentials; ", "primary credential"),
+        ("access CRA accounts; ", "protected account access"),
+        ("impersonate a guardian; ", "impersonation"),
+        ("apply for benefits; ", "benefit application"),
+        ("move money; ", "money movement"),
+        ("book travel; ", "travel booking"),
+        ("accept terms; ", "terms acceptance"),
+        ("disclose across profiles; ", "cross-profile disclosure"),
+        ("infer eligibility and custody; ", "sensitive inference"),
     ],
 )
 def test_task8_audit_semantically_rejects_unsafe_green_family_authority(
@@ -413,6 +452,53 @@ def test_changeable_claim_scan_requires_semantic_binding_for_nearby_markers(
     assert "Canadian dollar amount" in {label for label, _paragraph in findings}
 
 
+@pytest.mark.parametrize(
+    "wrong_category_marker",
+    [
+        "The benefit pays C$500 monthly; the six-year retention threshold was checked on 2026-08-21.",
+        "The benefit pays C$500 monthly, and a weekly review is an owner-selected operating policy.",
+    ],
+)
+def test_changeable_claim_scan_requires_same_clause_and_category_marker(
+    wrong_category_marker: str,
+) -> None:
+    findings = find_undated_changeable_claims(wrong_category_marker)
+
+    assert "Canadian dollar amount" in {label for label, _paragraph in findings}
+
+
+@pytest.mark.parametrize(
+    "bound_marker",
+    [
+        "The benefit amount was C$500, checked on 2026-08-21.",
+        "The owner selected a C$500 planning cap as an owner-selected operating policy.",
+    ],
+)
+def test_changeable_claim_scan_accepts_same_clause_and_category_marker(
+    bound_marker: str,
+) -> None:
+    assert find_undated_changeable_claims(bound_marker) == []
+
+
+def test_task8_audit_rejects_wrong_category_marker_mutation(tmp_path: Path) -> None:
+    _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
+    mutation = (
+        "The benefit pays C$500 monthly; the six-year retention threshold was "
+        "checked on 2026-08-21."
+    )
+    chapter_18.write_text(
+        chapter_18.read_text(encoding="utf-8").replace(
+            "\n## References", f"\n{mutation}\n\n## References", 1
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "undated Canadian dollar amount" in result.stdout
+
+
 def test_task8_audit_rejects_distant_date_hiding_undated_threshold(
     tmp_path: Path,
 ) -> None:
@@ -481,6 +567,25 @@ def test_live_source_contract_rejects_redirect_outside_declared_domain() -> None
     )
 
     assert any("redirected outside allowed domain" in failure for failure in failures)
+
+
+def test_live_source_contract_rejects_non_default_port_from_fetcher() -> None:
+    bodies = {
+        contract.url: " | ".join(contract.assertions)
+        for contract in OFFICIAL_SOURCE_CONTRACTS
+    }
+    first_url = OFFICIAL_SOURCE_CONTRACTS[0].url
+    failures: list[str] = []
+
+    validate_live_sources(
+        failures,
+        lambda url, _domain: (
+            "https://www.jobbank.gc.ca:8443/trap" if url == first_url else url,
+            bodies[url],
+        ),
+    )
+
+    assert any("non-default HTTPS port" in failure for failure in failures)
 
 
 def test_live_source_contract_rejects_missing_load_bearing_content() -> None:
@@ -601,6 +706,28 @@ def test_live_fetch_rejects_insecure_redirect_and_redirect_overflow() -> None:
             transport=looping_transport,
             max_redirects=2,
         )
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://www.ontario.ca:444/start",
+        "https://www.ontario.ca:8443/start",
+    ],
+)
+def test_live_fetch_rejects_non_default_https_ports_before_request(url: str) -> None:
+    requested: list[str] = []
+
+    def transport(
+        target: str, _timeout: float
+    ) -> tuple[int, str, dict[str, str], str]:
+        requested.append(target)
+        return 200, target, {}, "Unexpected"
+
+    with pytest.raises(RuntimeError, match="non-default HTTPS port"):
+        fetch_official_source(url, "ontario.ca", transport=transport)
+
+    assert requested == []
 
 
 @pytest.mark.parametrize("official_url", OFFICIAL_REFERENCES)

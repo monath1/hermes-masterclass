@@ -176,6 +176,8 @@ CLAUSE_BOUNDARY = re.compile(
     r"\s*(?:;|,(?=\s*(?:Hermes\b|the agent\b|it\b|may\b|can\b|could\b|"
     r"will\b|should\b|must\b))|\bbut\b|\bhowever\b|\bwhile\b|"
     r"\balthough\b|\bthough\b|\byet\b|"
+    r"\bprovided(?: that)?\b|\bunless\b|\bas long as\b|\beven if\b|"
+    r"\bwhereas\b|\bexcept(?: when| that)?\b|\bon condition that\b|"
     r"\band(?=\s+(?:it\b|Hermes\b|the agent\b|may\b|can\b|could\b|will\b|"
     r"should\b|must\b|is prohibited\b|is forbidden\b|is not allowed\b|"
     r"has no permission\b)))\s*",
@@ -358,39 +360,94 @@ THRESHOLD_VALUE = re.compile(
     re.IGNORECASE,
 )
 CLAIM_MARKER_WINDOW = 220
+CLAIM_CLAUSE_BOUNDARY = re.compile(
+    r";|[.!?](?=\s|$)|,\s+(?:and|but|while|whereas|although|though|provided|unless)\b",
+    re.IGNORECASE,
+)
+CLAIM_CATEGORY_CUE = {
+    "dollar": re.compile(
+        r"\b(?:amount|dollar|price|cost|payment|benefit|cap|ceiling)\w*\b",
+        re.IGNORECASE,
+    ),
+    "deadline": re.compile(
+        r"\b(?:deadline|due|filing|payment date|dated examples?|calendar date)\b",
+        re.IGNORECASE,
+    ),
+    "threshold": re.compile(
+        r"\b(?:threshold|retention|eligibility|percentage|percent|minimum|maximum)\b",
+        re.IGNORECASE,
+    ),
+}
+OPERATIONAL_CATEGORY_CUE = {
+    "dollar": re.compile(
+        r"\b(?:planning cap|budget ceiling|scenario amount|example amount)\b",
+        re.IGNORECASE,
+    ),
+    "deadline": re.compile(
+        r"\b(?:family deadline|review date|preparation window|operational cadence)\b",
+        re.IGNORECASE,
+    ),
+    "threshold": re.compile(
+        r"\b(?:review cadence|operational interval|planning horizon)\b",
+        re.IGNORECASE,
+    ),
+}
+
+
+def _claim_clause(text: str, start: int, end: int) -> tuple[str, int]:
+    """Return the bounded clause containing a numeric value and its end offset."""
+    boundaries = list(CLAIM_CLAUSE_BOUNDARY.finditer(text))
+    clause_start = max(
+        (boundary.end() for boundary in boundaries if boundary.end() <= start),
+        default=0,
+    )
+    clause_end = min(
+        (boundary.start() for boundary in boundaries if boundary.start() >= end),
+        default=len(text),
+    )
+    return text[clause_start:clause_end], clause_end
 
 
 def _match_has_local_marker(
-    text: str, match: re.Match[str], value_pattern: re.Pattern[str]
+    text: str,
+    match: re.Match[str],
+    value_pattern: re.Pattern[str],
+    category: str,
 ) -> bool:
-    """Bind each value to its sentence or a bounded referential date sentence."""
+    """Bind each value to a same-category clause or referential follow-up."""
     values = list(value_pattern.finditer(match.group()))
     if not values:
         values = [match]
     for value in values:
         start = match.start() + value.start() if value is not match else match.start()
         end = match.start() + value.end() if value is not match else match.end()
-        sentence_start = max(
-            text.rfind(".", 0, start),
-            text.rfind("!", 0, start),
-            text.rfind("?", 0, start),
-        ) + 1
-        terminator = re.search(r"[.!?](?:\s|$)", text[end:])
-        sentence_end = (
-            end + terminator.end()
-            if terminator
-            else min(len(text), end + CLAIM_MARKER_WINDOW)
-        )
-        sentence = text[sentence_start:sentence_end]
-        if DATED_ASSERTION.search(sentence) or OPERATIONAL_EXEMPTION.search(sentence):
+        clause, clause_end = _claim_clause(text, start, end)
+        category_cue = CLAIM_CATEGORY_CUE[category]
+        if DATED_ASSERTION.search(clause) and category_cue.search(clause):
+            continue
+        operational_cue = OPERATIONAL_CATEGORY_CUE[category]
+        if OPERATIONAL_EXEMPTION.search(clause) and operational_cue.search(clause):
             continue
         follow_up = text[
-            sentence_end : min(len(text), sentence_end + CLAIM_MARKER_WINDOW)
+            clause_end : min(len(text), clause_end + CLAIM_MARKER_WINDOW)
         ]
-        referential = re.match(
-            r"\s*(?:These|Those|This|That)\b", follow_up, re.IGNORECASE
+        direct_date = re.match(
+            r"[\s,;.]*(?:accessed|checked|verified|observed|published|modified|dated)\b",
+            follow_up,
+            re.IGNORECASE,
         )
-        if referential and DATED_ASSERTION.search(follow_up):
+        referential = re.search(
+            r"(?:^|[.!?]\s+)(?:These|Those|This|That)\b",
+            follow_up,
+            re.IGNORECASE,
+        )
+        if direct_date and DATED_ASSERTION.search(follow_up) and category_cue.search(clause):
+            continue
+        if (
+            referential
+            and DATED_ASSERTION.search(follow_up)
+            and category_cue.search(follow_up)
+        ):
             continue
         return False
     return True
@@ -406,19 +463,19 @@ def find_undated_changeable_claims(text: str) -> list[tuple[str, str]]:
             continue
         dollar_matches = list(CANADIAN_DOLLAR.finditer(compact))
         if any(
-            not _match_has_local_marker(compact, match, CANADIAN_DOLLAR)
+            not _match_has_local_marker(compact, match, CANADIAN_DOLLAR, "dollar")
             for match in dollar_matches
         ):
             findings.append(("Canadian dollar amount", compact))
         deadline_matches = list(CANADIAN_DEADLINE.finditer(compact))
         if any(
-            not _match_has_local_marker(compact, match, DEADLINE_VALUE)
+            not _match_has_local_marker(compact, match, DEADLINE_VALUE, "deadline")
             for match in deadline_matches
         ):
             findings.append(("Canadian deadline", compact))
         threshold_matches = list(CANADIAN_THRESHOLD.finditer(compact))
         if any(
-            not _match_has_local_marker(compact, match, THRESHOLD_VALUE)
+            not _match_has_local_marker(compact, match, THRESHOLD_VALUE, "threshold")
             for match in threshold_matches
         ):
             findings.append(("Canadian threshold", compact))
@@ -474,6 +531,12 @@ def _require_allowed_live_url(url: str, allowed_domain: str) -> None:
     allowed = allowed_domain.casefold()
     if hostname != allowed and not hostname.endswith(f".{allowed}"):
         raise RuntimeError(f"live source redirected outside allowed domain: {url}")
+    try:
+        port = parsed.port
+    except ValueError as error:
+        raise RuntimeError(f"live source URL has an invalid port: {url}") from error
+    if port not in (None, 443):
+        raise RuntimeError(f"live source URL uses a non-default HTTPS port: {url}")
     if parsed.username or parsed.password:
         raise RuntimeError(f"live source URL must not contain credentials: {url}")
 
@@ -539,12 +602,10 @@ def validate_live_sources(
             final_url, body = fetcher(contract.url, contract.allowed_domain)
         except Exception as error:  # pragma: no cover - exercised by manual network mode
             return [f"live source fetch failed: {contract.url}: {error}"]
-        hostname = (urlparse(final_url).hostname or "").casefold()
-        allowed = contract.allowed_domain.casefold()
-        if hostname != allowed and not hostname.endswith(f".{allowed}"):
-            return [
-                f"live source redirected outside allowed domain: {contract.url}: {final_url}"
-            ]
+        try:
+            _require_allowed_live_url(final_url, contract.allowed_domain)
+        except RuntimeError as error:
+            return [f"invalid live source authority: {contract.url}: {error}"]
         normalized = _normalized_source_text(body)
         for assertion in contract.assertions:
             if _normalized_source_text(assertion) not in normalized:
@@ -578,6 +639,35 @@ GREEN_AUTHORITY_POLICIES = (
         ),
     ),
     (
+        "medical action",
+        re.compile(
+            r"\b(?:diagnos\w*|treat\w*|prescrib\w*|dispens\w*|triag\w*|"
+            r"set therapeutic diets?|decide return-to-play)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "tax filing",
+        re.compile(
+            r"\b(?:file|submit|e-file).{0,30}\b(?:tax(?:es)?|tax returns?|returns?)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "investment or benefit decision",
+        re.compile(
+            r"\b(?:choose|select|recommend).{0,35}\b(?:investments?|benefits?)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "consent or rights",
+        re.compile(
+            r"\b(?:sign.{0,25}consent|consent to|waive.{0,25}rights?)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
         "raw child dossier",
         re.compile(
             r"\b(?:compile|create|store|retain|hold).{0,35}"
@@ -590,6 +680,45 @@ GREEN_AUTHORITY_POLICIES = (
         re.compile(
             r"\b(?:use|hold|access|store|retain).{0,30}"
             r"\bprimary credentials?\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "protected account access",
+        re.compile(
+            r"\b(?:access|log in|sign in).{0,35}"
+            r"\b(?:bank(?:ing)?|CRA|health|school|travel) accounts?\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "impersonation",
+        re.compile(r"\bimpersonat\w*.{0,25}\b(?:child|guardian)\b", re.IGNORECASE),
+    ),
+    (
+        "benefit application",
+        re.compile(r"\bapply for benefits?\b", re.IGNORECASE),
+    ),
+    (
+        "money movement",
+        re.compile(r"\b(?:move|transfer|send).{0,20}\bmoney\b", re.IGNORECASE),
+    ),
+    (
+        "travel booking",
+        re.compile(r"\bbook.{0,20}\b(?:travel|flight|hotel|accommodation)\b", re.IGNORECASE),
+    ),
+    (
+        "terms acceptance",
+        re.compile(r"\baccept.{0,20}\bterms\b", re.IGNORECASE),
+    ),
+    (
+        "cross-profile disclosure",
+        re.compile(r"\bdisclos\w*.{0,25}\bacross profiles\b", re.IGNORECASE),
+    ),
+    (
+        "sensitive inference",
+        re.compile(
+            r"\binfer.{0,45}\b(?:eligibility|custody|health|family values?)\b",
             re.IGNORECASE,
         ),
     ),
