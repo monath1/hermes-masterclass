@@ -70,6 +70,11 @@ A stronger lane changes the model route, not the authority colour. `gpt-5.6-sol`
 
 Hermes has a main model and multiple auxiliary slots. The dashboard's **Models** page changes the main default for new sessions; an already-open session keeps the model it started with unless `/model` changes it. The auxiliary slots default to `auto`, which normally begins with the main route and may follow configured fallback policy.
 
+<figure markdown>
+  ![Hermes dashboard model overview showing configured model information.](../assets/images/hermes/dashboard-models-overview.png)
+  <figcaption>Official Hermes model dashboard at pinned tag v2026.8.19; available routes remain mutable.</figcaption>
+</figure>
+
 This creates two planes to govern:
 
 | Plane | Typical work | Hidden surprise |
@@ -146,7 +151,7 @@ Choose the everyday model from current authenticated choices in `hermes model` o
 
 Use the frontier lane for tasks where stronger reasoning and tool use justify higher cost and approved external processing: a difficult architecture review, a nuanced contract issue inventory for professional handoff, an evidence-sensitive career narrative, or diagnosis of a complex business process. The model still produces proposals; consequential conclusions receive source and human review.
 
-OpenAI's official API model page, accessed **2026-08-21**, identifies the exact model ID as `gpt-5.6-sol` and describes it as the frontier GPT-5.6 model for complex professional work. It lists a 1,050,000-token context window, 128,000 maximum output tokens, function calling and structured outputs, and reasoning effort values `none`, `low`, `medium` (default), `high`, `xhigh`, and `max`.
+OpenAI's official API model page, accessed **2026-08-21**, identifies the exact model ID as `gpt-5.6-sol` and describes that model as intended for complex professional work. It lists a 1,050,000-token context window, 128,000 maximum output tokens, function calling and structured outputs, and reasoning effort values `none`, `low`, `medium` (default), `high`, `xhigh`, and `max`.
 
 Current direct API pricing must be read with a date and mode. On **2026-08-21**, OpenAI's model page lists standard short-context text pricing per one million tokens as **US$5 input, US$0.50 cached input, and US$30 output**, and notes that requests above 272K input tokens are charged at higher long-context multipliers. It also says cache writes cost **1.25× uncached input**: at the listed rate, one million tokens written to cache cost US$6.25 before any later US$0.50-per-million cached reads. A changing prefix can pay the write premium without earning enough reuse, so track cache-write and cached-read tokens by workflow. Tool calls and alternate service tiers may add different charges. Recheck the official pages before each budget cycle.
 
@@ -407,5 +412,5 @@ Award two points each for data minimization, correct lane selection, exact front
 - Nous Research, [Run Hermes locally with Ollama](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/local-ollama-setup.md).
 - Nous Research, [Run Hermes with Nous Portal](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/run-hermes-with-nous-portal.md).
 - OpenAI, [`gpt-5.6-sol` model](https://developers.openai.com/api/docs/models/gpt-5.6-sol) (accessed 2026-08-21).
-- OpenAI, [Model guidance for GPT-5.6](https://developers.openai.com/api/docs/guides/latest-model) (accessed 2026-08-21).
+- OpenAI, [Latest-model guidance for `gpt-5.6-sol`](https://developers.openai.com/api/docs/guides/latest-model) (accessed 2026-08-21).
 - OpenAI, [API pricing](https://platform.openai.com/pricing) (accessed 2026-08-21).

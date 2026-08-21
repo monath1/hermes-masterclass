@@ -1,0 +1,15 @@
+# Canada.ca consistently negotiates an HTTP/2 protocol error with Lychee 0.24.2.
+# Keep these release-verified exceptions URL-specific; do not widen to the domain.
+^https://www\.canada\.ca/en/financial-consumer-agency/services/make-budget\.html$
+^https://www\.canada\.ca/en/health-canada\.html$
+^https://www\.canada\.ca/en/public-health/services/being-active/physical-activity-your-health\.html$
+^https://www\.canada\.ca/en/revenue-agency\.html$
+^https://www\.canada\.ca/en/revenue-agency/news/newsroom/tax-tips/tax-tips-2026/tax-slips-what-they-are-where-find-why-waiting-can-help-avoid-mistakes\.html$
+^https://www\.canada\.ca/en/revenue-agency/news/newsroom/tax-tips/tax-tips-2026/what-you-need-for-2026-tax-filing-season\.html$
+^https://www\.canada\.ca/en/revenue-agency/services/tax/businesses/topics/keeping-records\.html$
+^https://www\.canada\.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/long-should-you-keep-your-income-tax-records\.html$
+^https://www\.canada\.ca/en/services/benefits/calendar\.html$
+^https://www\.canada\.ca/en/services/benefits/finder\.html$
+^https://www\.canada\.ca/en/services/benefits/publicpensions/cpp/retirement-income-calculator\.html$
+# OpenAI's pricing page rejects Lychee's unauthenticated client with HTTP 403.
+^https://platform\.openai\.com/pricing$

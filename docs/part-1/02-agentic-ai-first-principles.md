@@ -269,7 +269,7 @@ Three checks belong at the tool boundary:
 
 1. **Capability check:** is the tool enabled and is the target inside scope?
 2. **Authority check:** may this effect occur now, or only be prepared?
-3. **evidence check:** what observation will prove the result or reveal uncertainty?
+3. **Evidence check:** what observation will prove the result or reveal uncertainty?
 
 An action that passes the first check can still fail the second. An action that passes both can still require the third before the trajectory may be called complete.
 

@@ -81,6 +81,11 @@ The control plane is layered because one stop command does not cover every mecha
 
 ### Select the mechanism before writing the prompt
 
+<figure markdown>
+  ![Hermes feature illustration for scheduled and automated work.](../assets/images/hermes/feature-automation.webp)
+  <figcaption>Official Hermes automation feature art from pinned tag v2026.8.19.</figcaption>
+</figure>
+
 | Need | Use | State and persistence | Missed-time behaviour | Primary stop |
 | --- | --- | --- | --- | --- |
 | Finish one objective and prove it | `/goal` | Current session; goal/contract survives `/resume` | Resumes when the session is driven; not a calendar scheduler | `/goal pause` or `/goal clear` |

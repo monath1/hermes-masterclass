@@ -93,11 +93,13 @@
 ### Task 1: Build the Site, Research Baseline, and Validation Harness
 
 **Files:**
+
 - Create: all project/build files and site-foundation files listed above
 - Copy: selected official images into `docs/assets/images/hermes/`
 - Test: `tests/test_check_book.py`
 
 **Interfaces:**
+
 - Consumes: approved design spec and pinned official source checkout `/tmp/hermes-agent-v2026.8.19`
 - Produces: buildable MkDocs shell, canonical manifest, source map, image provenance, and validator commands used by every later task
 
@@ -159,6 +161,7 @@
 ### Task 2: Write Part I — From Chatbot to Colleague
 
 **Files:**
+
 - Create: `docs/part-1/01-meet-hermes.md`
 - Create: `docs/part-1/02-agentic-ai-first-principles.md`
 - Create: `docs/part-1/03-hermes-loop.md`
@@ -166,6 +169,7 @@
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: chapter contract, pinned source map, validator, and family/business running case
 - Produces: conceptual vocabulary and job-charter artifacts referenced by all later chapters
 
@@ -198,12 +202,14 @@
 ### Task 3: Write Part II-A — Mac mini, Interfaces, Models, and Memory
 
 **Files:**
+
 - Create: `docs/part-2/05-install-hermes-on-mac-mini.md`
 - Create: `docs/part-2/06-models-and-routing.md`
 - Create: `docs/part-2/07-personality-context-sessions-memory.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: Job Charter and authority ladder from Part I
 - Produces: operational installation, provider policy, and profile/memory boundaries used by all workflow chapters
 
@@ -232,12 +238,14 @@
 ### Task 4: Write Part II-B — Extensions, Channels, and Background Work
 
 **Files:**
+
 - Create: `docs/part-2/08-tools-skills-plugins-mcp.md`
 - Create: `docs/part-2/09-message-hermes-everywhere.md`
 - Create: `docs/part-2/10-goals-and-background-operations.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: model, profile, and memory policy from Task 3
 - Produces: vetted capability stack, channel matrix, and scheduling contract used by Parts III–V
 
@@ -266,11 +274,13 @@
 ### Task 5: Write Part III-A — Host Security and Identity Isolation
 
 **Files:**
+
 - Create: `docs/part-3/11-family-safe-security.md`
 - Create: `docs/part-3/12-identities-burner-accounts-secrets.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: capability, channel, and background-operation surfaces from Part II
 - Produces: threat model, trust envelope, identity inventory, and secret-handling controls required by every later workflow
 
@@ -295,11 +305,13 @@
 ### Task 6: Write Part III-B — Authority, Sensitive Data, and Recovery
 
 **Files:**
+
 - Create: `docs/part-3/13-approvals-autonomy-egress-audit.md`
 - Create: `docs/part-3/14-sensitive-data-backups-recovery.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: threat model and identity inventory from Task 5
 - Produces: policy matrix, audit rhythm, data map, retention schedule, backup/restore plan, and incident drills
 
@@ -324,11 +336,13 @@
 ### Task 7: Write Part IV-A — Chief-of-Staff Rhythms and Job Search
 
 **Files:**
+
 - Create: `docs/part-4/15-daily-weekly-operating-rhythms.md`
 - Create: `docs/part-4/16-job-search-opportunity-pipeline.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: approved identity, channel, scheduling, and audit controls
 - Produces: daily/weekly meeting system and ethical job-opportunity pipeline used by Chapter 17
 
@@ -353,11 +367,13 @@
 ### Task 8: Write Part IV-B — Career Brand and Canadian Family Operations
 
 **Files:**
+
 - Create: `docs/part-4/17-resume-interview-brand.md`
 - Create: `docs/part-4/18-family-operations-canada.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: job pipeline from Task 7 and sensitive-data policy from Part III
 - Produces: evidence bank, interview curriculum, family operating calendar, and professional-handoff checklists
 
@@ -382,11 +398,13 @@
 ### Task 9: Write Part V-A — The Small-Business Operating System
 
 **Files:**
+
 - Create: `docs/part-5/19-one-two-person-business-os.md`
 - Create: `docs/part-5/20-business-functions.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: Job Charter, authority policy, audit system, and personal operating rhythms
 - Produces: business workspace, project system, functional playbooks, and owner/agent responsibility map
 
@@ -411,11 +429,13 @@
 ### Task 10: Write Part V-B and Part VI — Management, Evaluation, and Capstone
 
 **Files:**
+
 - Create: `docs/part-5/21-hermes-as-manager.md`
 - Create: `docs/part-6/22-evaluation-observability-capstone.md`
 - Modify: `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: every preceding workflow and safety boundary
 - Produces: delegation contract, specialist architecture, scorecard, failure taxonomy, troubleshooting loop, and staged 90-day deployment plan
 
@@ -440,12 +460,14 @@
 ### Task 11: Write Appendices and Complete Reader/Contributor Documentation
 
 **Files:**
+
 - Create: all four `docs/appendices/*.md` files
 - Create: `LICENSE`, `CONTRIBUTING.md`
 - Replace: `README.md`
 - Modify: `docs/about.md`, `docs/index.md`, `book-manifest.yml`
 
 **Interfaces:**
+
 - Consumes: all 22 completed chapters and their references/artifacts
 - Produces: compact lookup material, reusable templates, curated extension matrix, consolidated bibliography, glossary, troubleshooting tree, and repository handoff documentation
 
@@ -478,12 +500,14 @@
 ### Task 12: Integrate, Render, Audit, and Prepare the Pull Request
 
 **Files:**
+
 - Modify: any manuscript, reference, manifest, style, configuration, or workflow file required to resolve integration findings
 - Modify: `mkdocs.yml` with explicit final navigation
 - Modify: `.github/workflows/quality.yml` to require final validation
 - Create: `docs/reference/editorial-audit.md`
 
 **Interfaces:**
+
 - Consumes: the complete manuscript and all prior task reports/reviews
 - Produces: coherent first edition, strict local build, final evidence record, and merge-ready branch
 

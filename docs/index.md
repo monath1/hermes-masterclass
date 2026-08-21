@@ -81,7 +81,7 @@ Use Chapter 22's operational evidence and capstone card before expanding any tas
 3. [Appendix C: Curated Hermes extension stack](appendices/appendix-c-curated-stack.md) — Hermes-native skills and plugins plus clearly identified external MCP categories, rated for value, permission, exposure, effort, cost, maintenance, and phase.
 4. [Appendix D: Troubleshooting, glossary, bibliography, and provenance](appendices/appendix-d-troubleshooting-glossary-bibliography.md) — safe recovery order, symptom diagnosis, definitions, primary sources, version ledger, screenshot pointer, and release checklist.
 
-The first edition contains exactly 22 numbered chapters and four appendices, totaling **110,111 measured Markdown words**. Fenced code blocks are excluded from that count.
+The first edition contains exactly 22 numbered chapters and four appendices, totaling **110,266 measured Markdown words**. Fenced code blocks are excluded from that count.
 
 ## Local preview
 

@@ -77,6 +77,11 @@ The matrix below describes Hermes v0.20.5 plus provider facts checked on 2026-08
 | SMS through Twilio | Dedicated Twilio number, signed inbound webhook, E.164 sender allowlist | Plain text only; no threads, files, images, typing, or voice in Hermes's SMS adapter | Not free. For Canada on 2026-08-21, Twilio listed per-segment inbound and outbound charges, additional carrier fees, and monthly number charges; prices vary and may change. | Short urgent fallback when data coverage or app use is unreliable | Ongoing number/message/carrier cost, limited context, public webhook, consent/compliance burden |
 | Voice | Input/output mode layered on CLI or supported messaging adapters, not a standalone identity | CLI recording; Telegram/Discord voice replies; WhatsApp voice notes; provider and adapter details vary | Local STT/TTS can avoid API charges but uses host resources; hosted speech providers may charge. Verify the selected provider. | Hands-busy capture, accessibility, and optional spoken reply | Transcription errors, ambient disclosure, voice-cloning risk, and false belief that a voice proves identity |
 
+<figure markdown>
+  ![Hermes feature illustration for connecting services and channels.](../assets/images/hermes/feature-connect.webp)
+  <figcaption>Official Hermes connection feature art from pinned tag v2026.8.19.</figcaption>
+</figure>
+
 For the Chen–Patels, Telegram is the best first family channel because it supports a dedicated bot, numeric allowlists, topics, attachments, and interactive control without linking a personal account. Harbourlight's customer-facing pilot belongs on a dedicated WhatsApp Business Cloud number because the path is officially supported. Email is the deliberate slow lane. SMS is a paid break-glass delivery path, not the default. The Baileys bridge is an Amber experiment only, never a primary personal-account integration.
 
 ### Build one gateway only after local operation passes

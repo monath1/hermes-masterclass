@@ -38,6 +38,11 @@ The distinction between turn and iteration matters. Priya sends one message. Her
 
 Hermes's `AIAgent` is the orchestration engine behind CLI, gateway, and other supported entry points. Internally, messages use a role-based format: system instructions, user input, assistant responses or tool requests, and tool results. Different providers require different wire formats, but Hermes converts them into a common internal representation before and after calls.
 
+<figure markdown>
+  ![Hermes terminal session-orchestrator view with work coordinated across sessions.](../assets/images/hermes/tui-session-orchestrator.png)
+  <figcaption>Official Hermes session-orchestrator view at pinned tag v2026.8.19.</figcaption>
+</figure>
+
 The high-level loop is simple enough to hold in memory:
 
 ```mermaid
@@ -302,11 +307,11 @@ Rules:
 ### Loop inspection worksheet
 
 | Iteration | Model proposed | Tool/response | Observation | State changed | Continue because |
-| ---: | --- | --- | --- | --- | --- |
-| 1 |  |  |  |  |  |
-| 2 |  |  |  |  |  |
-| 3 |  |  |  |  |  |
-| 4 |  |  |  |  |  |
+| --------: | -------------- | ------------- | ----------- | ------------- | ---------------- |
+|         1 |                |               |             |               |                  |
+|         2 |                |               |             |               |                  |
+|         3 |                |               |             |               |                  |
+|         4 |                |               |             |               |                  |
 
 Use the worksheet for a failed or high-value run. It forces analysis of the actual path instead of the final prose alone.
 

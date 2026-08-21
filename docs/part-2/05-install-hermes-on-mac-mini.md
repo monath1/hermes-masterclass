@@ -114,13 +114,13 @@ installer_url="https://hermes-agent.nousresearch.com/install.sh"
 installer_file="$HOME/Downloads/hermes-install-v2026.8.19.sh"
 curl --fail --location --proto '=https' --tlsv1.2 \
   --write-out '\nFinal URL: %{url_effective}\n' \
-  --output "$installer_file" "$installer_url"
+  --output "$installer_file" "$installer_url" || exit 1
 downloaded_sha256="$(shasum -a 256 "$installer_file" | awk '{print $1}')"
 printf 'SHA-256: %s\n' "$downloaded_sha256"
 less "$installer_file"
 ```
 
-Confirm that the printed final URL remains HTTPS on the official domain. Press `q` to leave `less`; give the recorded digest and file—not a second download—to a technical reviewer or Codex. After approval, verify the file is unchanged and execute that same path:
+The version-stamped local filename is only the operator's audit label; it does not prove that the unversioned `install.sh` URL delivered tag `v2026.8.19` or any release. Confirm that the printed final URL remains HTTPS on the official domain. Press `q` to leave `less`; give the recorded digest and file—not a second download—to a technical reviewer or Codex. After approval, verify the file is unchanged and execute that same path:
 
 ```bash
 installer_file="$HOME/Downloads/hermes-install-v2026.8.19.sh"

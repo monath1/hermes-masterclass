@@ -1,6 +1,6 @@
 # About this edition
 
-Hermes Agent Masterclass is a practical textbook for operating Hermes Agent on macOS from an Apple-silicon Mac mini. The intended reader is beginner-to-intermediate: someone who understands that agents exist, but wants an operational mental model and a safe, repeatable deployment. The complete first edition contains 22 numbered chapters and four reference appendices, totaling 110,111 measured Markdown words.
+Hermes Agent Masterclass is a practical textbook for operating Hermes Agent on macOS from an Apple-silicon Mac mini. The intended reader is beginner-to-intermediate: someone who understands that agents exist, but wants an operational mental model and a safe, repeatable deployment. The complete first edition contains 22 numbered chapters and four reference appendices, totaling 110,266 measured Markdown words.
 
 ## Product baseline
 

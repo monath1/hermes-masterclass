@@ -1,0 +1,7 @@
+{
+  "ignores": [
+    "site/**",
+    ".venv/**",
+    ".superpowers/**"
+  ]
+}

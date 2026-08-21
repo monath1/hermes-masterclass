@@ -10,7 +10,7 @@ This private repository contains the complete first-edition manuscript. Its cont
 
 The product baseline is **Nous Research Hermes Agent v0.20.5, tag `v2026.8.19`**. Version-sensitive instructions use the label “Verified against Hermes Agent v0.20.5 (2026-08-19).” The pinned [source map](research/hermes-v2026.8.19-source-map.md) routes claims to primary evidence.
 
-Current measured manuscript word count: **109,964 words**. The repository validator excludes fenced code blocks and counts the 22 chapter files plus four appendix files listed in `book-manifest.yml`.
+Current measured manuscript word count: **110,266 words**. The repository validator excludes fenced code blocks and counts the 22 chapter files plus four appendix files listed in `book-manifest.yml`.
 
 ## Contents
 

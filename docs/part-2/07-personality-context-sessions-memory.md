@@ -42,6 +42,11 @@ The result feels less magical and works better. Continuity becomes a set of insp
 
 **External memory provider.** One selected plugin that can add deeper retrieval, semantic search, graphs, fact extraction, or user modelling. External provider context and synchronization can run alongside built-in memory and may store data locally, in a self-hosted service, or in a provider cloud.
 
+<figure markdown>
+  ![Hermes feature illustration for memory and continuity.](../assets/images/hermes/feature-memory.webp)
+  <figcaption>Official Hermes memory feature art from pinned tag v2026.8.19.</figcaption>
+</figure>
+
 **Memory poisoning.** Incorrect, malicious, overbroad, or mis-scoped information entering a durable store and influencing future work.
 
 The stores meet in the prompt but have different lifecycles:
@@ -209,6 +214,11 @@ Run `hermes -p career chat` or use the profile alias and verify the banner befor
 ### Understand Bot Mode as profile ergonomics
 
 Bot Mode is built into Desktop and on by default at the pinned release. The **Bots** tab shows profiles as named agents. **New Agent** can create a fresh profile or clone another, choose a model, edit `SOUL.md`, and enable skills, toolsets, or MCP servers. Every Bot has a canonical persistent Bot Chat.
+
+<figure markdown>
+  ![Hermes Desktop view grouping session sources into folders.](../assets/images/hermes/desktop-session-source-folders.png)
+  <figcaption>Official Hermes Desktop session-source view at pinned tag v2026.8.19.</figcaption>
+</figure>
 
 This is convenient for a roster such as “Career Researcher,” “Family Planner,” and “Harbourlight Support.” The names do not create access control. A Bot is the underlying profile, and its files live under `~/.hermes/profiles/<name>/`. Desktop **Duplicate** is a full clone and copies `SOUL.md` and memory; CLI `--clone-all` does too, while ordinary CLI `--clone` keeps memory fresh. Review every copy before use. Delete Profile is destructive and the default profile cannot be deleted.
 

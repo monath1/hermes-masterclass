@@ -191,6 +191,11 @@ For each consequential attempt, record:
 
 ### Review monthly without trusting the dashboard
 
+<figure markdown>
+  ![Hermes web dashboard administration screen showing top-level system controls.](../assets/images/hermes/dashboard-admin-system-top.png)
+  <figcaption>Official Hermes administration dashboard at pinned tag v2026.8.19; UI state is evidence, not authorization.</figcaption>
+</figure>
+
 Once a month, Priya and Alex review authority together. They examine every Red refusal or override attempt, every uncertain external effect, every incident, every permanent allowlist change, and every authority expansion. They also sample all Amber executions if the volume is small; otherwise they take a risk-weighted sample plus a simple random sample. For Green work, they sample at least one case from each active task family and one denial test per boundary.
 
 The review compares request, source, approval object, decision, actual tool path, destination, receipt, and final claim. It counts missed approvals, unnecessary approvals, expired approvals accepted, target changes, retries, uncertain outcomes, false completion claims, hook/log gaps, blocked egress, and human correction time. It also asks whether an absent event means nothing happened or logging failed.

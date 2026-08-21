@@ -24,6 +24,10 @@ That outcome is not perfect security. It is a limited incident. This chapter bui
 
 **Security boundary.** A mechanism designed to prevent an adversary on one side from accessing resources on the other. The only security boundary against an adversarial LLM is the operating system. A separate OS account, a correctly configured container, or a whole-process sandbox can create boundaries. A prompt, profile, allowlist, approval dialog, scanner, or redaction rule cannot.
 
+!!! warning "The load-bearing boundary"
+    Treat prompts, allowlists, approvals, and scanners as operational controls.
+    Only the operating-system boundary is designed to contain an adversarial model.
+
 **Operational control.** A measure that reduces likelihood, catches mistakes, limits ordinary use, or improves recovery without providing containment. Hermes toolsets, sender allowlists, pairing, approval modes, profiles, safe-write roots, logs, and scanners are valuable operational controls. Their value is real, but different.
 
 **Prompt injection.** Instructions embedded in content that attempt to redirect a model. Injection may be visible or hidden in a page, document, email, tool result, image, or MCP response. Treat all retrieved content as data, not authority.
@@ -83,6 +87,11 @@ The Chen–Patels use this table:
 Review probability and impact separately. A child accidentally invoking an overpowered family bot is more likely than an attacker stealing the Mac mini, while physical theft may expose more assets. Controls should address both.
 
 ### Draw the trust envelope before choosing tools
+
+<figure markdown>
+  ![Hermes feature illustration for sandboxed execution and isolation.](../assets/images/hermes/feature-sandbox.webp)
+  <figcaption>Official Hermes sandbox feature art from pinned tag v2026.8.19; verify actual enforcement separately.</figcaption>
+</figure>
 
 Log in as the Hermes user and ask five questions:
 
@@ -304,7 +313,7 @@ Synthetic re-entry tests and approver:
 
 ### Decision rule
 
-Before connecting a new source, complete this sentence: “If this content fully controls the model or its parser, OS policy still prevents it from reaching ___ and sending data anywhere except ___.” If the blanks are broad or unverifiable, do not connect the source.
+Before connecting a new source, complete this sentence: “If this content fully controls the model or its parser, OS policy still prevents it from reaching `[protected resource]` and sending data anywhere except `[approved destination]`.” If the answers are broad or unverifiable, do not connect the source.
 
 ## Exercise
 

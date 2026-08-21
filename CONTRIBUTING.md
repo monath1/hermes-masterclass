@@ -79,3 +79,21 @@ Live mode requires a terminal 2xx response, follows a bounded number of redirect
 The Canadian numeric-claim scan requires a nearby ISO observation date for government amounts, deadlines, percentages, and retention periods. A local cadence or planning cap is exempt only when the prose explicitly calls it a `family-selected` or `owner-selected` `operating policy`; that marker must not be used for an externally imposed rule.
 
 Use `--final` only once all 22 chapters and four appendices exist. Run `git diff --check` before committing.
+
+Markdown lint intentionally permits long prose lines, repeated headings in separate
+sections, MkDocs HTML, emphasis-style subheads, and an omitted first H1. It also
+permits absolute ordered-list numbers because the home page and design specification
+continue canonical chapter numbers across part headings. Markdownlint-cli2 ignores
+only generated `site/`, installed `.venv/`, and ignored local `.superpowers/` SDD
+artifacts; all tracked manuscript, project-guide, research, plan, and specification
+Markdown remains in scope.
+
+Lychee checks tracked Markdown with repository-root local-link resolution. Its default
+mail-address checking remains disabled, and it excludes loopback URLs because the book
+deliberately documents a private `127.0.0.1` preview, plus the same generated,
+dependency, and ignored SDD directories.
+The URL-specific entries in `.lycheeignore` document Canada.ca endpoints that
+consistently return an HTTP/2 protocol error to Lychee 0.24.2 and the OpenAI pricing
+page that rejects its unauthenticated client with HTTP 403; each remains reachable in
+a browser. Do not widen them to a domain or status-code exclusion. Replace a dead
+citation, or document and narrowly exclude the exact URL with evidence.

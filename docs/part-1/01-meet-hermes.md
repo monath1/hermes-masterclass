@@ -290,6 +290,9 @@ Award one point for each of those seven elements, plus one point for separating 
 - Nous Research, [Hermes Agent README at tag v2026.8.19](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/README.md).
 - Nous Research, [Hermes Agent learning path](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/getting-started/learning-path.md).
 - Nous Research, [Features overview](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/overview.md).
+- Nous Research, [Agent loop internals](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/agent-loop.md).
+- Nous Research, [Prompt assembly](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/prompt-assembly.md).
+- Nous Research, [Session storage](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/session-storage.md).
 - Nous Research, [Architecture](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/architecture.md).
 - Nous Research, [Security](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/security.md).
 - Nous Research, [Trajectory format](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/trajectory-format.md).
