@@ -51,7 +51,7 @@ test "$actual_commit" = "$HERMES_COMMIT" || {
   exit 1
 }
 
-"$VERIFY_VENV/bin/pytest" -q
+HERMES_TEST_SOURCE="$hermes_source" "$VERIFY_VENV/bin/pytest" -q
 "$VERIFY_VENV/bin/python" tools/check_book.py --final
 for audit in 6 7 8 9 10 11; do
   "$VERIFY_VENV/bin/python" "tools/check_task${audit}.py" --hermes-source "$hermes_source"

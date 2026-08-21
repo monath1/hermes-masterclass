@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -10,7 +11,9 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CHECKER = PROJECT_ROOT / "tools" / "check_task11.py"
-PINNED_HERMES = Path("/tmp/hermes-agent-v2026.8.19")
+PINNED_HERMES = Path(
+    os.environ.get("HERMES_TEST_SOURCE", "/tmp/hermes-agent-v2026.8.19")
+)
 CLI_URL = (
     "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/"
     "website/docs/reference/cli-commands.md"

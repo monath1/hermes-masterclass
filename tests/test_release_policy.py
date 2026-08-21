@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -146,6 +147,92 @@ def test_rejects_release_verifier_that_excludes_built_site(tmp_path: Path) -> No
 
     assert result.returncode == 1
     assert "Lychee common options must not exclude the built site" in result.stdout
+
+
+def test_verifier_passes_bootstrapped_hermes_source_to_pytest(tmp_path: Path) -> None:
+    """Catch a verifier that validates a checkout but hides it from pytest."""
+    fake_venv = tmp_path / "venv"
+    fake_bin = tmp_path / "bin"
+    hermes_source = tmp_path / "fresh-hermes-checkout"
+    capture = tmp_path / "pytest-hermes-source.txt"
+    (fake_venv / "bin").mkdir(parents=True)
+    fake_bin.mkdir()
+    hermes_source.mkdir()
+
+    python = fake_venv / "bin/python"
+    python.write_text("#!/usr/bin/env sh\nexit 0\n", encoding="utf-8")
+    python.chmod(0o755)
+    pytest = fake_venv / "bin/pytest"
+    pytest.write_text(
+        "#!/usr/bin/env sh\n"
+        "printf '%s' \"${HERMES_TEST_SOURCE-}\" > \"$HERMES_ENV_CAPTURE\"\n"
+        "exit 23\n",
+        encoding="utf-8",
+    )
+    pytest.chmod(0o755)
+    git = fake_bin / "git"
+    git.write_text(
+        "#!/usr/bin/env sh\n"
+        "printf '%s\\n' fcbd1076a93841fa88855acce810e342a5b78101\n",
+        encoding="utf-8",
+    )
+    git.chmod(0o755)
+
+    env = os.environ.copy()
+    env.update(
+        {
+            "HERMES_ENV_CAPTURE": str(capture),
+            "HERMES_SOURCE": str(hermes_source),
+            "HERMES_VERIFY_VENV": str(fake_venv),
+            "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
+        }
+    )
+
+    result = subprocess.run(
+        ["bash", str(PROJECT_ROOT / "tools/verify_release.sh")],
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert result.returncode == 23, result.stdout + result.stderr
+    assert capture.read_text(encoding="utf-8") == str(hermes_source)
+
+
+def test_contract_tests_resolve_env_provided_hermes_source(tmp_path: Path) -> None:
+    """Catch contract tests that silently keep using a developer-only /tmp clone."""
+    sentinel = tmp_path / "env-selected-hermes-source"
+    env = os.environ.copy()
+    env["HERMES_TEST_SOURCE"] = str(sentinel)
+    contract_modules = (
+        "tests/test_check_task8.py",
+        "tests/test_check_task9.py",
+        "tests/test_check_task10.py",
+        "tests/test_check_task11.py",
+    )
+
+    for index, contract_module in enumerate(contract_modules):
+        module_path = PROJECT_ROOT / contract_module
+        load_module = (
+            "import importlib.util; "
+            f"spec = importlib.util.spec_from_file_location('contract_{index}', "
+            f"{str(module_path)!r}); "
+            "module = importlib.util.module_from_spec(spec); "
+            "spec.loader.exec_module(module); "
+            "print(module.PINNED_HERMES)"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", load_module],
+            cwd=PROJECT_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert result.stdout.strip() == str(sentinel)
 
 
 def test_current_repository_satisfies_release_policy() -> None:

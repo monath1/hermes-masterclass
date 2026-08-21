@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -30,6 +31,9 @@ CHAPTER_PATHS = (
 )
 CHAPTER_17 = CHAPTER_PATHS[0]
 CHAPTER_18 = CHAPTER_PATHS[1]
+PINNED_HERMES = Path(
+    os.environ.get("HERMES_TEST_SOURCE", "/tmp/hermes-agent-v2026.8.19")
+)
 OFFICIAL_REFERENCES = (
     "https://www.jobbank.gc.ca/trend-analysis/search-job-outlooks",
     "https://www.ontario.ca/page/school-year-calendars",
@@ -69,7 +73,7 @@ def test_task8_career_and_family_contract() -> None:
     """Catch weakened truth, child-data, advice, and source controls."""
     result = run_check(
         PROJECT_ROOT,
-        hermes_source=Path("/tmp/hermes-agent-v2026.8.19"),
+        hermes_source=PINNED_HERMES,
     )
 
     assert result.returncode == 0, result.stdout + result.stderr

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -18,6 +19,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 CHAPTER_PATHS = (
     "docs/part-5/21-hermes-as-manager.md",
     "docs/part-6/22-evaluation-observability-capstone.md",
+)
+PINNED_HERMES = Path(
+    os.environ.get("HERMES_TEST_SOURCE", "/tmp/hermes-agent-v2026.8.19")
 )
 
 
@@ -46,7 +50,7 @@ def load_checker():
 def test_task10_management_and_capstone_contract() -> None:
     result = run_check(
         PROJECT_ROOT,
-        hermes_source=Path("/tmp/hermes-agent-v2026.8.19"),
+        hermes_source=PINNED_HERMES,
     )
 
     assert result.returncode == 0, result.stdout + result.stderr

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,9 @@ CHAPTER_PATHS = (
     "docs/part-5/19-one-two-person-business-os.md",
     "docs/part-5/20-business-functions.md",
 )
+PINNED_HERMES = Path(
+    os.environ.get("HERMES_TEST_SOURCE", "/tmp/hermes-agent-v2026.8.19")
+)
 
 
 def run_check(book_root: Path, *, hermes_source: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -47,7 +51,7 @@ def copy_task9_chapters(tmp_path: Path) -> tuple[Path, Path]:
 def test_task9_business_contract() -> None:
     result = run_check(
         PROJECT_ROOT,
-        hermes_source=Path("/tmp/hermes-agent-v2026.8.19"),
+        hermes_source=PINNED_HERMES,
     )
 
     assert result.returncode == 0, result.stdout + result.stderr
