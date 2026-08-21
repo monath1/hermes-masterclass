@@ -1,0 +1,3 @@
+[codespell]
+skip = .git,.venv,site,docs/assets/images/hermes
+ignore-words-list = hermes,Nous,OpenRouter,OpenAI,macOS,Mermaid,MkDocs,PyYAML,Codex,WhatsApp,Telegram,Bitwarden,onepassword
