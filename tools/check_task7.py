@@ -213,7 +213,8 @@ class ClauseContext:
 
     actor: str | None = None
     authorization: Phrase = ()
-    referents: frozenset[str] = frozenset()
+    singular_referent: Phrase = ()
+    plural_referent: Phrase = ()
 
 
 @dataclass(frozen=True)
@@ -274,8 +275,20 @@ class SentenceView:
         elif inherited_subject and context.actor is not None:
             tokens.insert(0, context.actor)
 
-        if "them" in tokens and "applications" in context.referents:
-            tokens = ["applications" if token == "them" else token for token in tokens]
+        unresolved_leading_it = leading is not None and tokens[leading] == "it"
+        resolved_tokens: list[str] = []
+        for index, token in enumerate(tokens):
+            if (
+                token == "it"
+                and context.singular_referent
+                and not (unresolved_leading_it and index == leading)
+            ):
+                resolved_tokens.extend(context.singular_referent)
+            elif token == "them" and context.plural_referent:
+                resolved_tokens.extend(context.plural_referent)
+            else:
+                resolved_tokens.append(token)
+        tokens = resolved_tokens
 
         local_markers = token_positions(tokens, AUTHORIZATION_MARKERS)
         if (
@@ -300,13 +313,25 @@ class SentenceView:
                 authorization_tokens.append("not")
             authorization = tuple(authorization_tokens)
 
-        referents = set(context.referents)
-        if set(tokens).intersection({"application", "applications", "materials", "package"}):
-            referents.add("applications")
+        singular_referent = context.singular_referent
+        plural_referent = context.plural_referent
+        if token_positions(tokens, phrases("application package")):
+            singular_referent = ("application", "package")
+        elif "application" in tokens:
+            singular_referent = ("application",)
+        elif "form" in tokens:
+            singular_referent = ("form",)
+        if token_positions(tokens, phrases("application materials")):
+            plural_referent = ("application", "materials")
+        elif token_positions(tokens, phrases("candidate materials")):
+            plural_referent = ("candidate", "materials")
+        elif "applications" in tokens:
+            plural_referent = ("applications",)
         next_context = ClauseContext(
             actor=resolved_actor,
             authorization=authorization,
-            referents=frozenset(referents),
+            singular_referent=singular_referent,
+            plural_referent=plural_referent,
         )
         return cls(source=source.strip(), tokens=tuple(tokens), next_context=next_context)
 
@@ -318,6 +343,15 @@ class SentenceView:
 
     def has_after(self, candidates: tuple[Phrase, ...], start: int) -> bool:
         return any(position >= start for position, _end in self.positions(candidates))
+
+    def has_unnegated_after(self, candidates: tuple[Phrase, ...], start: int) -> bool:
+        for position, _end in self.positions(candidates):
+            if position < start:
+                continue
+            exclusion_window = self.tokens[max(start, position - 3) : position]
+            if not {"not", "except", "excluding"}.intersection(exclusion_window):
+                return True
+        return False
 
     def nearest_actor_before(self, position: int) -> str | None:
         actors = [token for token in self.tokens[:position] if token in KNOWN_ACTORS]
@@ -415,7 +449,7 @@ def has_unsafe_platform_automation(sentence: SentenceView) -> bool:
     direct_actions = phrases("automate", "scrape", "crawl", "harvest")
     platforms = phrases("job bank", "linkedin")
     return any(
-        sentence.has_after(platforms, action_end)
+        sentence.has_unnegated_after(platforms, action_end)
         for _action_start, action_end in sentence.authorized_actions(
             actions,
             actors={"hermes"},

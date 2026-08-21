@@ -211,6 +211,33 @@ def test_authorization_scanner_does_not_guess_pronouns_across_sentences() -> Non
     assert find_unsafe_authorizations(prose) == []
 
 
+@pytest.mark.parametrize(
+    "unsafe_pronoun_carry",
+    [
+        "Hermes may prepare an application; it may submit it without approval.",
+        "Hermes may prepare a form; it may submit it without approval.",
+    ],
+)
+def test_authorization_scanner_resolves_singular_submission_objects(
+    unsafe_pronoun_carry: str,
+) -> None:
+    findings = find_unsafe_authorizations(unsafe_pronoun_carry)
+
+    assert "submission without approval" in {label for label, _clause in findings}
+
+
+def test_authorization_scanner_keeps_leading_it_as_the_adjacent_subject() -> None:
+    prose = "Hermes may prepare an application; it may not submit it without approval."
+
+    assert find_unsafe_authorizations(prose) == []
+
+
+def test_authorization_scanner_respects_a_negated_platform_object() -> None:
+    prose = "Hermes may search public employer pages, not LinkedIn."
+
+    assert find_unsafe_authorizations(prose) == []
+
+
 @pytest.mark.parametrize("official_url", OFFICIAL_REFERENCES)
 def test_task7_audit_requires_each_exact_official_reference_url(
     tmp_path: Path, official_url: str
