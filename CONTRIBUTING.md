@@ -31,7 +31,7 @@ The ordinary Task 8 audit is deterministic and network-free: it checks the selec
 .venv/bin/python tools/check_task8.py --hermes-source /tmp/hermes-agent-v2026.8.19 --live
 ```
 
-Live mode follows each official link, rejects redirects outside its declared government domain, and checks factual anchors in the returned page. It is intentionally excluded from push and pull-request runs because external availability is nondeterministic. To run it in CI, open the **Quality** workflow manually and enable **Verify Task 8 official pages, redirect domains, and content anchors**.
+Live mode requires a terminal 2xx response, follows a bounded number of redirects one hop at a time, rejects non-HTTPS or off-domain hops before following them, and checks factual anchors in the returned page. It is intentionally excluded from push and pull-request runs because external availability is nondeterministic. To run it in CI, open the **Quality** workflow manually and enable **Verify Task 8 official pages, redirect domains, and content anchors**.
 
 The Canadian numeric-claim scan requires a nearby ISO observation date for government amounts, deadlines, percentages, and retention periods. A local cadence or planning cap is exempt only when the prose explicitly calls it a `family-selected` or `owner-selected` `operating policy`; that marker must not be used for an externally imposed rule.
 

@@ -7,11 +7,12 @@ import argparse
 import html
 import re
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 
 from check_book import markdown_words
 
@@ -166,14 +167,18 @@ AFFIRMATIVE = re.compile(
 )
 NEGATED = re.compile(
     r"\b(?:may not|cannot|can't|could not|will not|won't|should not|must not|"
+    r"must (?:refuse|decline) to|must avoid|refuses? to|declines? to|"
     r"does not|doesn't|do not|never|is unable to|has no permission to|"
     r"is not allowed to|is prohibited from|is forbidden from)\b",
     re.IGNORECASE,
 )
 CLAUSE_BOUNDARY = re.compile(
-    r"\s*(?:;|\bbut\b|\bhowever\b|\bwhile\b|"
+    r"\s*(?:;|,(?=\s*(?:Hermes\b|the agent\b|it\b|may\b|can\b|could\b|"
+    r"will\b|should\b|must\b))|\bbut\b|\bhowever\b|\bwhile\b|"
+    r"\balthough\b|\bthough\b|\byet\b|"
     r"\band(?=\s+(?:it\b|Hermes\b|the agent\b|may\b|can\b|could\b|will\b|"
-    r"should\b|must\b)))\s*",
+    r"should\b|must\b|is prohibited\b|is forbidden\b|is not allowed\b|"
+    r"has no permission\b)))\s*",
     re.IGNORECASE,
 )
 AGENT_NAME = re.compile(r"\b(?:Hermes|the agent)\b", re.IGNORECASE)
@@ -342,6 +347,53 @@ CANADIAN_THRESHOLD = re.compile(
     r"\b(?:tax|benefit|credit|eligib\w*|retain\w*|retention|keep|records?)\b)",
     re.IGNORECASE | re.DOTALL,
 )
+DEADLINE_VALUE = re.compile(
+    r"\b(?:January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)\s+\d{1,2}\b",
+    re.IGNORECASE,
+)
+THRESHOLD_VALUE = re.compile(
+    r"\d+(?:\.\d+)?%|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"eleven|twelve|\d+)\s+(?:days?|months?|years?)\b",
+    re.IGNORECASE,
+)
+CLAIM_MARKER_WINDOW = 220
+
+
+def _match_has_local_marker(
+    text: str, match: re.Match[str], value_pattern: re.Pattern[str]
+) -> bool:
+    """Bind each value to its sentence or a bounded referential date sentence."""
+    values = list(value_pattern.finditer(match.group()))
+    if not values:
+        values = [match]
+    for value in values:
+        start = match.start() + value.start() if value is not match else match.start()
+        end = match.start() + value.end() if value is not match else match.end()
+        sentence_start = max(
+            text.rfind(".", 0, start),
+            text.rfind("!", 0, start),
+            text.rfind("?", 0, start),
+        ) + 1
+        terminator = re.search(r"[.!?](?:\s|$)", text[end:])
+        sentence_end = (
+            end + terminator.end()
+            if terminator
+            else min(len(text), end + CLAIM_MARKER_WINDOW)
+        )
+        sentence = text[sentence_start:sentence_end]
+        if DATED_ASSERTION.search(sentence) or OPERATIONAL_EXEMPTION.search(sentence):
+            continue
+        follow_up = text[
+            sentence_end : min(len(text), sentence_end + CLAIM_MARKER_WINDOW)
+        ]
+        referential = re.match(
+            r"\s*(?:These|Those|This|That)\b", follow_up, re.IGNORECASE
+        )
+        if referential and DATED_ASSERTION.search(follow_up):
+            continue
+        return False
+    return True
 
 
 def find_undated_changeable_claims(text: str) -> list[tuple[str, str]]:
@@ -350,13 +402,25 @@ def find_undated_changeable_claims(text: str) -> list[tuple[str, str]]:
     findings: list[tuple[str, str]] = []
     for paragraph in re.split(r"\n\s*\n", body):
         compact = " ".join(paragraph.split())
-        if not compact or DATED_ASSERTION.search(compact) or OPERATIONAL_EXEMPTION.search(compact):
+        if not compact:
             continue
-        if CANADIAN_DOLLAR.search(compact):
+        dollar_matches = list(CANADIAN_DOLLAR.finditer(compact))
+        if any(
+            not _match_has_local_marker(compact, match, CANADIAN_DOLLAR)
+            for match in dollar_matches
+        ):
             findings.append(("Canadian dollar amount", compact))
-        if CANADIAN_DEADLINE.search(compact):
+        deadline_matches = list(CANADIAN_DEADLINE.finditer(compact))
+        if any(
+            not _match_has_local_marker(compact, match, DEADLINE_VALUE)
+            for match in deadline_matches
+        ):
             findings.append(("Canadian deadline", compact))
-        if CANADIAN_THRESHOLD.search(compact):
+        threshold_matches = list(CANADIAN_THRESHOLD.finditer(compact))
+        if any(
+            not _match_has_local_marker(compact, match, THRESHOLD_VALUE)
+            for match in threshold_matches
+        ):
             findings.append(("Canadian threshold", compact))
     return findings
 
@@ -366,53 +430,113 @@ def _normalized_source_text(source: str) -> str:
     return " ".join(html.unescape(without_markup).casefold().split())
 
 
-def fetch_official_source(url: str) -> tuple[str, str]:
-    """Fetch one official page and return its final URL and decoded body."""
-    marker = "__HERMES_FINAL_URL__="
+LiveTransport = Callable[[str, float], tuple[int, str, dict[str, str], str]]
 
-    def curl(target: str) -> tuple[str, str]:
-        result = subprocess.run(
-            [
-                "curl",
-                "--silent",
-                "--show-error",
-                "--location",
-                "--max-time",
-                "20",
-                "--user-agent",
-                "HERMES-book-source-audit/1.0 (+manual verification)",
-                "--write-out",
-                f"\n{marker}%{{url_effective}}",
-                target,
-            ],
-            check=False,
-            capture_output=True,
-            text=True,
+
+def _curl_once(url: str, timeout: float) -> tuple[int, str, dict[str, str], str]:
+    """Fetch exactly one HTTP response; redirects are deliberately not followed."""
+    marker = "__HERMES_HTTP_META__="
+    result = subprocess.run(
+        [
+            "curl",
+            "--silent",
+            "--show-error",
+            "--max-time",
+            f"{timeout:.3f}",
+            "--user-agent",
+            "HERMES-book-source-audit/1.0 (+manual verification)",
+            "--write-out",
+            f"\n{marker}%{{http_code}}\t%{{url_effective}}\t%{{redirect_url}}",
+            url,
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or f"curl exited {result.returncode}")
+    body, separator, metadata = result.stdout.rpartition(f"\n{marker}")
+    if not separator:
+        raise RuntimeError("curl did not report HTTP metadata")
+    fields = metadata.rstrip("\n").split("\t", 2)
+    if len(fields) != 3 or not fields[0].isdigit():
+        raise RuntimeError("curl returned malformed HTTP metadata")
+    status_text, effective_url, redirect_url = fields
+    headers = {"location": redirect_url} if redirect_url else {}
+    return int(status_text), effective_url, headers, body
+
+
+def _require_allowed_live_url(url: str, allowed_domain: str) -> None:
+    parsed = urlparse(url)
+    if parsed.scheme.casefold() != "https":
+        raise RuntimeError(f"live source redirect must use HTTPS: {url}")
+    hostname = (parsed.hostname or "").casefold()
+    allowed = allowed_domain.casefold()
+    if hostname != allowed and not hostname.endswith(f".{allowed}"):
+        raise RuntimeError(f"live source redirected outside allowed domain: {url}")
+    if parsed.username or parsed.password:
+        raise RuntimeError(f"live source URL must not contain credentials: {url}")
+
+
+def fetch_official_source(
+    url: str,
+    allowed_domain: str,
+    *,
+    transport: LiveTransport = _curl_once,
+    max_redirects: int = 5,
+    total_timeout: float = 30,
+) -> tuple[str, str]:
+    """Fetch one source with bounded, validated, manually followed redirects."""
+    if max_redirects < 0 or total_timeout <= 0:
+        raise ValueError("redirect and timeout bounds must be positive")
+    deadline = time.monotonic() + total_timeout
+    current_url = url
+    redirects = 0
+    while True:
+        _require_allowed_live_url(current_url, allowed_domain)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError(f"live source total timeout exceeded: {url}")
+        status, effective_url, headers, body = transport(
+            current_url, min(20.0, remaining)
         )
-        if result.returncode != 0:
-            raise RuntimeError(result.stderr.strip() or f"curl exited {result.returncode}")
-        body, separator, final_url = result.stdout.rpartition(f"\n{marker}")
-        if not separator or not final_url:
-            raise RuntimeError("curl did not report an effective URL")
-        return final_url.strip(), body
+        _require_allowed_live_url(effective_url, allowed_domain)
 
-    final_url, body = curl(url)
-    parsed = urlparse(final_url)
-    moved_target = parse_qs(parsed.query).get("to", [])
-    if parsed.path.endswith("/cfgredirect.html") and moved_target:
-        return curl(moved_target[0])
-    return final_url, body
+        target: str | None = None
+        if 300 <= status < 400:
+            location = next(
+                (value for key, value in headers.items() if key.casefold() == "location"),
+                "",
+            )
+            if not location:
+                raise RuntimeError(f"HTTP {status} redirect missing Location: {effective_url}")
+            target = urljoin(effective_url, location)
+        elif 200 <= status < 300:
+            parsed = urlparse(effective_url)
+            moved_target = parse_qs(parsed.query).get("to", [])
+            if parsed.path.endswith("/cfgredirect.html") and moved_target:
+                target = urljoin(effective_url, moved_target[0])
+            else:
+                return effective_url, body
+        else:
+            raise RuntimeError(f"HTTP {status} from live source: {effective_url}")
+
+        _require_allowed_live_url(target, allowed_domain)
+        if redirects >= max_redirects:
+            raise RuntimeError(f"live source redirect limit exceeded: {url}")
+        redirects += 1
+        current_url = target
 
 
 def validate_live_sources(
     failures: list[str],
-    fetcher: Callable[[str], tuple[str, str]] = fetch_official_source,
+    fetcher: Callable[[str, str], tuple[str, str]] = fetch_official_source,
 ) -> None:
     """Check live reachability, redirect ownership, and load-bearing page content."""
     def check_contract(contract: OfficialSourceContract) -> list[str]:
         contract_failures: list[str] = []
         try:
-            final_url, body = fetcher(contract.url)
+            final_url, body = fetcher(contract.url, contract.allowed_domain)
         except Exception as error:  # pragma: no cover - exercised by manual network mode
             return [f"live source fetch failed: {contract.url}: {error}"]
         hostname = (urlparse(final_url).hostname or "").casefold()
@@ -442,6 +566,93 @@ def validate_official_references(text: str, failures: list[str]) -> None:
             continue
         if not any("accessed 2026-08-21" in line.casefold() for line in reference_lines):
             failures.append(f"missing visible verification date: {url}")
+
+
+GREEN_AUTHORITY_POLICIES = (
+    (
+        "professional advice",
+        re.compile(
+            r"\b(?:provide|give|offer).{0,50}"
+            r"\b(?:medical|financial|tax) advice\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "raw child dossier",
+        re.compile(
+            r"\b(?:compile|create|store|retain|hold).{0,35}"
+            r"\braw child dossiers?\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "primary credential",
+        re.compile(
+            r"\b(?:use|hold|access|store|retain).{0,30}"
+            r"\bprimary credentials?\b",
+            re.IGNORECASE,
+        ),
+    ),
+)
+HANDOFF_DECISION_CONTRACTS = (
+    (
+        "health",
+        r"Health or nutrition concern:.*?Decide:.*?"
+        r"(?:clinician|pharmacist|dietitian|emergency service)",
+    ),
+    (
+        "tax",
+        r"Tax question:.*?Decide:.*?"
+        r"(?:taxpayer|accountant|tax professional|CRA)",
+    ),
+    (
+        "financial",
+        r"Budget, debt, retirement, pension, investment, or insurance question:"
+        r".*?Decide:.*?"
+        r"(?:adults|planner|administrator|provider|insolvency professional)",
+    ),
+    (
+        "school/legal/travel",
+        r"School, child consent, custody, or travel-document question:"
+        r".*?Decide:.*?(?:guardian|school|board|authority|lawyer)",
+    ),
+    (
+        "benefits",
+        r"Benefit eligibility, overpayment, appeal, or account change:"
+        r".*?Decide:.*?(?:agency|representative|adviser)",
+    ),
+)
+
+
+def validate_family_semantics(chapter: str, failures: list[str]) -> None:
+    """Validate decision ownership and prohibited Green authority structurally."""
+    green_match = re.search(
+        r"^\| \*\*Green — may act\*\* \|(?P<body>.*?)\|\s*$",
+        chapter,
+        re.IGNORECASE | re.MULTILINE,
+    )
+    if not green_match:
+        failures.append("missing Chapter 18 Green authority row")
+    else:
+        green = green_match.group("body")
+        for label, pattern in GREEN_AUTHORITY_POLICIES:
+            if pattern.search(green):
+                failures.append(f"unsafe Chapter 18 Green authority: {label}")
+
+    matrix_match = re.search(
+        r"```text\s+PROFESSIONAL HANDOFF MATRIX(?P<body>.*?)```",
+        chapter,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not matrix_match:
+        failures.append("missing semantic Chapter 18 professional handoff matrix")
+        return
+    matrix = matrix_match.group("body")
+    if re.search(r"\bDecide:\s*(?:Hermes|the agent)\b", matrix, re.IGNORECASE):
+        failures.append("unsafe Chapter 18 professional handoff decision owner")
+    for label, pattern in HANDOFF_DECISION_CONTRACTS:
+        if not re.search(pattern, matrix, re.IGNORECASE | re.DOTALL):
+            failures.append(f"missing Chapter 18 professional handoff decision contract: {label}")
 
 
 def validate_source(source: Path, failures: list[str]) -> None:
@@ -544,6 +755,8 @@ def audit_task8(
 
     if "asthma-plan update" in chapter_18.casefold():
         failures.append("diagnosis-bearing sample metadata: asthma-plan update")
+
+    validate_family_semantics(chapter_18, failures)
 
     for label, paragraph in find_undated_changeable_claims(chapter_18):
         failures.append(f"undated {label}: {paragraph}")

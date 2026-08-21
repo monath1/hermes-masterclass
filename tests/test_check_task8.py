@@ -16,6 +16,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from check_task8 import (  # noqa: E402
     OFFICIAL_SOURCE_CONTRACTS,
+    fetch_official_source,
     find_undated_changeable_claims,
     find_unsafe_authorizations,
     validate_live_sources,
@@ -169,6 +170,50 @@ def test_authorization_scanner_accepts_local_negation_with_agent_antecedents(
     assert find_unsafe_authorizations(safe_paraphrase) == []
 
 
+@pytest.mark.parametrize(
+    ("diagnostic", "mixed_predicates"),
+    [
+        (
+            "tax filing",
+            "Hermes may file taxes and is prohibited from retaining a raw child dossier.",
+        ),
+        (
+            "tax filing",
+            "Hermes may file taxes, although it must not retain a raw child dossier.",
+        ),
+        (
+            "raw child dossier",
+            "Hermes may retain a raw child dossier and is prohibited from filing taxes.",
+        ),
+        (
+            "raw child dossier",
+            "Although it must not file taxes, Hermes may retain a raw child dossier.",
+        ),
+    ],
+)
+def test_authorization_scanner_binds_modality_to_each_coordinated_predicate(
+    diagnostic: str, mixed_predicates: str
+) -> None:
+    findings = find_unsafe_authorizations(mixed_predicates)
+
+    assert diagnostic in {label for label, _sentence in findings}
+
+
+@pytest.mark.parametrize(
+    "required_refusal",
+    [
+        "Hermes must refuse to file taxes.",
+        "The agent must decline to file the family's tax return.",
+        "Hermes must avoid filing taxes.",
+        "Hermes may prepare records, although it must not file taxes.",
+    ],
+)
+def test_authorization_scanner_treats_required_refusals_as_safe(
+    required_refusal: str,
+) -> None:
+    assert find_unsafe_authorizations(required_refusal) == []
+
+
 def test_task8_audit_rejects_an_end_to_end_unsafe_child_data_mutation(tmp_path: Path) -> None:
     _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
     chapter_18.write_text(
@@ -220,6 +265,54 @@ def test_task8_audit_requires_professional_handoffs(tmp_path: Path) -> None:
 
     assert result.returncode == 1
     assert "missing Chapter 18 professional-handoff matrix" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("unsafe_green_action", "diagnostic"),
+    [
+        ("provide medical, financial, and tax advice; ", "professional advice"),
+        ("compile raw child dossiers; ", "raw child dossier"),
+        ("use primary credentials; ", "primary credential"),
+    ],
+)
+def test_task8_audit_semantically_rejects_unsafe_green_family_authority(
+    tmp_path: Path, unsafe_green_action: str, diagnostic: str
+) -> None:
+    _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
+    contents = chapter_18.read_text(encoding="utf-8")
+    chapter_18.write_text(
+        contents.replace(
+            "| **Green — may act** | Read approved",
+            f"| **Green — may act** | {unsafe_green_action}Read approved",
+            1,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert f"unsafe Chapter 18 Green authority: {diagnostic}" in result.stdout
+
+
+def test_task8_audit_semantically_rejects_hermes_as_professional_decider(
+    tmp_path: Path,
+) -> None:
+    _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
+    contents = chapter_18.read_text(encoding="utf-8")
+    chapter_18.write_text(
+        contents.replace(
+            "Decide: taxpayer or authorized accountant/tax professional; CRA where needed.",
+            "Decide: Hermes; CRA where needed.",
+            1,
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "unsafe Chapter 18 professional handoff decision owner" in result.stdout
 
 
 def test_task8_audit_rejects_diagnosis_bearing_shared_index_metadata(tmp_path: Path) -> None:
@@ -285,6 +378,63 @@ def test_changeable_claim_scan_accepts_dated_facts_and_operational_policy_exempt
     assert find_undated_changeable_claims(safe_claim) == []
 
 
+@pytest.mark.parametrize(
+    "unrelated_context",
+    [
+        "The unrelated retention example was checked on 2026-08-21.",
+        "A weekly review is a family-selected operating policy.",
+    ],
+)
+def test_changeable_claim_scan_does_not_apply_distant_context_to_numeric_claim(
+    unrelated_context: str,
+) -> None:
+    filler = " ".join(["Unrelated background material."] * 30)
+    claim = f"The benefit pays C$500 monthly. {filler} {unrelated_context}"
+
+    findings = find_undated_changeable_claims(claim)
+
+    assert "Canadian dollar amount" in {label for label, _paragraph in findings}
+
+
+@pytest.mark.parametrize(
+    "nearby_but_unrelated_context",
+    [
+        "The six-year retention threshold was checked on 2026-08-21.",
+        "A weekly review is an owner-selected operating policy.",
+    ],
+)
+def test_changeable_claim_scan_requires_semantic_binding_for_nearby_markers(
+    nearby_but_unrelated_context: str,
+) -> None:
+    claim = f"The benefit pays C$500 monthly. {nearby_but_unrelated_context}"
+
+    findings = find_undated_changeable_claims(claim)
+
+    assert "Canadian dollar amount" in {label for label, _paragraph in findings}
+
+
+def test_task8_audit_rejects_distant_date_hiding_undated_threshold(
+    tmp_path: Path,
+) -> None:
+    _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
+    filler = " ".join(["Background note."] * 30)
+    mutation = (
+        "Families must keep benefit records for seven years. "
+        f"{filler} An unrelated source was checked on 2026-08-21."
+    )
+    chapter_18.write_text(
+        chapter_18.read_text(encoding="utf-8").replace(
+            "\n## References", f"\n{mutation}\n\n## References", 1
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "undated Canadian threshold" in result.stdout
+
+
 def test_task8_audit_rejects_an_undated_canadian_amount_mutation(tmp_path: Path) -> None:
     _chapter_17, chapter_18 = copy_task8_chapters(tmp_path)
     chapter_18.write_text(
@@ -309,7 +459,7 @@ def test_live_source_contract_accepts_declared_domains_and_content() -> None:
     }
     failures: list[str] = []
 
-    validate_live_sources(failures, lambda url: (url, bodies[url]))
+    validate_live_sources(failures, lambda url, _domain: (url, bodies[url]))
 
     assert failures == []
 
@@ -324,7 +474,7 @@ def test_live_source_contract_rejects_redirect_outside_declared_domain() -> None
 
     validate_live_sources(
         failures,
-        lambda url: (
+        lambda url, _domain: (
             "https://example.invalid/redirect" if url == first_url else url,
             bodies[url],
         ),
@@ -342,9 +492,115 @@ def test_live_source_contract_rejects_missing_load_bearing_content() -> None:
     bodies[first_url] = "A reachable page with unrelated content."
     failures: list[str] = []
 
-    validate_live_sources(failures, lambda url: (url, bodies[url]))
+    validate_live_sources(failures, lambda url, _domain: (url, bodies[url]))
 
     assert any("missing live source content assertion" in failure for failure in failures)
+
+
+def test_live_fetch_follows_safe_relative_redirect_and_requires_2xx() -> None:
+    responses = {
+        "https://www.ontario.ca/start": (
+            302,
+            "https://www.ontario.ca/start",
+            {"location": "/page/school-year-calendars"},
+            "",
+        ),
+        "https://www.ontario.ca/page/school-year-calendars": (
+            200,
+            "https://www.ontario.ca/page/school-year-calendars",
+            {},
+            "School year calendars and school boards",
+        ),
+    }
+    requested: list[str] = []
+
+    def transport(url: str, _timeout: float) -> tuple[int, str, dict[str, str], str]:
+        requested.append(url)
+        return responses[url]
+
+    final_url, body = fetch_official_source(
+        "https://www.ontario.ca/start",
+        "ontario.ca",
+        transport=transport,
+        max_redirects=3,
+        total_timeout=5,
+    )
+
+    assert final_url == "https://www.ontario.ca/page/school-year-calendars"
+    assert body == "School year calendars and school boards"
+    assert requested == [
+        "https://www.ontario.ca/start",
+        "https://www.ontario.ca/page/school-year-calendars",
+    ]
+
+
+@pytest.mark.parametrize("status", [400, 404, 500, 503])
+def test_live_fetch_rejects_non_2xx_terminal_status(status: int) -> None:
+    def transport(url: str, _timeout: float) -> tuple[int, str, dict[str, str], str]:
+        return status, url, {}, "Error page"
+
+    with pytest.raises(RuntimeError, match=f"HTTP {status}"):
+        fetch_official_source(
+            "https://www.ontario.ca/failure",
+            "ontario.ca",
+            transport=transport,
+        )
+
+
+def test_live_fetch_rejects_off_domain_intermediate_before_following() -> None:
+    requested: list[str] = []
+
+    def transport(url: str, _timeout: float) -> tuple[int, str, dict[str, str], str]:
+        requested.append(url)
+        return 302, url, {"location": "https://example.invalid/trap"}, ""
+
+    with pytest.raises(RuntimeError, match="outside allowed domain"):
+        fetch_official_source(
+            "https://www.ontario.ca/start",
+            "ontario.ca",
+            transport=transport,
+        )
+
+    assert requested == ["https://www.ontario.ca/start"]
+
+
+def test_live_fetch_rejects_off_domain_effective_final_url() -> None:
+    def transport(_url: str, _timeout: float) -> tuple[int, str, dict[str, str], str]:
+        return 200, "https://example.invalid/final", {}, "Unexpected page"
+
+    with pytest.raises(RuntimeError, match="outside allowed domain"):
+        fetch_official_source(
+            "https://www.ontario.ca/start",
+            "ontario.ca",
+            transport=transport,
+        )
+
+
+def test_live_fetch_rejects_insecure_redirect_and_redirect_overflow() -> None:
+    def insecure_transport(
+        url: str, _timeout: float
+    ) -> tuple[int, str, dict[str, str], str]:
+        return 302, url, {"location": "http://www.ontario.ca/insecure"}, ""
+
+    with pytest.raises(RuntimeError, match="HTTPS"):
+        fetch_official_source(
+            "https://www.ontario.ca/start",
+            "ontario.ca",
+            transport=insecure_transport,
+        )
+
+    def looping_transport(
+        url: str, _timeout: float
+    ) -> tuple[int, str, dict[str, str], str]:
+        return 302, url, {"location": "/loop"}, ""
+
+    with pytest.raises(RuntimeError, match="redirect limit"):
+        fetch_official_source(
+            "https://www.ontario.ca/start",
+            "ontario.ca",
+            transport=looping_transport,
+            max_redirects=2,
+        )
 
 
 @pytest.mark.parametrize("official_url", OFFICIAL_REFERENCES)
