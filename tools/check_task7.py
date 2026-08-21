@@ -110,10 +110,49 @@ AUTHORIZATION_MARKERS: tuple[Phrase, ...] = (
     ("allow",),
     ("permit",),
     ("enable",),
+    ("cannot",),
+    ("do", "not"),
+    ("does", "not"),
 )
 NEGATION_TOKENS = {"not", "never", "cannot", "prohibited", "forbidden"}
 KNOWN_ACTORS = {"hermes", "priya", "alex", "candidate", "user", "users", "person", "human"}
 HUMAN_ACTORS = KNOWN_ACTORS - {"hermes"}
+ACTION_HEADS = {
+    "access",
+    "apply",
+    "automate",
+    "blast",
+    "contact",
+    "control",
+    "crawl",
+    "email",
+    "embellish",
+    "exaggerate",
+    "fabricate",
+    "file",
+    "falsify",
+    "generate",
+    "give",
+    "harvest",
+    "invent",
+    "manage",
+    "manufacture",
+    "message",
+    "monitor",
+    "open",
+    "operate",
+    "provide",
+    "query",
+    "read",
+    "scrape",
+    "search",
+    "send",
+    "share",
+    "sign",
+    "submit",
+    "triage",
+    "use",
+}
 TOKEN_ALIASES = {
     "accesses": "access",
     "allows": "allow",
@@ -156,15 +195,38 @@ def phrases(*values: str) -> tuple[Phrase, ...]:
     return tuple(tuple(value.split()) for value in values)
 
 
+def token_positions(
+    tokens: tuple[str, ...] | list[str], candidates: tuple[Phrase, ...]
+) -> list[tuple[int, int]]:
+    matches: list[tuple[int, int]] = []
+    for phrase in candidates:
+        width = len(phrase)
+        for start in range(len(tokens) - width + 1):
+            if tuple(tokens[start : start + width]) == phrase:
+                matches.append((start, start + width))
+    return sorted(matches)
+
+
+@dataclass(frozen=True)
+class ClauseContext:
+    """Elliptical subject, modality, and object available to one adjacent clause."""
+
+    actor: str | None = None
+    authorization: Phrase = ()
+    referents: frozenset[str] = frozenset()
+
+
 @dataclass(frozen=True)
 class SentenceView:
-    """Normalized sentence used by the prose-policy scanner."""
+    """Normalized clause used by the bounded manuscript-policy scanner."""
 
     source: str
     tokens: tuple[str, ...]
+    next_context: ClauseContext
 
     @classmethod
-    def parse(cls, source: str) -> SentenceView:
+    def parse(cls, source: str, context: ClauseContext | None = None) -> SentenceView:
+        context = context or ClauseContext()
         normalized = (
             source.casefold()
             .replace("’", "'")
@@ -173,21 +235,83 @@ class SentenceView:
             .replace("n't", " not")
         )
         raw_tokens = re.findall(r"[a-z0-9]+(?:'[a-z]+)?", normalized)
-        tokens = []
+        tokens: list[str] = []
         for token in raw_tokens:
             if token.endswith("'s"):
                 token = token[:-2]
             tokens.append(TOKEN_ALIASES.get(token, token))
-        return cls(source=source.strip(), tokens=tuple(tokens))
+
+        # In "not only X but also Y", "not" expands scope; it does not prohibit X.
+        tokens = [
+            token
+            for index, token in enumerate(tokens)
+            if not (token == "not" and index + 1 < len(tokens) and tokens[index + 1] == "only")
+        ]
+        original_tokens = tuple(tokens)
+        original_markers = token_positions(original_tokens, AUTHORIZATION_MARKERS)
+        actor_positions = [
+            index for index, token in enumerate(original_tokens) if token in KNOWN_ACTORS
+        ]
+        first_actor = actor_positions[0] if actor_positions else None
+        prefix = original_tokens[:first_actor] if first_actor is not None else original_tokens
+        inherited_subject = context.actor is not None and (
+            first_actor is None
+            or bool(set(prefix).intersection(ACTION_HEADS))
+            or bool(original_markers and original_markers[0][0] < first_actor)
+        )
+
+        leading = next(
+            (index for index, token in enumerate(tokens) if token not in {"also", "then"}),
+            None,
+        )
+        if (
+            leading is not None
+            and tokens[leading] in {"it", "they"}
+            and context.actor is not None
+        ):
+            tokens[leading] = context.actor
+            inherited_subject = True
+        elif inherited_subject and context.actor is not None:
+            tokens.insert(0, context.actor)
+
+        if "them" in tokens and "applications" in context.referents:
+            tokens = ["applications" if token == "them" else token for token in tokens]
+
+        local_markers = token_positions(tokens, AUTHORIZATION_MARKERS)
+        if (
+            inherited_subject
+            and not local_markers
+            and context.authorization
+            and set(tokens).intersection(ACTION_HEADS)
+        ):
+            actor_index = tokens.index(context.actor) if context.actor in tokens else 0
+            tokens[actor_index + 1 : actor_index + 1] = context.authorization
+            local_markers = token_positions(tokens, AUTHORIZATION_MARKERS)
+
+        resolved_actor = next((token for token in tokens if token in KNOWN_ACTORS), context.actor)
+        authorization: Phrase = ()
+        if local_markers:
+            marker_start, marker_end = local_markers[-1]
+            authorization_tokens = list(tokens[marker_start:marker_end])
+            if (
+                NEGATION_TOKENS.intersection(tokens[marker_start : marker_end + 4])
+                and not NEGATION_TOKENS.intersection(authorization_tokens)
+            ):
+                authorization_tokens.append("not")
+            authorization = tuple(authorization_tokens)
+
+        referents = set(context.referents)
+        if set(tokens).intersection({"application", "applications", "materials", "package"}):
+            referents.add("applications")
+        next_context = ClauseContext(
+            actor=resolved_actor,
+            authorization=authorization,
+            referents=frozenset(referents),
+        )
+        return cls(source=source.strip(), tokens=tuple(tokens), next_context=next_context)
 
     def positions(self, candidates: tuple[Phrase, ...]) -> list[tuple[int, int]]:
-        matches: list[tuple[int, int]] = []
-        for phrase in candidates:
-            width = len(phrase)
-            for start in range(len(self.tokens) - width + 1):
-                if self.tokens[start : start + width] == phrase:
-                    matches.append((start, start + width))
-        return sorted(matches)
+        return token_positions(self.tokens, candidates)
 
     def has(self, candidates: tuple[Phrase, ...]) -> bool:
         return bool(self.positions(candidates))
@@ -400,6 +524,13 @@ POLICY_SCANNERS: tuple[tuple[str, Callable[[SentenceView], bool]], ...] = (
     ("fabricated claims", has_unsafe_fabricated_claims),
     ("submission without approval", has_unsafe_submission),
 )
+CLAUSE_BOUNDARY_PATTERN = re.compile(
+    r"\s*;\s*"
+    r"|\s*,?\s*\b(?:but|while|whereas|however|yet|although|though)\b\s*"
+    r"|\s+\b(?:and|or)\b\s+(?=(?:Hermes|Priya|Alex|it|they|may|can|cannot|"
+    r"should|must|will|does|do|is)\b)",
+    re.IGNORECASE,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -427,16 +558,19 @@ def extract_state_vocabulary(text: str, label: str, failures: list[str]) -> set[
 
 
 def find_unsafe_authorizations(text: str) -> list[tuple[str, str]]:
-    """Return policy labels and sentences containing affirmative unsafe authority."""
+    """Return policy labels and clauses containing affirmative unsafe authority."""
     findings: list[tuple[str, str]] = []
-    sentence_sources = re.split(r"(?<=[.!?;])(?:\s+|$)|\n+", text)
-    for source in sentence_sources:
-        sentence = SentenceView.parse(source)
-        if not sentence.tokens:
-            continue
-        for label, scanner in POLICY_SCANNERS:
-            if scanner(sentence):
-                findings.append((label, sentence.source))
+    sentence_sources = re.split(r"(?<=[.!?])(?:\s+|$)|\n+", text)
+    for sentence_source in sentence_sources:
+        context = ClauseContext()
+        for source in CLAUSE_BOUNDARY_PATTERN.split(sentence_source):
+            clause = SentenceView.parse(source, context)
+            if not clause.tokens:
+                continue
+            for label, scanner in POLICY_SCANNERS:
+                if scanner(clause):
+                    findings.append((label, clause.source))
+            context = clause.next_context
     return findings
 
 

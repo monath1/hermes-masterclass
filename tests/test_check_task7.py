@@ -157,6 +157,60 @@ def test_authorization_scanner_does_not_flag_explicit_negations(
     assert findings == []
 
 
+@pytest.mark.parametrize(
+    "safe_coordination",
+    [
+        "Hermes may query public employers but must not scrape LinkedIn.",
+        "Hermes may prepare applications while Priya submits them manually.",
+        "Hermes may search employer pages; it must not automatically access LinkedIn.",
+        "Hermes may draft outreach, but it cannot blast hundreds of messages.",
+    ],
+)
+def test_authorization_scanner_binds_safe_coordination_locally(
+    safe_coordination: str,
+) -> None:
+    assert find_unsafe_authorizations(safe_coordination) == []
+
+
+@pytest.mark.parametrize(
+    ("diagnostic", "unsafe_coordination"),
+    [
+        (
+            "submission without approval",
+            "Hermes may not draft but may submit applications without approval.",
+        ),
+        (
+            "primary-inbox access",
+            "Hermes may not only summarize notices but also access primary inboxes.",
+        ),
+        (
+            "submission without approval",
+            "Hermes may prepare applications; it may submit them without approval.",
+        ),
+        (
+            "Job Bank or LinkedIn automation/scraping",
+            "Hermes may query public employers while it can scrape LinkedIn.",
+        ),
+        (
+            "bulk/spam outreach",
+            "Hermes may draft one note; it may send blanket outreach messages.",
+        ),
+    ],
+)
+def test_authorization_scanner_finds_unsafe_adjacent_clauses_and_pronouns(
+    diagnostic: str, unsafe_coordination: str
+) -> None:
+    findings = find_unsafe_authorizations(unsafe_coordination)
+
+    assert diagnostic in {label for label, _clause in findings}
+
+
+def test_authorization_scanner_does_not_guess_pronouns_across_sentences() -> None:
+    prose = "Hermes may prepare applications. It may submit them without approval."
+
+    assert find_unsafe_authorizations(prose) == []
+
+
 @pytest.mark.parametrize("official_url", OFFICIAL_REFERENCES)
 def test_task7_audit_requires_each_exact_official_reference_url(
     tmp_path: Path, official_url: str
