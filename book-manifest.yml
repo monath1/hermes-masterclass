@@ -100,10 +100,14 @@ chapters:
     title: Résumé, Interview, and Brand Overhaul
     path: docs/part-4/17-resume-interview-brand.md
     part: Part IV — Your Personal Chief of Staff
+    word_target: 4200–4800
+    status: complete
   - number: 18
     title: Family Operations in Canada
     path: docs/part-4/18-family-operations-canada.md
     part: Part IV — Your Personal Chief of Staff
+    word_target: 4400–5000
+    status: complete
   - number: 19
     title: The One- or Two-Person Business OS
     path: docs/part-5/19-one-two-person-business-os.md
