@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. The first half of Part II now turns that contract into a secured Mac mini installation, a three-lane model policy, and inspectable continuity boundaries. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -36,12 +36,15 @@ Read these chapters in order before granting recurring access. Returning readers
 5. [Install Hermes CLI, Desktop, and Web Dashboard](part-2/05-install-hermes-on-mac-mini.md) — prepare a dedicated macOS host, prove each Hermes interface, install the gateway, and rehearse update and rollback.
 6. [Choose Models and Route Work](part-2/06-models-and-routing.md) — adopt local/private, everyday hosted, and `gpt-5.6-sol` frontier lanes with explicit cost, privacy, fallback, and verification rules.
 7. [Personality, Context, Sessions, and Memory](part-2/07-personality-context-sessions-memory.md) — separate `SOUL.md`, project context, sessions, built-in and external memory, profiles, and Bot Mode, including what must never be remembered.
+8. [Tools, Skills, Plugins, and MCP](part-2/08-tools-skills-plugins-mcp.md) — distinguish extension types, curate a Hermes-native stack, and require permission, supply-chain, confinement, removal, and maintenance evidence.
+9. [Message Hermes Everywhere](part-2/09-message-hermes-everywhere.md) — choose secondary identities across WhatsApp Cloud, Telegram, email, SMS, and voice with pairing, group, cost, escalation, and lost-device controls.
+10. [Goals and Background Operations](part-2/10-goals-and-background-operations.md) — select goals, cron, heartbeats, loops, and hooks; make delivery duplicate-safe; and deploy four bounded recurring workflows.
 
-Complete these chapters before connecting real family or business channels. Chapter 5's installation ledger, Chapter 6's route card, and Chapter 7's retention review sheet become the operating evidence used by later workflow chapters.
+Complete these chapters before connecting real family or business channels. Chapter 5's installation ledger, Chapter 6's route card, Chapter 7's retention review sheet, Chapter 8's extension card, Chapter 9's channel card, and Chapter 10's background-operation contract become the operating evidence used by later workflow chapters.
 
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–7 are complete; later chapters remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–10 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

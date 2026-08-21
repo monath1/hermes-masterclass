@@ -46,14 +46,20 @@ chapters:
     title: Tools, Skills, Plugins, and MCP
     path: docs/part-2/08-tools-skills-plugins-mcp.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4300–5000
+    status: complete
   - number: 9
     title: Message Hermes Everywhere
     path: docs/part-2/09-message-hermes-everywhere.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4000–4600
+    status: complete
   - number: 10
     title: Goals and Background Operations
     path: docs/part-2/10-goals-and-background-operations.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4300–5000
+    status: complete
   - number: 11
     title: The Family-Safe Security Architecture
     path: docs/part-3/11-family-safe-security.md
