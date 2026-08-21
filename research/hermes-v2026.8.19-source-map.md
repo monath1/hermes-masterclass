@@ -1,0 +1,48 @@
+# Hermes Agent v2026.8.19 source map
+
+This is the research routing guide for the first edition, not a substitute for reading the cited source. The local baseline is `/tmp/hermes-agent-v2026.8.19`, checked out at tag `v2026.8.19` (Hermes Agent v0.20.5). Each repository path below maps to `https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/<path>`; authors should cite the exact URL they used in their chapter references.
+
+## Core official sources
+
+| Chapter | Pinned Hermes paths | Non-Hermes primary authorities to consult when making claims |
+| --- | --- | --- |
+| 1 | `README.md`; `website/docs/getting-started/learning-path.md`; `website/docs/user-guide/features/overview.md`; `website/docs/user-guide/security.md` | None normally needed. |
+| 2 | `website/docs/developer-guide/architecture.md`; `website/docs/developer-guide/agent-loop.md`; `website/docs/developer-guide/trajectory-format.md`; `website/docs/developer-guide/prompt-assembly.md` | [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework). |
+| 3 | `website/docs/developer-guide/agent-loop.md`; `website/docs/developer-guide/prompt-assembly.md`; `website/docs/developer-guide/session-storage.md`; `website/docs/developer-guide/trajectory-format.md` | None normally needed. |
+| 4 | `website/docs/user-guide/features/goals.md`; `website/docs/user-guide/features/delegation.md`; `website/docs/user-guide/security.md` | None normally needed. |
+| 5 | `website/docs/getting-started/installation.md`; `website/docs/getting-started/updating.md`; `website/docs/user-guide/desktop.md`; `website/docs/user-guide/cli.md`; `website/docs/user-guide/features/web-dashboard.md`; `website/docs/user-guide/profiles.md` | [Apple Platform Security](https://support.apple.com/guide/security/welcome/web). |
+| 6 | `website/docs/user-guide/configuring-models.md`; `website/docs/user-guide/features/provider-routing.md`; `website/docs/user-guide/features/fallback-providers.md`; `website/docs/reference/model-catalog.md`; `website/docs/guides/local-llm-on-mac.md`; `website/docs/guides/run-hermes-with-nous-portal.md` | [OpenAI `gpt-5.6-sol` model page](https://developers.openai.com/api/docs/models/gpt-5.6-sol); [OpenAI API docs](https://platform.openai.com/docs/). |
+| 7 | `website/docs/user-guide/features/personality.md`; `website/docs/user-guide/features/context-files.md`; `website/docs/user-guide/sessions.md`; `website/docs/user-guide/features/memory.md`; `website/docs/user-guide/features/memory-providers.md`; `website/docs/user-guide/profiles.md`; `website/docs/user-guide/bot-mode.md` | [Office of the Privacy Commissioner of Canada](https://www.priv.gc.ca/). |
+| 8 | `website/docs/user-guide/features/tools.md`; `website/docs/reference/toolsets-reference.md`; `website/docs/user-guide/features/skills.md`; `website/docs/user-guide/features/plugins.md`; `website/docs/user-guide/features/mcp.md`; `website/docs/user-guide/security.md` | [Model Context Protocol specification](https://modelcontextprotocol.io/specification). |
+| 9 | `website/docs/user-guide/messaging/index.md`; `website/docs/user-guide/messaging/whatsapp-cloud.md`; `website/docs/user-guide/messaging/telegram.md`; `website/docs/user-guide/messaging/email.md`; `website/docs/user-guide/messaging/sms.md`; `website/docs/user-guide/features/voice-mode.md` | [Meta WhatsApp Cloud API docs](https://developers.facebook.com/docs/whatsapp/cloud-api/); [Telegram Bot API](https://core.telegram.org/bots/api). |
+| 10 | `website/docs/user-guide/features/goals.md`; `website/docs/user-guide/features/cron.md`; `website/docs/user-guide/features/heartbeat.md`; `website/docs/user-guide/features/loops.md`; `website/docs/user-guide/features/hooks.md`; `website/docs/user-guide/checkpoints-and-rollback.md`; `website/docs/guides/cron-troubleshooting.md` | None normally needed. |
+| 11 | `SECURITY.md`; `website/docs/user-guide/security.md`; `website/docs/user-guide/docker.md`; `website/docs/user-guide/managed-scope.md`; `website/docs/user-guide/egress/index.md`; `website/docs/user-guide/egress/iron-proxy.md` | [Apple Platform Security](https://support.apple.com/guide/security/welcome/web); [CISA secure-by-design](https://www.cisa.gov/securebydesign). |
+| 12 | `website/docs/user-guide/secrets/index.md`; `website/docs/user-guide/secrets/onepassword.md`; `website/docs/user-guide/secrets/bitwarden.md`; `website/docs/user-guide/features/credential-pools.md`; `website/docs/user-guide/multi-profile-gateways.md`; `website/docs/user-guide/messaging/whatsapp-cloud.md` | [NIST Digital Identity Guidelines](https://pages.nist.gov/800-63-3/). |
+| 13 | `website/docs/user-guide/security.md`; `website/docs/user-guide/managed-scope.md`; `website/docs/user-guide/egress/index.md`; `website/docs/user-guide/checkpoints-and-rollback.md`; `website/docs/developer-guide/trajectory-format.md`; `website/docs/user-guide/features/hooks.md` | [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework). |
+| 14 | `website/docs/user-guide/checkpoints-and-rollback.md`; `website/docs/user-guide/sessions.md`; `website/docs/user-guide/security.md`; `website/docs/user-guide/secrets/index.md` | [PCI DSS](https://www.pcisecuritystandards.org/standards/pci-dss/); [Office of the Privacy Commissioner of Canada](https://www.priv.gc.ca/). |
+| 15 | `website/docs/guides/daily-briefing-bot.md`; `website/docs/user-guide/features/cron.md`; `website/docs/user-guide/messaging/email.md`; `website/docs/user-guide/features/browser.md`; `website/docs/user-guide/features/web-search.md`; `website/docs/user-guide/skills/bundled/productivity/productivity-weekly-review-planning.md` | None normally needed. |
+| 16 | `website/docs/user-guide/features/web-search.md`; `website/docs/user-guide/features/browser.md`; `website/docs/user-guide/features/document-extraction.md`; `website/docs/user-guide/skills/bundled/research/research-grounded-citations.md`; `website/docs/user-guide/skills/bundled/productivity/productivity-xlsx.md` | [Government of Canada Job Bank](https://www.jobbank.gc.ca/). |
+| 17 | `website/docs/user-guide/features/document-extraction.md`; `website/docs/user-guide/features/delegation.md`; `website/docs/user-guide/skills/bundled/productivity/productivity-docx.md`; `website/docs/user-guide/skills/bundled/productivity/productivity-pdf.md` | [Government of Canada Job Bank](https://www.jobbank.gc.ca/). |
+| 18 | `website/docs/user-guide/features/cron.md`; `website/docs/user-guide/features/memory.md`; `website/docs/user-guide/features/tools.md`; `website/docs/user-guide/messaging/email.md` | [Canada Revenue Agency](https://www.canada.ca/en/revenue-agency.html); [Health Canada](https://www.canada.ca/en/health-canada.html). |
+| 19 | `website/docs/user-guide/features/kanban.md`; `website/docs/user-guide/features/goals.md`; `website/docs/user-guide/features/delegation.md`; `website/docs/user-guide/features/skills.md` | None normally needed. |
+| 20 | `website/docs/user-guide/features/web-search.md`; `website/docs/user-guide/messaging/email.md`; `website/docs/user-guide/features/document-extraction.md`; `website/docs/user-guide/features/tools.md`; `website/docs/user-guide/skills/bundled/productivity/productivity-google-workspace.md` | [Competition Bureau Canada](https://competition-bureau.canada.ca/); [Canada Revenue Agency](https://www.canada.ca/en/revenue-agency.html). |
+| 21 | `website/docs/user-guide/features/delegation.md`; `website/docs/guides/delegation-patterns.md`; `website/docs/user-guide/bot-mode.md`; `website/docs/user-guide/features/codex-app-server-runtime.md`; `website/docs/developer-guide/subagent-lifecycle-api.md` | [OpenAI Codex documentation](https://developers.openai.com/codex/). |
+| 22 | `website/docs/developer-guide/trajectory-format.md`; `website/docs/user-guide/features/goals.md`; `website/docs/user-guide/features/fallback-providers.md`; `website/docs/guides/troubleshooting-agent-quality.md`; `website/docs/user-guide/checkpoints-and-rollback.md` | [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework). |
+| Appendix A | `website/docs/reference/cli-commands.md`; `website/docs/reference/slash-commands.md`; `website/docs/reference/tools-reference.md`; `website/docs/reference/profile-commands.md` | None normally needed. |
+| Appendix B | `website/docs/user-guide/features/goals.md`; `website/docs/user-guide/security.md`; `website/docs/user-guide/checkpoints-and-rollback.md` | Authorities cited by the originating chapter. |
+| Appendix C | `website/docs/reference/skills-catalog.md`; `website/docs/reference/optional-skills-catalog.md`; `website/docs/user-guide/features/plugins.md`; `website/docs/user-guide/features/mcp.md` | [Model Context Protocol specification](https://modelcontextprotocol.io/specification). |
+| Appendix D | `website/docs/getting-started/updating.md`; `website/docs/reference/faq.md`; `website/docs/guides/cron-troubleshooting.md`; `SECURITY.md` | Authorities cited by the originating chapter. |
+
+## Release-drift checks
+
+Run these from a clean clone before changing a version-sensitive statement:
+
+```shell
+git -C /tmp/hermes-agent-v2026.8.19 describe --tags --exact-match HEAD
+git -C /tmp/hermes-agent-v2026.8.19 rev-parse HEAD
+git ls-remote --tags https://github.com/NousResearch/hermes-agent.git 'v*'
+git -C /tmp/hermes-agent-v2026.8.19 fetch --tags origin
+git -C /tmp/hermes-agent-v2026.8.19 diff v2026.8.19..origin/main -- website/docs
+```
+
+If a newer tag changes a referenced behavior, keep the pinned statement for this edition or deliberately update the baseline, source map, image provenance, and every affected chapter together. Record the verification date in the chapter references.

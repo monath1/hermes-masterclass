@@ -1,0 +1,103 @@
+product_baseline: Hermes Agent v0.20.5 (2026-08-19)
+chapters:
+  - number: 1
+    title: "Meet Hermes: An Agent That Stays on the Job"
+    path: docs/part-1/01-meet-hermes.md
+    part: Part I — From Chatbot to Colleague
+  - number: 2
+    title: Agentic AI From First Principles
+    path: docs/part-1/02-agentic-ai-first-principles.md
+    part: Part I — From Chatbot to Colleague
+  - number: 3
+    title: The Hermes Loop
+    path: docs/part-1/03-hermes-loop.md
+    part: Part I — From Chatbot to Colleague
+  - number: 4
+    title: Write the Job Description
+    path: docs/part-1/04-write-the-job-description.md
+    part: Part I — From Chatbot to Colleague
+  - number: 5
+    title: Install Hermes CLI, Desktop, and Web Dashboard
+    path: docs/part-2/05-install-hermes-on-mac-mini.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 6
+    title: Choose Models and Route Work
+    path: docs/part-2/06-models-and-routing.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 7
+    title: Personality, Context, Sessions, and Memory
+    path: docs/part-2/07-personality-context-sessions-memory.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 8
+    title: Tools, Skills, Plugins, and MCP
+    path: docs/part-2/08-tools-skills-plugins-mcp.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 9
+    title: Message Hermes Everywhere
+    path: docs/part-2/09-message-hermes-everywhere.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 10
+    title: Goals and Background Operations
+    path: docs/part-2/10-goals-and-background-operations.md
+    part: Part II — Build the Mac mini Foundation
+  - number: 11
+    title: The Family-Safe Security Architecture
+    path: docs/part-3/11-family-safe-security.md
+    part: Part III — Build the Trust Envelope
+  - number: 12
+    title: Identities, Burner Accounts, and Secrets
+    path: docs/part-3/12-identities-burner-accounts-secrets.md
+    part: Part III — Build the Trust Envelope
+  - number: 13
+    title: Approvals, Autonomy, Egress, and Audit
+    path: docs/part-3/13-approvals-autonomy-egress-audit.md
+    part: Part III — Build the Trust Envelope
+  - number: 14
+    title: Sensitive Data, Backups, and Recovery
+    path: docs/part-3/14-sensitive-data-backups-recovery.md
+    part: Part III — Build the Trust Envelope
+  - number: 15
+    title: Daily and Weekly Operating Rhythms
+    path: docs/part-4/15-daily-weekly-operating-rhythms.md
+    part: Part IV — Your Personal Chief of Staff
+  - number: 16
+    title: The Job-Search and Opportunity Pipeline
+    path: docs/part-4/16-job-search-opportunity-pipeline.md
+    part: Part IV — Your Personal Chief of Staff
+  - number: 17
+    title: Résumé, Interview, and Brand Overhaul
+    path: docs/part-4/17-resume-interview-brand.md
+    part: Part IV — Your Personal Chief of Staff
+  - number: 18
+    title: Family Operations in Canada
+    path: docs/part-4/18-family-operations-canada.md
+    part: Part IV — Your Personal Chief of Staff
+  - number: 19
+    title: The One- or Two-Person Business OS
+    path: docs/part-5/19-one-two-person-business-os.md
+    part: Part V — Your First Digital Employee
+  - number: 20
+    title: Research, Sales, Marketing, Support, and Finance
+    path: docs/part-5/20-business-functions.md
+    part: Part V — Your First Digital Employee
+  - number: 21
+    title: Hermes as Manager
+    path: docs/part-5/21-hermes-as-manager.md
+    part: Part V — Your First Digital Employee
+  - number: 22
+    title: Evaluation, Observability, and the 90-Day Capstone
+    path: docs/part-6/22-evaluation-observability-capstone.md
+    part: Part VI — Advanced Operations
+appendices:
+  - letter: A
+    title: Commands and interface reference
+    path: docs/appendices/appendix-a-command-reference.md
+  - letter: B
+    title: Copy-ready charters, policies, prompts, checklists, and playbooks
+    path: docs/appendices/appendix-b-templates-playbooks.md
+  - letter: C
+    title: Curated native skill/plugin/MCP stack
+    path: docs/appendices/appendix-c-curated-stack.md
+  - letter: D
+    title: Troubleshooting, glossary, bibliography, version ledger, and source provenance
+    path: docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md
