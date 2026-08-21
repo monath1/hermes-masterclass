@@ -141,7 +141,7 @@ Cron is handled by the gateway, which normally ticks every 60 seconds. Each due 
 Create and manage jobs through supported interfaces:
 
 ```bash
-hermes cron create "every 2h" "Check the named public source and report only verified changes."
+hermes cron create --help
 hermes cron list
 hermes cron pause <job-id-or-name>
 hermes cron resume <job-id-or-name>
@@ -156,6 +156,29 @@ hermes cron status
 The scheduler's file lock prevents overlapping ticks from claiming the same due batch. Each attempt is written to `~/.hermes/cron/executions.db` as claimed, running, and then completed, failed, or unknown. If the owner process dies, an abandoned attempt becomes `unknown` only after process identity proves the owner is gone. Hermes does not automatically rerun unknown work. Inspect with `hermes cron runs <job-id> --limit 20` before deciding.
 
 Job prompts are scanned at creation/update, and pre-dispatch checks can block a missing provider credential, unready skill, or unknown delivery target without spending model tokens. Keep this fail-closed preflight enabled. Pin model/provider for recurring work so a global model change does not silently change cost or data routing; Hermes's default drift guard blocks affected unpinned jobs and alerts once.
+
+Before copying any agent-backed cron example below, qualify one economical local or everyday-hosted pair with Chapter 6's synthetic tool test, data-route check, cost check, and provider dashboard/endpoint evidence. Record the exact provider and model identifiers in the route card. Then edit this setup block and change `hermes_routine_route_reviewed` to `YES`. The sentinels deliberately fail before any `cron create` command:
+
+```bash
+hermes_routine_provider="REPLACE_WITH_QUALIFIED_LOCAL_OR_EVERYDAY_PROVIDER"
+hermes_routine_model="REPLACE_WITH_EXACT_QUALIFIED_MODEL_ID"
+hermes_routine_route_reviewed="NO"
+
+hermes_require_qualified_cron_route() {
+  if [[ -z "${hermes_routine_provider:-}" ||
+        "$hermes_routine_provider" == REPLACE_* ||
+        -z "${hermes_routine_model:-}" ||
+        "$hermes_routine_model" == REPLACE_* ||
+        "${hermes_routine_route_reviewed:-NO}" != "YES" ]]; then
+    printf '%s\n' "STOP: qualify and record an economical cron provider/model first." >&2
+    return 64
+  fi
+}
+
+hermes_require_qualified_cron_route
+```
+
+The guard is repeated with `&&` before every creation command. If a reader skips this block, the missing function stops the command chain; if the block is unchanged, the function returns non-zero. A complex review may receive its own separately benchmarked everyday pair, but only through the same sentinel-and-review pattern. The frontier lane remains an exceptional, owner-approved escalation for complex work under Chapter 6's evidence, data, and budget rules—not a routine briefing, reminder, watch, or weekly-review default.
 
 Not every schedule needs a model. A no-agent job is preferable for a deterministic threshold whose script already produces the exact alert. Hermes runs scripts from its bounded scripts directory, sanitizes inherited environment, delivers non-empty standard output, stays silent on empty output, and alerts on non-zero exit or timeout. A pre-check script on an agent job can instead print `{"wakeAgent": false}` to avoid an unnecessary model call when nothing changed. Keep the mechanical predicate in code and reserve the model for interpretation; this lowers cost and removes a source of invented “changes.”
 
@@ -188,12 +211,13 @@ Use four explicit continuity forms:
 For example:
 
 ```bash
-hermes -p career cron create "every 6h" \
+hermes_require_qualified_cron_route &&
+  hermes -p career cron create "every 6h" \
   "Check only the public opportunity URLs in /Users/hermes/Workspaces/career/deadline-ledger.md. Report deadlines not present in the prior output, with source URL and observed time." \
   --name "career-deadline-watch" \
   --workdir /Users/hermes/Workspaces/career \
-  --provider openai-api \
-  --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver telegram \
   --continuity
 ```
@@ -274,44 +298,49 @@ Inspect checkpoint storage as an operational resource. `hermes checkpoints statu
 
 ### Install four quiet automation blueprints
 
-Run each blueprint manually with synthetic sources, then create it with `--deliver local`. After seven correct runs and a delivery drill, change only the route. Each command selects its Hermes profile with the documented global `-p` flag. The example directories below belong to the dedicated `hermes` macOS account; create and inspect each absolute directory before running a command. `--workdir` is a documented cron option, not decoration: it makes file tools deterministic and loads only that workspace's project instructions. If a deployment assigns profiles to separate OS accounts, execute each command as that account and use its own inaccessible workspace instead.
-
-Every example also pins `--provider openai-api --model gpt-5.6-sol`, a concrete pair verified in Chapter 6 and supported by Hermes's user-owned cron pin flags. These tutorial inputs must be synthetic, redacted, or explicitly approved for that hosted route. If policy requires a local or everyday lane, first qualify an exact provider/model pair through Chapter 6, replace both values in the command, and record the choice; never deploy with an implicit global route.
+Run each blueprint manually with synthetic sources, then create it with `--deliver local`. After seven correct runs and a delivery drill, change only the route. Keep the qualified variables and guard from the setup block in the same shell. Each command selects its Hermes profile with the documented global `-p` flag. The example directories below belong to the dedicated `hermes` macOS account; create and inspect each absolute directory before running a command. `--workdir` makes file tools deterministic and loads only that workspace's project instructions. If profiles use separate OS accounts, execute each command as that account and use its own inaccessible workspace.
 
 **Weekday daily briefing.** Coalesce after downtime and produce only internal summaries:
 
 ```bash
-hermes -p family cron create "0 7 * * 1-5" \
+hermes_require_qualified_cron_route &&
+  hermes -p family cron create "0 7 * * 1-5" \
   "Prepare today's family briefing only from /Users/hermes/Workspaces/family-ops/briefing-input.md and /Users/hermes/Workspaces/family-ops/school-bulletins/. State source timestamps and missing inputs. Do not read career or Harbourlight paths; do not send, book, purchase, or alter source records." \
   --name "family-weekday-briefing" \
   --workdir /Users/hermes/Workspaces/family-ops \
-  --provider openai-api \
-  --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local
 ```
 
 **Weekly review.** Run three separate reviews so no job crosses family, career, and business profiles. Staggering them also makes failures attributable:
 
 ```bash
-hermes -p family cron create "0 18 * * 0" \
+hermes_require_qualified_cron_route &&
+  hermes -p family cron create "0 18 * * 0" \
   "Review only /Users/hermes/Workspaces/family-ops/weekly-input.md for the seven-day period ending today. Separate completed, carried, blocked, and adult decisions; do not contact anyone." \
   --name "family-weekly-review" \
   --workdir /Users/hermes/Workspaces/family-ops \
-  --provider openai-api --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local
 
-hermes -p career cron create "15 18 * * 0" \
+hermes_require_qualified_cron_route &&
+  hermes -p career cron create "15 18 * * 0" \
   "Review only /Users/hermes/Workspaces/career/weekly-input.md. Separate evidence gathered, drafts, deadlines, blockers, and Priya's decisions; never submit or contact an employer." \
   --name "career-weekly-review" \
   --workdir /Users/hermes/Workspaces/career \
-  --provider openai-api --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local
 
-hermes -p harbourlight cron create "30 18 * * 0" \
+hermes_require_qualified_cron_route &&
+  hermes -p harbourlight cron create "30 18 * * 0" \
   "Review only /Users/hermes/Workspaces/harbourlight/weekly-input-redacted.md. Separate completed, carried, blocked, and owner decisions; never contact customers, change accounts, or commit funds." \
   --name "harbourlight-weekly-review" \
   --workdir /Users/hermes/Workspaces/harbourlight \
-  --provider openai-api --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local
 ```
 
@@ -320,12 +349,13 @@ A combined owner view is optional and is not created by these jobs. A human-appr
 **Deadline watch.** Use continuity plus an authoritative ledger; alert only on new or changed verified deadlines:
 
 ```bash
-hermes -p career cron create "every 6h" \
+hermes_require_qualified_cron_route &&
+  hermes -p career cron create "every 6h" \
   "Check only the public opportunity URLs in /Users/hermes/Workspaces/career/deadline-ledger.md. Verify each closing date at its source. Report new, changed, or unreachable entries with observed time; otherwise return [SILENT]. Never submit or contact an employer." \
   --name "career-deadline-watch" \
   --workdir /Users/hermes/Workspaces/career \
-  --provider openai-api \
-  --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local \
   --continuity
 ```
@@ -333,12 +363,13 @@ hermes -p career cron create "every 6h" \
 **Household reminder.** Use a wall-clock expression for a recurring weekly preparation reminder; the result is a reminder, not an action:
 
 ```bash
-hermes -p family cron create "0 19 * * 4" \
+hermes_require_qualified_cron_route &&
+  hermes -p family cron create "0 19 * * 4" \
   "Remind the family to review Friday school bags and forms. List only items in /Users/hermes/Workspaces/family-ops/school-checklist.md and state its update time. If missing or stale, ask an adult to inspect it; do not infer children's requirements." \
   --name "thursday-school-check" \
   --workdir /Users/hermes/Workspaces/family-ops \
-  --provider openai-api \
-  --model gpt-5.6-sol \
+  --provider "$hermes_routine_provider" \
+  --model "$hermes_routine_model" \
   --deliver local
 ```
 
@@ -453,11 +484,11 @@ Re-entry tests and approver:
 
 ## Exercise
 
-Design the four Chen–Patel workflow families from this chapter for `America/Toronto`. Split any family, career, and Harbourlight work into separate jobs with absolute workspaces. For each, specify mechanism, schedule, self-contained inputs, toolsets, concrete provider/model pin, state/watermark, delivery, missed-run rule, idempotency key, Green/Amber/Red boundary, kill procedure, and proof of success. Then analyze this incident: the gateway restarts while the deadline watch is sending an alert; the run becomes `unknown`, the alert appears once, and the job's watermark did not advance. Decide whether to run it again.
+Design the four Chen–Patel workflow families from this chapter for `America/Toronto`. Split any family, career, and Harbourlight work into separate jobs with absolute workspaces. For each, specify mechanism, schedule, self-contained inputs, toolsets, a guarded exact local/everyday provider-model pair, state/watermark, delivery, missed-run rule, idempotency key, Green/Amber/Red boundary, kill procedure, and proof of success. Then analyze this incident: the gateway restarts while the deadline watch is sending an alert; the run becomes `unknown`, the alert appears once, and the job's watermark did not advance. Decide whether to run it again.
 
 ## Answer or rubric
 
-The daily briefing, weekly review, deadline watch, and household reminder are cron workflow families because they need durable schedules. Family, career, and Harbourlight reviews become separate jobs with separate absolute workdirs, credentials, and output paths. A combined owner summary can read only human-approved redacted/declassified exports in a narrow handoff workspace. Use explicit private delivery only after local probation. The briefing coalesces, each weekly review catches up once with a labeled period, the deadline watch escalates a coverage gap and uses source IDs plus continuity, and a stale household reminder skips. Every job names sources, time zone, observation timestamp, authority, missing-input behaviour, and an explicit provider/model pin.
+The daily briefing, weekly review, deadline watch, and household reminder are cron workflow families because they need durable schedules. Family, career, and Harbourlight reviews become separate jobs with separate absolute workdirs, credentials, and output paths. A combined owner summary can read only human-approved redacted/declassified exports in a narrow handoff workspace. Use explicit private delivery only after local probation. The briefing coalesces, each weekly review catches up once with a labeled period, the deadline watch escalates a coverage gap and uses source IDs plus continuity, and a stale household reminder skips. Every job names sources, time zone, observation timestamp, authority, and missing-input behaviour; its qualified economical provider/model variables pass the sentinel guard before creation. Frontier routing remains a separately approved exception, not a default.
 
 For the incident, `unknown` plus one visible alert is evidence that delivery may have succeeded. Do not blind-run or infer that cron will replay the result. Inspect `hermes cron runs`, saved output or `last_output`, scheduler logs, the provider's message ID/history, and the source ledger. The ordinary gateway final-response ledger is outside the cron delivery path. If the intended alert with the same period/key exists, repair the watermark through the approved state procedure without sending again. If provider evidence proves absence, rerun with the same intent key. If uncertainty remains, ask the owner and label it. Award two points each for mechanism choice, time semantics, explicit state, missed-run policy, duplicate safety, authority, layered kill procedure, and evidence-based incident handling. Thirteen of sixteen indicates mastery.
 
