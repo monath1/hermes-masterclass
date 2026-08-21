@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -78,6 +79,31 @@ def run_check(book_root: Path, *args: str) -> subprocess.CompletedProcess[str]:
         check=False,
         capture_output=True,
         text=True,
+    )
+
+
+def provenance_entry(**overrides: object) -> dict[str, object]:
+    entry: dict[str, object] = {
+        "filename": "dashboard-admin-system-top.png",
+        "upstream_path": "website/static/img/dashboard/admin-system-top.png",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [5, 13],
+        "alt": "Hermes web dashboard administration screen showing top-level system controls.",
+    }
+    entry.update(overrides)
+    return entry
+
+
+def write_provenance(book_root: Path, entry: dict[str, object]) -> None:
+    images = book_root / "docs/assets/images/hermes"
+    images.mkdir(parents=True, exist_ok=True)
+    (images / "dashboard-admin-system-top.png").write_bytes(b"fixture image")
+    (book_root / "docs/assets/images/PROVENANCE.md").write_text(
+        "# Fixture provenance\n\ndashboard-admin-system-top.png\n", encoding="utf-8"
+    )
+    (book_root / "docs/assets/images/provenance.yml").write_text(
+        yaml.safe_dump({"assets": [entry]}, sort_keys=False), encoding="utf-8"
     )
 
 
@@ -196,3 +222,62 @@ def test_reports_accidental_secret_patterns(tmp_path: Path) -> None:
 
     assert result.returncode == 1
     assert "possible secret: docs/part-1/01-meet-hermes.md: OPENAI_API_KEY" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("field", "diagnostic"),
+    [
+        ("filename", "missing provenance field: assets[0]: filename"),
+        ("upstream_path", "missing provenance field: assets[0]: upstream_path"),
+        ("tag", "missing provenance field: assets[0]: tag"),
+        ("license", "missing provenance field: assets[0]: license"),
+        ("chapters", "missing provenance field: assets[0]: chapters"),
+        ("alt", "missing provenance field: assets[0]: alt"),
+    ],
+)
+def test_final_mode_rejects_missing_provenance_fields(
+    tmp_path: Path, field: str, diagnostic: str
+) -> None:
+    write_book(tmp_path)
+    entry = provenance_entry()
+    entry.pop(field)
+    write_provenance(tmp_path, entry)
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert diagnostic in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "diagnostic"),
+    [
+        ("filename", "unknown.png", "unregistered provenance filename: unknown.png"),
+        ("upstream_path", "website/static/img/dashboard/wrong.png", "wrong provenance upstream_path: dashboard-admin-system-top.png"),
+        ("tag", "v0.0.0", "wrong provenance tag: dashboard-admin-system-top.png: expected v2026.8.19"),
+        ("license", "Apache-2.0", "wrong provenance license: dashboard-admin-system-top.png: expected MIT"),
+        ("chapters", "5", "invalid provenance chapters: dashboard-admin-system-top.png"),
+        ("alt", "", "invalid provenance alt: dashboard-admin-system-top.png"),
+    ],
+)
+def test_final_mode_rejects_wrong_provenance_fields(
+    tmp_path: Path, field: str, value: object, diagnostic: str
+) -> None:
+    write_book(tmp_path)
+    write_provenance(tmp_path, provenance_entry(**{field: value}))
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert diagnostic in result.stdout
+
+
+def test_final_mode_rejects_an_image_without_provenance_registration(tmp_path: Path) -> None:
+    write_book(tmp_path)
+    write_provenance(tmp_path, provenance_entry())
+    (tmp_path / "docs/assets/images/hermes/unregistered.png").write_bytes(b"fixture image")
+
+    result = run_check(tmp_path, "--final")
+
+    assert result.returncode == 1
+    assert "unregistered image: docs/assets/images/hermes/unregistered.png" in result.stdout

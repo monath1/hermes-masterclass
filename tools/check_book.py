@@ -65,6 +65,57 @@ SECRET_PATTERNS = (
     ("OpenAI key", re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b")),
     ("private key", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----")),
 )
+PROVENANCE_FIELDS = ("filename", "upstream_path", "tag", "license", "chapters", "alt")
+EXPECTED_IMAGE_PROVENANCE = {
+    "dashboard-admin-system-top.png": {
+        "upstream_path": "website/static/img/dashboard/admin-system-top.png",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [5, 13],
+    },
+    "dashboard-models-overview.png": {
+        "upstream_path": "website/static/img/docs/dashboard-models/overview.png",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [6],
+    },
+    "tui-session-orchestrator.png": {
+        "upstream_path": "website/static/img/docs/tui-session-orchestrator/session-orchestrator.png",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [3, 10, 21],
+    },
+    "desktop-session-source-folders.png": {
+        "upstream_path": "apps/desktop/pr-assets/session-source-folders.png",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [5, 7],
+    },
+    "feature-connect.webp": {
+        "upstream_path": "apps/desktop/src/assets/tiers/feature-connect.webp",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [9],
+    },
+    "feature-automation.webp": {
+        "upstream_path": "apps/desktop/src/assets/tiers/feature-automation.webp",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [10],
+    },
+    "feature-sandbox.webp": {
+        "upstream_path": "apps/desktop/src/assets/tiers/feature-sandbox.webp",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [11],
+    },
+    "feature-memory.webp": {
+        "upstream_path": "apps/desktop/src/assets/tiers/feature-memory.webp",
+        "tag": "v2026.8.19",
+        "license": "MIT",
+        "chapters": [7],
+    },
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -181,14 +232,66 @@ def validate_file(root: Path, path: Path, final: bool, is_chapter: bool, failure
 
 
 def validate_provenance(root: Path, failures: list[str]) -> None:
-    provenance = root / "docs/assets/images/PROVENANCE.md"
-    if not provenance.is_file():
+    provenance_markdown = root / "docs/assets/images/PROVENANCE.md"
+    provenance_manifest = root / "docs/assets/images/provenance.yml"
+    image_directory = root / "docs/assets/images/hermes"
+    if not provenance_markdown.is_file():
         failures.append("missing screenshot provenance: docs/assets/images/PROVENANCE.md")
+    if not provenance_manifest.is_file():
+        failures.append("missing provenance manifest: docs/assets/images/provenance.yml")
         return
-    content = provenance.read_text(encoding="utf-8")
-    for asset in sorted((root / "docs/assets/images/hermes").glob("*")) if (root / "docs/assets/images/hermes").exists() else []:
-        if asset.is_file() and asset.name not in content:
-            failures.append(f"missing screenshot provenance entry: docs/assets/images/hermes/{asset.name}")
+    try:
+        data = yaml.safe_load(provenance_manifest.read_text(encoding="utf-8"))
+    except yaml.YAMLError as error:
+        failures.append(f"invalid provenance YAML: {error}")
+        return
+    entries = data.get("assets") if isinstance(data, dict) else None
+    if not isinstance(entries, list):
+        failures.append("invalid provenance manifest: assets must be a list")
+        return
+
+    registered: set[str] = set()
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            failures.append(f"invalid provenance entry: assets[{index}]")
+            continue
+        for field in PROVENANCE_FIELDS:
+            if field not in entry:
+                failures.append(f"missing provenance field: assets[{index}]: {field}")
+        filename = entry.get("filename")
+        if not isinstance(filename, str) or not filename:
+            continue
+        if filename not in EXPECTED_IMAGE_PROVENANCE:
+            failures.append(f"unregistered provenance filename: {filename}")
+            continue
+        if filename in registered:
+            failures.append(f"duplicate provenance filename: {filename}")
+            continue
+        registered.add(filename)
+        expected = EXPECTED_IMAGE_PROVENANCE[filename]
+        for field in ("upstream_path", "tag", "license"):
+            if field in entry and entry[field] != expected[field]:
+                expected_value = expected[field]
+                if field == "tag":
+                    failures.append(f"wrong provenance tag: {filename}: expected {expected_value}")
+                else:
+                    failures.append(f"wrong provenance {field}: {filename}: expected {expected_value}")
+        chapters = entry.get("chapters")
+        if not isinstance(chapters, list) or not chapters or not all(isinstance(chapter, int) for chapter in chapters):
+            failures.append(f"invalid provenance chapters: {filename}")
+        elif chapters != expected["chapters"]:
+            failures.append(f"wrong provenance chapters: {filename}: expected {expected['chapters']}")
+        alt = entry.get("alt")
+        if not isinstance(alt, str) or len(alt.strip()) < 10:
+            failures.append(f"invalid provenance alt: {filename}")
+
+    actual_images = sorted(path for path in image_directory.glob("*") if path.is_file()) if image_directory.exists() else []
+    for asset in actual_images:
+        if asset.name not in registered:
+            failures.append(f"unregistered image: docs/assets/images/hermes/{asset.name}")
+    for filename in sorted(registered):
+        if not (image_directory / filename).is_file():
+            failures.append(f"provenance references missing image: docs/assets/images/hermes/{filename}")
 
 
 def main() -> int:
