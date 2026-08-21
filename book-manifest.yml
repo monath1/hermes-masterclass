@@ -124,10 +124,14 @@ chapters:
     title: Hermes as Manager
     path: docs/part-5/21-hermes-as-manager.md
     part: Part V — Your First Digital Employee
+    word_target: 4400–5000
+    status: complete
   - number: 22
     title: Evaluation, Observability, and the 90-Day Capstone
     path: docs/part-6/22-evaluation-observability-capstone.md
     part: Part VI — Advanced Operations
+    word_target: 4800–5300
+    status: complete
 appendices:
   - letter: A
     title: Commands and interface reference
