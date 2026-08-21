@@ -86,6 +86,72 @@ CHAPTER_16_STATES = {
     "closed",
     "withdrawn",
 }
+OFFICIAL_REFERENCE_URLS = (
+    "https://www.jobbank.gc.ca/termsofuse-seeker.xhtml",
+    "https://www.jobbank.gc.ca/jobsearch/",
+    "https://www.linkedin.com/legal/user-agreement",
+    "https://www.linkedin.com/help/linkedin/answer/a1341387/prohibited-software-and-extensions",
+    "https://antifraudcentre-centreantifraude.ca/scams-fraudes/job-emploi-eng.htm",
+)
+AFFIRMATIVE_MODAL = r"(?:may|can|should|must|will|is\s+allowed\s+to)"
+UNSAFE_AUTHORIZATION_PATTERNS = (
+    (
+        "primary-inbox access",
+        re.compile(
+            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+(?:directly\s+)?"
+            r"(?:access|read|manage|connect\s+to)\s+"
+            r"(?:(?:Priya|Alex)(?:['’]s)\s+|the\s+)?primary\s+inbox\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "account sharing",
+        re.compile(
+            rf"\b(?:Priya|Alex|the\s+candidate|the\s+user|users?)\s+"
+            rf"{AFFIRMATIVE_MODAL}\s+(?:share|give|provide)\s+"
+            r"(?:(?:her|his|their|the)\s+)?"
+            r"(?:(?:Job\s+Bank|LinkedIn|job[- ]platform)\s+)?"
+            r"(?:account(?:\s+credentials)?|credentials?|password|sign[- ]in)\s+"
+            r"(?:with|to)\s+Hermes\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "Job Bank or LinkedIn automation/scraping",
+        re.compile(
+            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
+            r"(?:automate|scrape|crawl|screen[- ]scrape)\b"
+            r"[^.\n]*(?:Job\s+Bank|LinkedIn)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "bulk/spam outreach",
+        re.compile(
+            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
+            r"(?:send|generate|automate)\b[^.\n]*"
+            r"(?:bulk|spam)\b[^.\n]*(?:outreach|messages?|emails?)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "fabricated claims",
+        re.compile(
+            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
+            r"(?:fabricate|invent|make\s+up)\b[^.\n]*"
+            r"(?:claims?|credentials?|experience|relationships?|results?)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "submission without approval",
+        re.compile(
+            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+submit\b[^.\n]*"
+            r"(?:without|before)\s+[^.\n]*approval\b",
+            re.IGNORECASE,
+        ),
+    ),
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -110,6 +176,25 @@ def extract_state_vocabulary(text: str, label: str, failures: list[str]) -> set[
         failures.append(f"missing canonical state vocabulary: {label}")
         return set()
     return set(re.findall(r"`([^`]+)`", match.group("states")))
+
+
+def reject_unsafe_authorizations(text: str, failures: list[str]) -> None:
+    """Reject affirmative unsafe permissions without matching explicit negations."""
+    for label, pattern in UNSAFE_AUTHORIZATION_PATTERNS:
+        match = pattern.search(text)
+        if match is not None:
+            failures.append(f"unsafe authorization: {label}: {match.group(0)}")
+
+
+def validate_official_references(text: str, failures: list[str]) -> None:
+    """Require the exact official reference and a visible same-line access date."""
+    for url in OFFICIAL_REFERENCE_URLS:
+        reference_lines = [line for line in text.splitlines() if f"]({url})" in line]
+        if not reference_lines:
+            failures.append(f"missing exact official reference URL: {url}")
+            continue
+        if not any("accessed 2026-08-21" in line.casefold() for line in reference_lines):
+            failures.append(f"missing visible verification date: {url}")
 
 
 def validate_source(source: Path, failures: list[str]) -> None:
@@ -217,6 +302,9 @@ def audit_task7(root: Path, hermes_source: Path | None = None) -> list[str]:
         "fresh exact submission approval",
     ):
         require(chapter_16, phrase, "Chapter 16 uncertain-submission control", failures)
+
+    reject_unsafe_authorizations(combined, failures)
+    validate_official_references(chapter_16, failures)
 
     pinned_pattern = re.compile(
         r"https://github\.com/NousResearch/hermes-agent/blob/v2026\.8\.19/([^\s)#]+)"

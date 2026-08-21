@@ -209,6 +209,37 @@ def test_completed_chapter_requires_a_valid_manifest_word_target(
     ) in result.stdout
 
 
+@pytest.mark.parametrize(
+    ("include_path", "path_value"),
+    [
+        pytest.param(False, None, id="missing"),
+        pytest.param(True, 15, id="non-string"),
+        pytest.param(True, "", id="empty"),
+    ],
+)
+def test_completed_chapter_requires_a_non_empty_string_path_before_target_parsing(
+    tmp_path: Path, include_path: bool, path_value: object
+) -> None:
+    entry: dict[str, object] = {
+        "number": 1,
+        "title": "Fixture",
+        "part": "Part I",
+        "word_target": "not-a-range",
+        "status": "complete",
+    }
+    if include_path:
+        entry["path"] = path_value
+    write_book(tmp_path, chapters=[entry])
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert (
+        "invalid completed chapter path: chapter 1: expected a non-empty string"
+    ) in result.stdout
+    assert "invalid completed chapter word_target" not in result.stdout
+
+
 def test_incremental_mode_reports_a_missing_completed_chapter(tmp_path: Path) -> None:
     entry = {
         "number": 1,

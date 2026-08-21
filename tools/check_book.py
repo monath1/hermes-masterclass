@@ -170,7 +170,13 @@ def validate_manifest(
         if not isinstance(entry, dict) or entry.get("status") != "complete":
             continue
         path = entry.get("path")
-        label = path if isinstance(path, str) else f"chapter {entry.get('number', '?')}"
+        chapter_label = f"chapter {entry.get('number', '?')}"
+        if not isinstance(path, str) or not path.strip():
+            failures.append(
+                f"invalid completed chapter path: {chapter_label}: expected a non-empty string"
+            )
+            continue
+        label = path
         target = entry.get("word_target")
         match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
         if match is None or int(match.group(1)) > int(match.group(2)):
@@ -178,8 +184,7 @@ def validate_manifest(
                 f"invalid completed chapter word_target: {label}: expected MIN–MAX with MIN <= MAX"
             )
             continue
-        if isinstance(path, str):
-            completed_word_targets[path] = (int(match.group(1)), int(match.group(2)))
+        completed_word_targets[path] = (int(match.group(1)), int(match.group(2)))
 
     if final:
         if numbers != list(range(1, 23)):
