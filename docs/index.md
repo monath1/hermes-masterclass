@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III begins by placing those capabilities inside OS-enforced host boundaries and isolated identity and secret lifecycles. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -46,12 +46,14 @@ Complete these chapters before connecting real family or business channels. Chap
 
 11. [The Family-Safe Security Architecture](part-3/11-family-safe-security.md) — model threats to the Chen–Patel family, make OS isolation the load-bearing boundary, constrain files, browsers, networks, and automation, and rehearse stop and rebuild.
 12. [Identities, Burner Accounts, and Secrets](part-3/12-identities-burner-accounts-secrets.md) — keep primary identities outside Hermes, isolate family/business/test accounts, operate scoped secret providers, and prove rotation, recovery, offboarding, and quarterly review.
+13. [Approvals, Autonomy, Egress, and Audit](part-3/13-approvals-autonomy-egress-audit.md) — turn Green/Amber/Red into expiring action rules, keep unattended work fail closed, bind tools and egress, sample evidence monthly, and revoke authority completely.
+14. [Sensitive Data, Backups, and Recovery](part-3/14-sensitive-data-backups-recovery.md) — minimize personal, payment, health, school, employment, tax, and business data; distinguish access, encryption, and backup; test restores; and rehearse four incident drills.
 
-Complete these chapters before giving later workflow chapters sensitive data or external authority. Chapter 11's threat-and-boundary card and Chapter 12's identity register make the trust envelope auditable instead of aspirational.
+Complete these chapters before giving later workflow chapters sensitive data or external authority. Chapter 11's boundary card, Chapter 12's identity register, Chapter 13's authority-and-audit card, and Chapter 14's data-and-recovery card make the trust envelope auditable and recoverable instead of aspirational.
 
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–12 are complete; later chapters remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–14 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

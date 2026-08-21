@@ -76,10 +76,14 @@ chapters:
     title: Approvals, Autonomy, Egress, and Audit
     path: docs/part-3/13-approvals-autonomy-egress-audit.md
     part: Part III — Build the Trust Envelope
+    word_target: 4200–4800
+    status: complete
   - number: 14
     title: Sensitive Data, Backups, and Recovery
     path: docs/part-3/14-sensitive-data-backups-recovery.md
     part: Part III — Build the Trust Envelope
+    word_target: 4400–5000
+    status: complete
   - number: 15
     title: Daily and Weekly Operating Rhythms
     path: docs/part-4/15-daily-weekly-operating-rhythms.md
