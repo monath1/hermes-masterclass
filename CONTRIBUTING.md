@@ -21,6 +21,7 @@ python3 -m venv .venv
 .venv/bin/mkdocs build --strict
 .venv/bin/python tools/check_book.py
 .venv/bin/python tools/check_task6.py --hermes-source /tmp/hermes-agent-v2026.8.19
+.venv/bin/python tools/check_task7.py --hermes-source /tmp/hermes-agent-v2026.8.19
 ```
 
 Use `--final` only once all 22 chapters and four appendices exist. Run `git diff --check` before committing.

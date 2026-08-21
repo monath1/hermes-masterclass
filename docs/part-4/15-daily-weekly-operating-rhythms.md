@@ -30,6 +30,8 @@ At 5:15, Hermes produces a handback: two outcomes completed, one blocked, one ne
 
 **Commitment ledger.** The authoritative internal list of promises, with owner, outcome, source, due or review date, state, evidence, and next action. It is operational state, not built-in memory.
 
+**Unresolved field.** The literal `unresolved` marker for an owner, date, or other required value absent from the source and not yet supplied by a human.
+
 **Waiting item.** A commitment whose next move belongs to somebody else. It still needs an internal owner and a follow-up or review date; silence is not completion.
 
 **Stale item.** A record whose date, source, owner, desired outcome, or last meaningful activity no longer supports action. Stale does not mean unimportant. It means the record needs a decision.
@@ -89,7 +91,7 @@ That line prevents “nothing was mentioned” from becoming “nothing exists.�
 
 ### Make the commitment ledger the quiet centre
 
-Briefings fail when every run reconstructs promises from chat. Create one ledger per authority domain: family, career, and Harbourlight. Do not combine them in one workbook just to create a universal dashboard. A human-approved owner handoff may include selected rows, but the source ledgers stay separate.
+Create separate family, career, and Harbourlight ledgers instead of reconstructing promises from chat or combining domains. An approved owner handoff may include selected rows.
 
 A Markdown table, CSV, or XLSX workbook is enough. The bundled `xlsx` skill can create and inspect a workbook when spreadsheet features add value; ordinary Markdown is easier to diff and recover. Whatever format you choose, every row needs:
 
@@ -106,7 +108,7 @@ A Markdown table, CSV, or XLSX workbook is enough. The bundled `xlsx` skill can 
 - completion evidence or cancellation reason;
 - approval/action ID for an external effect.
 
-Hermes may propose rows from notes. A human accepts unstated owners and deadlines. The meeting-action skill likewise separates decisions, proposals, commitments, questions, and risks; unresolved fields remain unresolved. Never turn “we should look at camps” into “Priya will register Ben by Friday.”
+Each proposed row starts `captured`. `unresolved` is a field value, not a ledger state. Hermes must leave an unstated owner or date `unresolved`; a human must supply it or explicitly confirm it from an identified source. Hermes never invents a candidate owner or date for approval. Never turn “we should look at camps” into “Priya will register Ben by Friday.”
 
 Update a commitment only after checking the source record. If a calendar event was moved, capture the provider's current event ID and time rather than relying on an old briefing. If an email follow-up was sent manually, record evidence supplied by the sender. The ledger is accountable, not omniscient.
 
@@ -122,7 +124,7 @@ A useful briefing is read in five minutes. It should not be an essay, motivation
 6. **Proposed focus plan.** At most three outcomes, plus one short administration batch and a visible defer list.
 7. **Approvals.** Exact Amber proposals, separated from information.
 
-The briefing should say “No verified changes found in the declared sources” rather than “Nothing changed.” It should say “Weather source not checked” rather than infer conditions from an old chat. If inputs are stale, deliver a coverage exception instead of a polished fiction.
+Say “No verified changes found” rather than “Nothing changed,” and report stale or unchecked inputs instead of filling gaps.
 
 The proposal is not the plan until an adult accepts it. A useful reply protocol is compact:
 
@@ -181,7 +183,7 @@ Use a staleness ladder:
 | --- | --- | --- |
 | Due date passed, result still needed | Mark `blocked` or re-plan with evidence | What changed, who owns recovery, and is the old promise still valid? |
 | No activity for the domain's review window | Flag for weekly review | Is this active, waiting, paused, or obsolete? |
-| No owner or observable outcome | Return to `captured`/`unresolved` | Who accepts it, and what would done look like? |
+| No owner or observable outcome | Keep `captured`; leave missing fields `unresolved` | Who supplies or confirms the owner and outcome? |
 | Duplicate records | Select a canonical row and cross-link | Which source wins, and may the duplicate be archived? |
 | Source disappeared or cannot be verified | Mark coverage gap | Preserve, reconstruct, or cancel? |
 | Context changed | Propose `superseded` with replacement | Does the new commitment fully replace the old one? |
@@ -299,7 +301,7 @@ A productive rhythm does not supersede professional judgement. Hermes may prepar
 
 **Inbox content hijacks the workflow.** A forwarded message instructs Hermes to upload files or ignore policy. Recovery: quarantine the thread/attachment, preserve source and trace, inspect tools used and any egress, rotate exposed credentials, remove poisoned memory or ledger entries, and restart from trusted instructions. Treat messages as data.
 
-**A promise is invented.** Ambiguous meeting language becomes an owner and date. Recovery: mark the row unresolved, link the actual note, notify affected people through an approved draft if necessary, and require explicit acceptance before `accepted` state.
+**A promise is invented.** Ambiguous language becomes an owner or date. Recovery: return the row to `captured`, mark unsupported fields `unresolved`, link the source, and require the human to supply or explicitly confirm each value before `accepted`.
 
 **Stale cleanup destroys evidence.** Old items are deleted because they look inactive. Recovery: stop cleanup, restore from version control or backup, compare ledger and source systems, recreate cancellation/supersession reasons, and move deletions behind a reviewed batch approval.
 

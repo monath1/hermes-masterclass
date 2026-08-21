@@ -56,6 +56,7 @@ EXPECTED_APPENDIX_PATHS = (
     "docs/appendices/appendix-d-troubleshooting-glossary-bibliography.md",
 )
 PLACEHOLDER_PATTERN = re.compile(r"\b(TODO|TBD|FIXME)\b")
+WORD_TARGET_PATTERN = re.compile(r"^\s*(\d+)\s*[–-]\s*(\d+)\s*$")
 LOCAL_LINK_PATTERN = re.compile(r"!?(?:\[[^\]]*\])\(([^)\s]+)(?:\s+['\"][^)]*['\"])?\)")
 HTML_ASSET_PATTERN = re.compile(r"<(?:img|source)\b[^>]*\bsrc=[\"']([^\"']+)[\"']", re.IGNORECASE)
 SECRET_PATTERNS = (
@@ -147,7 +148,9 @@ def manifest_paths(entries: object, key: str) -> list[str]:
     return [entry[key] for entry in entries if isinstance(entry, dict) and isinstance(entry.get(key), str)]
 
 
-def validate_manifest(manifest: dict[str, object], final: bool, failures: list[str]) -> tuple[list[str], list[str]]:
+def validate_manifest(
+    manifest: dict[str, object], final: bool, failures: list[str]
+) -> tuple[list[str], list[str], dict[str, tuple[int, int]]]:
     chapters = manifest.get("chapters", [])
     appendices = manifest.get("appendices", [])
     if not isinstance(chapters, list):
@@ -162,6 +165,21 @@ def validate_manifest(manifest: dict[str, object], final: bool, failures: list[s
         failures.append(f"duplicate chapter number: {number}")
     chapter_paths = manifest_paths(chapters, "path")
     appendix_paths = manifest_paths(appendices, "path")
+    completed_word_targets: dict[str, tuple[int, int]] = {}
+    for entry in chapters:
+        if not isinstance(entry, dict) or entry.get("status") != "complete":
+            continue
+        path = entry.get("path")
+        label = path if isinstance(path, str) else f"chapter {entry.get('number', '?')}"
+        target = entry.get("word_target")
+        match = WORD_TARGET_PATTERN.fullmatch(target) if isinstance(target, str) else None
+        if match is None or int(match.group(1)) > int(match.group(2)):
+            failures.append(
+                f"invalid completed chapter word_target: {label}: expected MIN–MAX with MIN <= MAX"
+            )
+            continue
+        if isinstance(path, str):
+            completed_word_targets[path] = (int(match.group(1)), int(match.group(2)))
 
     if final:
         if numbers != list(range(1, 23)):
@@ -170,7 +188,7 @@ def validate_manifest(manifest: dict[str, object], final: bool, failures: list[s
             failures.append("invalid chapter paths or order: expected canonical 22-chapter manifest")
         if appendix_paths != list(EXPECTED_APPENDIX_PATHS):
             failures.append("invalid appendix paths or order: expected canonical appendices A through D")
-    return chapter_paths, appendix_paths
+    return chapter_paths, appendix_paths, completed_word_targets
 
 
 def relative_path(root: Path, path: Path) -> str:
@@ -299,7 +317,9 @@ def main() -> int:
     root = args.root.resolve()
     failures: list[str] = []
     manifest = load_manifest(root, failures)
-    chapter_paths, appendix_paths = validate_manifest(manifest, args.final, failures)
+    chapter_paths, appendix_paths, completed_word_targets = validate_manifest(
+        manifest, args.final, failures
+    )
 
     all_paths = chapter_paths + appendix_paths
     words = 0
@@ -308,12 +328,21 @@ def main() -> int:
         path = root / rel_path
         is_chapter = index < len(chapter_paths)
         if not path.is_file():
-            if args.final:
+            if is_chapter and rel_path in completed_word_targets:
+                failures.append(f"missing completed chapter: {rel_path}")
+            elif args.final:
                 kind = "chapter" if is_chapter else "appendix"
                 failures.append(f"missing {kind}: {rel_path}")
             continue
         existing_files += 1
-        words += validate_file(root, path, args.final, is_chapter, failures)
+        file_words = validate_file(root, path, args.final, is_chapter, failures)
+        words += file_words
+        target = completed_word_targets.get(rel_path) if is_chapter else None
+        if target is not None and not target[0] <= file_words <= target[1]:
+            failures.append(
+                f"word count outside manifest target: {rel_path}: "
+                f"{target[0]}–{target[1]} (found {file_words})"
+            )
 
     if args.final:
         actual_chapter_paths = sorted(

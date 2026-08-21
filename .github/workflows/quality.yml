@@ -34,3 +34,4 @@ jobs:
           path: .pinned-hermes-source
           fetch-depth: 1
       - run: python tools/check_task6.py --hermes-source .pinned-hermes-source
+      - run: python tools/check_task7.py --hermes-source .pinned-hermes-source

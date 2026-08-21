@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -82,6 +83,12 @@ def run_check(book_root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def measured_words(contents: str) -> int:
+    """Measure fixture words independently using the documented checker contract."""
+    without_code = re.sub(r"```.*?```", "", contents, flags=re.DOTALL)
+    return len(re.findall(r"\b[\w][\w’'/-]*\b", without_code))
+
+
 def provenance_entry(**overrides: object) -> dict[str, object]:
     entry: dict[str, object] = {
         "filename": "dashboard-admin-system-top.png",
@@ -114,6 +121,109 @@ def test_accepts_a_valid_incremental_manuscript(tmp_path: Path) -> None:
 
     assert result.returncode == 0, result.stdout
     assert "check_book: OK — 1 files" in result.stdout
+
+
+@pytest.mark.parametrize(
+    ("minimum_offset", "maximum_offset"),
+    [
+        (0, 10),
+        (-10, 0),
+    ],
+)
+def test_completed_chapter_accepts_word_counts_at_manifest_boundaries(
+    tmp_path: Path, minimum_offset: int, maximum_offset: int
+) -> None:
+    contents = chapter()
+    words = measured_words(contents)
+    minimum = words + minimum_offset
+    maximum = words + maximum_offset
+    entry = {
+        "number": 1,
+        "title": "Fixture",
+        "path": "docs/part-1/01-meet-hermes.md",
+        "part": "Part I",
+        "word_target": f"{minimum}–{maximum}",
+        "status": "complete",
+    }
+    write_book(tmp_path, chapters=[entry], files={entry["path"]: contents})
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 0, result.stdout
+
+
+@pytest.mark.parametrize(
+    ("minimum_offset", "maximum_offset"),
+    [
+        (1, 10),
+        (-10, -1),
+    ],
+)
+def test_completed_chapter_rejects_word_counts_outside_manifest_target(
+    tmp_path: Path, minimum_offset: int, maximum_offset: int
+) -> None:
+    contents = chapter()
+    words = measured_words(contents)
+    minimum = words + minimum_offset
+    maximum = words + maximum_offset
+    entry = {
+        "number": 1,
+        "title": "Fixture",
+        "path": "docs/part-1/01-meet-hermes.md",
+        "part": "Part I",
+        "word_target": f"{minimum}–{maximum}",
+        "status": "complete",
+    }
+    write_book(tmp_path, chapters=[entry], files={entry["path"]: contents})
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert (
+        f"word count outside manifest target: docs/part-1/01-meet-hermes.md: "
+        f"{minimum}–{maximum} (found {words})"
+    ) in result.stdout
+
+
+@pytest.mark.parametrize("word_target", [None, "four thousand", "500–400"])
+def test_completed_chapter_requires_a_valid_manifest_word_target(
+    tmp_path: Path, word_target: str | None
+) -> None:
+    entry: dict[str, object] = {
+        "number": 1,
+        "title": "Fixture",
+        "path": "docs/part-1/01-meet-hermes.md",
+        "part": "Part I",
+        "status": "complete",
+    }
+    if word_target is not None:
+        entry["word_target"] = word_target
+    write_book(tmp_path, chapters=[entry])
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert (
+        "invalid completed chapter word_target: docs/part-1/01-meet-hermes.md: "
+        "expected MIN–MAX with MIN <= MAX"
+    ) in result.stdout
+
+
+def test_incremental_mode_reports_a_missing_completed_chapter(tmp_path: Path) -> None:
+    entry = {
+        "number": 1,
+        "title": "Fixture",
+        "path": "docs/part-1/01-meet-hermes.md",
+        "part": "Part I",
+        "word_target": "100–200",
+        "status": "complete",
+    }
+    write_book(tmp_path, chapters=[entry], files={})
+
+    result = run_check(tmp_path)
+
+    assert result.returncode == 1
+    assert "missing completed chapter: docs/part-1/01-meet-hermes.md" in result.stdout
 
 
 def test_final_mode_reports_a_missing_planned_chapter(tmp_path: Path) -> None:

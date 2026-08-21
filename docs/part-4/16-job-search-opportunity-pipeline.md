@@ -206,13 +206,13 @@ Minimum fields are:
 - observed, posted, closing, freshness-check, and next-review dates;
 - role thesis version and hard-constraint result;
 - criterion scores, evidence links, gaps, confidence, and human decision;
-- state: `discovered`, `qualifying`, `researching`, `hold`, `no-go`, `preparing`, `ready-for-review`, `approved-to-submit`, `submitted`, `interviewing`, `offer`, `closed`, or `withdrawn`;
+- state: `discovered`, `qualifying`, `researching`, `hold`, `no-go`, `preparing`, `ready-for-review`, `approved-to-submit`, `submission-unknown`, `submitted`, `interviewing`, `offer`, `closed-or-unavailable`, `closed`, or `withdrawn`;
 - application packet version and artifact hashes/paths;
 - contacts and consent/context, networking status, and last touch;
 - exact submitted fields/files, human approval/action ID, submission time, and receipt;
 - follow-up date, response, outcome reason, retention/delete date, and lessons.
 
-State transitions require evidence. A high score does not move a row to `preparing`; Priya's go decision does. `ready-for-review` means the packet passed internal checks, not that it was submitted. `submitted` requires provider or human receipt. If the portal times out after clicking, mark `submission-unknown`, stop, and inspect application history or confirmation email manually before retrying.
+State transitions require evidence. A score cannot move a row to `preparing`; Priya's go decision does. `ready-for-review` means only that internal checks passed, while `submitted` requires a receipt. After a portal timeout, `submission-unknown` cannot transition to any submission retry. Priya resolves the state from provider evidence to `submitted` or back to `ready-for-review`; returning cancels the prior approval, so retry requires fresh exact submission approval.
 
 Use append-only notes for consequential changes. Correct current fields, but preserve why the score, deadline, or state changed. Never rewrite a rejected role as if it had never existed merely to improve the dashboard.
 
@@ -277,7 +277,7 @@ After several successful manual cycles, cron may review the local ledger and per
 
 Do not schedule Job Bank or LinkedIn access. Do not attach a logged-in browser profile to a background job. Priya's human-configured platform alerts can arrive in a dedicated secondary intake if the platform supports that use; Hermes only processes the resulting permitted message under the mailbox policy.
 
-The cron result proposes changes. It does not mark a role closed solely from a failed page. If a source is unreachable, record a coverage gap. A changed deadline needs source evidence and a new observation time. Unknown submission state freezes follow-up and retry until Priya reconciles the portal.
+The cron result proposes changes. A failed page is a coverage gap, not proof of closure. Changed deadlines need fresh evidence. `submission-unknown` freezes follow-up and retry until Priya resolves the state.
 
 ## Professional example
 
@@ -323,7 +323,7 @@ This is employment preparation, not legal, immigration, tax, financial, or profe
 
 **The employer is not verified.** A recruiter domain, posting, or interview route may be fraudulent. Recovery: do not open supplied attachments or pay; verify via independently located employer contact/career pages; preserve minimal headers/URLs; report through appropriate provider or anti-fraud channels; rotate credentials if exposed; close the row with evidence.
 
-**Submission outcome is unknown.** The portal times out after the final action. Recovery: do not click again. Check portal history and confirmation email manually, compare role and artifact identifiers, contact employer support if appropriate, and classify `submitted`, `not-submitted`, or `unknown`. Priya decides any retry.
+**Submission outcome is unknown.** After a final-action timeout, do not click again. Priya checks portal history, confirmation email, role and artifact IDs, and support if needed. The state remains `submission-unknown` until she resolves it to `submitted` or `ready-for-review`; any retry needs fresh exact submission approval.
 
 **Metrics create pressure to misbehave.** Low application counts cause weak-fit submissions. Recovery: remove volume targets, review qualified conversion and evidence failures, reduce the source batch, and treat deliberate no-go decisions as useful output.
 
@@ -421,7 +421,7 @@ The canonical employer posting becomes the source; aggregator sightings attach t
 
 Priya uses Job Bank manually under its current terms and copies only permitted minimum details. Hermes does not control the account or automate queries. It does not scrape the LinkedIn profile or message the hiring manager; a connection needs legitimate context and Priya's manual judgement. The suspicious recruiter path is stopped and independently verified; no purchase, banking data, credentials, identity documents, or remote access are supplied.
 
-Native web search/extraction and permitted public-page browsing support discovery/research; grounded citations supports the employer brief; XLSX is optional for the ledger; document tools support reviewed artifacts. No job-board MCP/custom integration is justified here. Platform accounts, sensitive fields, attestations, final claim review, and submission remain human/manual. The ledger moves to `submitted` only with a receipt; a timeout becomes unknown and is reconciled before retry.
+Native web search/extraction and permitted public browsing support research; grounded citations supports the brief; XLSX is optional; document tools support reviewed artifacts. No job-board MCP/custom integration is justified. Accounts, sensitive fields, attestations, claim review, and submission remain manual. The ledger needs a receipt for `submitted`; a timeout becomes `submission-unknown`, which Priya must resolve and freshly approve before retry.
 
 Award two points each for source terms, canonical deduplication, evidence-labelled intake, hard-constraint gate, transparent scoring, primary-source research, relational networking, anti-fabrication, exact submission approval, fraud response, capability boundaries, and useful metrics. Twenty of twenty-four indicates mastery; automated Job Bank/LinkedIn access, fabricated management, bulk outreach, or unapproved submission requires redesign.
 
