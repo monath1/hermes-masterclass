@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III places those capabilities inside OS-enforced host boundaries, isolated identity and secret lifecycles, executable authority rules, auditable external effects, and tested data recovery. Part IV begins the practical chief-of-staff system with bounded daily and weekly rhythms and an ethical, evidence-led job-search pipeline. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -51,9 +51,16 @@ Complete these chapters before connecting real family or business channels. Chap
 
 Complete these chapters before giving later workflow chapters sensitive data or external authority. Chapter 11's boundary card, Chapter 12's identity register, Chapter 13's authority-and-audit card, and Chapter 14's data-and-recovery card make the trust envelope auditable and recoverable instead of aspirational.
 
+## Part IV — Your Personal Chief of Staff
+
+15. [Daily and Weekly Operating Rhythms](part-4/15-daily-weekly-operating-rhythms.md) — build a source-labelled morning briefing, calendar/inbox/task triage, focus plan, commitment ledger, end-of-day handback, and respectful family council without making Hermes the primary inbox.
+16. [The Job-Search and Opportunity Pipeline](part-4/16-job-search-opportunity-pipeline.md) — turn candidate-approved evidence, permitted discovery, transparent fit scoring, employer research, networking, application preparation, and follow-up into an ethical pipeline with a human submission gate.
+
+Complete the trust envelope before operating these workflows with personal or employment data. Chapter 15's chief-of-staff card and Chapter 16's ethical opportunity-pipeline card preserve the profile, source, approval, and recovery interfaces that Chapters 17–18 will extend.
+
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–14 are complete; later chapters remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–16 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

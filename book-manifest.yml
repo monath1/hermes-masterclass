@@ -88,10 +88,14 @@ chapters:
     title: Daily and Weekly Operating Rhythms
     path: docs/part-4/15-daily-weekly-operating-rhythms.md
     part: Part IV — Your Personal Chief of Staff
+    word_target: 4000–4600
+    status: complete
   - number: 16
     title: The Job-Search and Opportunity Pipeline
     path: docs/part-4/16-job-search-opportunity-pipeline.md
     part: Part IV — Your Personal Chief of Staff
+    word_target: 4400–5000
+    status: complete
   - number: 17
     title: Résumé, Interview, and Brand Overhaul
     path: docs/part-4/17-resume-interview-brand.md
