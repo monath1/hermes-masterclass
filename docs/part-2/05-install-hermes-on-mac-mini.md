@@ -97,15 +97,42 @@ Create three folders inside the Hermes user's home: one for `family`, one for `c
 
 ### Choose one install path
 
-For a first Mac installation, the official Hermes documentation recommends downloading the Hermes Desktop installer from `hermes-agent.nousresearch.com` and running it. That path installs the graphical app and can install the command-line runtime into the same `HERMES_HOME` layout.
-
-For a command-line-only installation, the documented macOS command is:
+The pinned installer has one macOS prerequisite: Git. Check it before downloading anything:
 
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+git --version
 ```
 
-Piping a network script into a shell is powerful. A non-coder should delegate inspection, not blind execution. Before running it, open the official installation page, confirm the domain, and ask a technical reviewer or Codex to download and inspect the script without changing the machine. Then run the documented command from the dedicated Hermes account only if the inspection and source agree.
+On a fresh Mac, that command may offer Apple's Command Line Tools. If it does not, run `xcode-select --install`, approve the macOS dialog, wait for completion, open a new Terminal window, and rerun `git --version`. Stop if Git still does not report a version; stacking an installer on a missing prerequisite obscures the fault.
+
+For a first Mac installation, the official Hermes documentation recommends downloading the Hermes Desktop installer from `hermes-agent.nousresearch.com` and running it. That path installs the graphical app and can install the command-line runtime into the same `HERMES_HOME` layout.
+
+For a command-line-only installation, avoid piping a fresh network response directly into a shell. Download once from the documented URL and inspect that exact file:
+
+```bash
+installer_url="https://hermes-agent.nousresearch.com/install.sh"
+installer_file="$HOME/Downloads/hermes-install-v2026.8.19.sh"
+curl --fail --location --proto '=https' --tlsv1.2 \
+  --write-out '\nFinal URL: %{url_effective}\n' \
+  --output "$installer_file" "$installer_url"
+downloaded_sha256="$(shasum -a 256 "$installer_file" | awk '{print $1}')"
+printf 'SHA-256: %s\n' "$downloaded_sha256"
+less "$installer_file"
+```
+
+Confirm that the printed final URL remains HTTPS on the official domain. Press `q` to leave `less`; give the recorded digest and file—not a second download—to a technical reviewer or Codex. After approval, verify the file is unchanged and execute that same path:
+
+```bash
+installer_file="$HOME/Downloads/hermes-install-v2026.8.19.sh"
+reviewed_sha256="PASTE_REVIEWED_SHA256"
+actual_sha256="$(shasum -a 256 "$installer_file" | awk '{print $1}')"
+test "$reviewed_sha256" != "PASTE_REVIEWED_SHA256" || exit 1
+test "$actual_sha256" = "$reviewed_sha256" || {
+  echo "Installer changed after review; stop."
+  exit 1
+}
+bash "$installer_file"
+```
 
 Do not use `sudo` for the normal per-user Mac installation. Root mode changes paths and concentrates state under a root-owned home; it is not the family-host design in this book. The per-user installer places code at `~/.hermes/hermes-agent/`, state at `~/.hermes/`, and the launcher at `~/.local/bin/hermes`.
 
@@ -219,6 +246,8 @@ hermes gateway status
 
 The default generated plist is `~/Library/LaunchAgents/ai.hermes.gateway.plist`. It captures `PATH`, `VIRTUAL_ENV`, and `HERMES_HOME`. If tools such as Node.js or `ffmpeg` are installed later, rerun `hermes gateway install` so the static plist captures the updated path.
 
+This is a user LaunchAgent: it starts on crash and after the dedicated Hermes user logs in, not before login. FileVault disables automatic login. After power restoration or a macOS restart, the gateway therefore remains unavailable until an authorized person unlocks the disk and logs in. Do not weaken FileVault or enable automatic login to hide that dependency.
+
 View logs without modifying state:
 
 ```bash
@@ -233,6 +262,8 @@ hermes gateway status
 ```
 
 The service test passes when the status returns running under the expected profile and the log shows a clean restart. It does not authorize messages from real users. Keep channel allowlists and credentials narrow.
+
+Rehearse recovery in a maintenance window: restart from the macOS menu, verify the synthetic channel remains offline at login, log in as the dedicated user, run `hermes gateway status`, and send one harmless canary. If the LaunchAgent did not start, preserve its log, run `hermes doctor`, use `hermes gateway start`, and recheck status. Record time-to-recovery; this installation has no pre-login service.
 
 ### Create a known-good receipt before updates
 
@@ -285,13 +316,18 @@ Use this decision order:
 
 Code rollback can encounter config incompatibility. After returning to an older release, run `hermes config check` and inspect unknown settings rather than deleting them blindly. Restore into a test profile or spare account first when the live state matters.
 
-For an approved code-only rollback, the pinned update guide gives this sequence (substitute the exact commit recorded in the last good receipt):
+For an approved code-only rollback, set the exact commit recorded in the last good receipt; the guard stops if the placeholder was not replaced:
 
 ```bash
 hermes gateway stop
 cd ~/.hermes/hermes-agent
 git log --oneline -10
-git checkout <commit-hash>
+rollback_commit="paste-exact-commit-from-last-good-receipt"
+test "$rollback_commit" != "paste-exact-commit-from-last-good-receipt" || {
+  echo "Set rollback_commit from the receipt; stop."
+  exit 1
+}
+git checkout "$rollback_commit"
 uv pip install -e ".[all]"
 hermes config check
 hermes gateway start
@@ -300,19 +336,30 @@ hermes --version
 hermes gateway status
 ```
 
-A release tag can replace the commit after checking `git tag --sort=-version:refname`. Do not guess the tag. This leaves the checkout detached, which is acceptable for a temporary incident rollback but must be recorded; the next planned update should deliberately return the install to its supported update branch.
+A release tag can replace the commit after checking `git tag --sort=-version:refname`. Do not guess it. Record the temporary detached checkout; the next planned update should deliberately return to the supported update branch.
 
 For an approved full-state restore, stop the gateway and use the archive created by `hermes backup`:
 
 ```bash
 hermes gateway stop
-hermes import ~/hermes-backup-<recorded-timestamp>.zip
+backup_zip="$HOME/hermes-backup-YYYYMMDD-HHMMSS.zip"
+test -f "$backup_zip" || {
+  echo "Set backup_zip to the verified archive path; stop."
+  exit 1
+}
+hermes import "$backup_zip"
 hermes doctor
 hermes gateway start
 hermes gateway status
 ```
 
-`hermes import` overwrites matching files in the target Hermes home and prompts when an installation already exists. Never add `--force` to the first recovery attempt. Verify the archive path, profile target, free disk, and custody before approval. A quick pre-update snapshot is not the same artifact as this full zip; follow the receipt's documented state-snapshot restore path for that narrower case.
+`hermes import` overwrites matching files in the target Hermes home and prompts when an installation already exists. Never add `--force` to the first recovery attempt. Verify the archive path, profile target, free disk, and custody before approval. For the narrower quick snapshot created by the normal update flow, the documented concrete restore command is:
+
+```bash
+hermes backup restore --state pre-update
+```
+
+Run it only after reviewing the receipt and confirming that the quick snapshot, rather than code or the full archive, is the failed layer.
 
 ### Copy-ready Codex delegation prompt for terminal work
 
@@ -485,10 +532,12 @@ Award two points each for host isolation, security prerequisites, layered verifi
 - Nous Research, [Desktop app](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/desktop.md).
 - Nous Research, [CLI](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/cli.md).
 - Nous Research, [Web dashboard](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/web-dashboard.md).
-- Nous Research, [Messaging gateway service management](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/messaging/index.md).
+- Nous Research, [macOS gateway LaunchAgent](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/multi-profile-gateways.md).
 - Nous Research, [Profiles](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profiles.md).
 - Nous Research, [Run local LLMs on Mac](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/local-llm-on-mac.md).
 - Apple, [Set up your Mac to be secure](https://support.apple.com/en-ca/guide/mac-help/flvlt003/mac) (accessed 2026-08-21).
 - Apple, [Change Firewall settings on Mac](https://support.apple.com/en-ca/guide/mac-help/mh11783/mac) (accessed 2026-08-21).
 - Apple, [Software Update settings on Mac](https://support.apple.com/guide/mac-help/software-update-settings-on-mac-mchla7037245/mac) (accessed 2026-08-21).
 - Apple, [Back up your files with Time Machine](https://support.apple.com/guide/mac-help/back-up-files-mh35860/mac) (accessed 2026-08-21).
+- Apple, [Install the Command Line Tools for Xcode](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools/) (accessed 2026-08-21).
+- Apple, [Automatic login and FileVault](https://support.apple.com/en-ca/102316) (accessed 2026-08-21).

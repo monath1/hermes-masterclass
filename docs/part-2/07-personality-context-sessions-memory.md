@@ -166,7 +166,7 @@ Hermes's memory tool can add, replace, and remove entries. By default, built-in 
 
 A write is persisted immediately but the active session's frozen memory snapshot does not change. Start a new session to test the revised memory. If Hermes says it remembers a correction in the same old session, distinguish live conversational context from the durable store.
 
-The background review notification controls whether chat reports a change; turning the notification off does not stop the review or write. To disable automatic post-turn review, use its explicit `enabled: false` setting. To disable both built-in stores, disable `memory_enabled` and `user_profile_enabled`; verify that external provider behavior separately.
+The background review notification controls whether chat reports a change; turning the notification off does not stop the review or write. To disable automatic post-turn review, set `auxiliary.background_review.enabled: false`. To disable both built-in stores, set `memory.memory_enabled: false` and `memory.user_profile_enabled: false`; verify external-provider behavior separately.
 
 ### Define what never gets remembered
 
@@ -189,7 +189,7 @@ For Harbourlight, the Office of the Privacy Commissioner of Canada's fair inform
 
 ### Separate people and domains with profiles
 
-Create distinct profiles for `family`, `career`, and `harbourlight` rather than overloading the default profile. A blank profile starts with fresh memory and sessions. `--clone` copies config, `.env`, `SOUL.md`, and skills, so it can copy credentials and identity assumptions that should not cross domains. Prefer fresh profiles for privacy boundaries and add only the needed pieces.
+Create distinct profiles for `family`, `career`, and `harbourlight` rather than overloading the default profile. A blank profile starts with fresh memory and sessions. Ordinary CLI `--clone` copies config, `.env`, `SOUL.md`, and skills but creates fresh memory and sessions; it can still copy credentials and identity assumptions across domains. CLI `--clone-all` also copies memory. Prefer fresh profiles for privacy boundaries and add only the needed pieces.
 
 Keep the three overloaded uses of “profile” explicit: `USER.md` is the active agent's compact user profile; `harbourlight` is a project profile implemented as a separate `HERMES_HOME`; and a browser or macOS user profile is an operating-system/application identity outside Hermes. They solve different problems and should not be treated as interchangeable controls.
 
@@ -210,7 +210,7 @@ Run `hermes -p career chat` or use the profile alias and verify the banner befor
 
 Bot Mode is built into Desktop and on by default at the pinned release. The **Bots** tab shows profiles as named agents. **New Agent** can create a fresh profile or clone another, choose a model, edit `SOUL.md`, and enable skills, toolsets, or MCP servers. Every Bot has a canonical persistent Bot Chat.
 
-This is convenient for a roster such as “Career Researcher,” “Family Planner,” and “Harbourlight Support.” The names do not create access control. A Bot is the underlying profile, and its files live under `~/.hermes/profiles/<name>/`. Duplicate or clone can copy SOUL and memory; review the new profile before use. Delete Profile is destructive and the default profile cannot be deleted.
+This is convenient for a roster such as “Career Researcher,” “Family Planner,” and “Harbourlight Support.” The names do not create access control. A Bot is the underlying profile, and its files live under `~/.hermes/profiles/<name>/`. Desktop **Duplicate** is a full clone and copies `SOUL.md` and memory; CLI `--clone-all` does too, while ordinary CLI `--clone` keeps memory fresh. Review every copy before use. Delete Profile is destructive and the default profile cannot be deleted.
 
 Bot Mode's canonical chat is designed as a continuing relationship: `/new` or `/reset` there is redirected to `/compact`. That preserves the conversation identity while refreshing working context, but it does not make the room an appropriate archive for every subject. Use ordinary bounded sessions for cases that require independent retention and deletion.
 
@@ -313,7 +313,7 @@ Memory write approval is not authority for the underlying fact. The human review
 
 **Wrong profile.** A family fact or session lands in Harbourlight. Recovery: stop affected gateways/Bots, preserve session and path evidence, assess disclosure, remove/correct every copy through approved procedures, and reopen only after separation tests pass.
 
-**Clone copies too much.** A new Bot inherits `.env`, SOUL, skills, or memory from another domain. Recovery: quarantine the profile, revoke copied credentials if exposed, recreate fresh where safer, and avoid clone as a privacy shortcut.
+**A copy carries too much.** Ordinary CLI `--clone` can carry `.env`, SOUL, and skills; Desktop Duplicate or CLI `--clone-all` can also carry memory. Recovery: quarantine the profile, revoke copied credentials if exposed, recreate fresh where safer, and avoid copying as a privacy shortcut.
 
 **External provider becomes a shadow archive.** Deleting local state leaves synchronized records elsewhere. Recovery: disable new synchronization, consult the provider's export/delete controls and terms, reconcile identifiers, document completion evidence, and notify affected owners if required.
 
@@ -377,11 +377,11 @@ Control tightened:
 
 ## Exercise
 
-Place each item in `SOUL.md`, project context, current session, `USER.md`, `MEMORY.md`, an authoritative artifact, or “never remember”: preferred briefing tone; Harbourlight's refund approval rule; a customer's card number; Priya's dated preference for hybrid work; a one-day school pickup change; a verified local endpoint quirk; a child's anxiety before a test; and a role's closing date. Then design recovery after the closing date is wrongly saved to the family profile and synchronized to an external provider.
+Place each item in `SOUL.md`, project context, current session, `USER.md`, `MEMORY.md`, an authoritative artifact, or “never remember”: an instance-wide durable briefing tone; Harbourlight's refund approval rule; a customer's card number; Priya's dated preference for hybrid work; a one-day school pickup change; a verified local endpoint quirk; a child's anxiety before a test; and a role's closing date. Then design recovery after the closing date is wrongly saved to the family profile and synchronized to an external provider.
 
 ## Answer or rubric
 
-Briefing tone belongs in `SOUL.md`. The refund approval rule belongs in Harbourlight project context and its authoritative policy; a compact pointer may enter business `MEMORY.md` after approval. The card number and child's anxiety are never remembered. Priya's dated work preference may enter career `USER.md`. The one-day pickup change remains in the bounded family session/source, not durable memory. A verified endpoint quirk may enter the relevant profile's `MEMORY.md`. The role closing date belongs in the role session and opportunity ledger, not family memory.
+An instance-wide durable briefing tone belongs in `SOUL.md`; a preference belonging to one user instead goes in that profile's `USER.md`. The refund approval rule belongs in Harbourlight project context and its authoritative policy; a compact pointer may enter business `MEMORY.md` after approval. The card number and child's anxiety are never remembered. Priya's dated work preference may enter career `USER.md`. The one-day pickup change remains in the bounded family session/source, not durable memory. A verified endpoint quirk may enter the relevant profile's `MEMORY.md`. The role closing date belongs in the role session and opportunity ledger, not family memory.
 
 Recovery stops family and affected provider synchronization, preserves evidence, identifies every local and external copy, removes the wrong entry under owner approval, corrects downstream artifacts, starts a fresh session, and tests provenance. The owners review adjacent entries and enable write approval. Award two points each for correct placement, prohibited-data judgment, profile separation, frozen-snapshot awareness, external deletion, and evidence-preserving recovery. Ten of twelve indicates mastery.
 
