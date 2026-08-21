@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. The navigation deliberately includes only the pages that exist today; chapter navigation will grow with the manuscript.
+The first edition is being written in public view inside this private repository. Part I is now available and establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -22,9 +22,18 @@ Every version-sensitive instruction will be labeled **Verified against Hermes Ag
 
 The book treats operating-system isolation, limited identities, and recovery practice as real controls. A prompt, a scanner, or an approval dialog is useful, but none replaces a sound host boundary.
 
+## Part I — From Chatbot to Colleague
+
+1. [Meet Hermes: An Agent That Stays on the Job](part-1/01-meet-hermes.md) — decide when an agent is appropriate, set the authority ladder, and test operational readiness.
+2. [Agentic AI From First Principles](part-1/02-agentic-ai-first-principles.md) — separate the model, harness, context, state, trajectory, autonomy, and reliability problem.
+3. [The Hermes Loop](part-1/03-hermes-loop.md) — follow one research job through prompt assembly, tool observations, persistence, compression, stopping, and handback.
+4. [Write the Job Description](part-1/04-write-the-job-description.md) — adopt a copy-ready charter, service levels, delegation contract, and supervised first-week plan.
+
+Read these chapters in order before granting recurring access. Returning readers can use the Chapter 1 readiness rubric, Chapter 2 diagnostic card, Chapter 3 handback contract, and Chapter 4 Job Charter as operating references.
+
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Until those chapters are authored and reviewed, this site makes no claim that they are already available.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Part I is complete; later parts remain unavailable until authored and reviewed.
 
 ## Local preview
 

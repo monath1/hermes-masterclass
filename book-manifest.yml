@@ -4,18 +4,26 @@ chapters:
     title: "Meet Hermes: An Agent That Stays on the Job"
     path: docs/part-1/01-meet-hermes.md
     part: Part I — From Chatbot to Colleague
+    word_target: 3600–4300
+    status: complete
   - number: 2
     title: Agentic AI From First Principles
     path: docs/part-1/02-agentic-ai-first-principles.md
     part: Part I — From Chatbot to Colleague
+    word_target: 4000–4600
+    status: complete
   - number: 3
     title: The Hermes Loop
     path: docs/part-1/03-hermes-loop.md
     part: Part I — From Chatbot to Colleague
+    word_target: 4000–4600
+    status: complete
   - number: 4
     title: Write the Job Description
     path: docs/part-1/04-write-the-job-description.md
     part: Part I — From Chatbot to Colleague
+    word_target: 3600–4300
+    status: complete
   - number: 5
     title: Install Hermes CLI, Desktop, and Web Dashboard
     path: docs/part-2/05-install-hermes-on-mac-mini.md
