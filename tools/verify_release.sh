@@ -14,9 +14,12 @@ cd "$PROJECT_ROOT"
 cleanup_paths=()
 cleanup() {
   local path
-  for path in "${cleanup_paths[@]}"; do
-    test -d "$path" && rm -rf "$path"
+  # Bash 3.2 (the macOS system shell) treats an empty array expansion as an
+  # unbound variable under `set -u`; the default keeps cleanup portable.
+  for path in "${cleanup_paths[@]:-}"; do
+    test -n "$path" && test -d "$path" && rm -rf "$path"
   done
+  return 0
 }
 trap cleanup EXIT
 
