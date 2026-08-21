@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I is now available and establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. The first half of Part II now turns that contract into a secured Mac mini installation, a three-lane model policy, and inspectable continuity boundaries. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -31,9 +31,17 @@ The book treats operating-system isolation, limited identities, and recovery pra
 
 Read these chapters in order before granting recurring access. Returning readers can use the Chapter 1 readiness rubric, Chapter 2 diagnostic card, Chapter 3 handback contract, and Chapter 4 Job Charter as operating references.
 
+## Part II — Build the Mac mini Foundation
+
+5. [Install Hermes CLI, Desktop, and Web Dashboard](part-2/05-install-hermes-on-mac-mini.md) — prepare a dedicated macOS host, prove each Hermes interface, install the gateway, and rehearse update and rollback.
+6. [Choose Models and Route Work](part-2/06-models-and-routing.md) — adopt local/private, everyday hosted, and `gpt-5.6-sol` frontier lanes with explicit cost, privacy, fallback, and verification rules.
+7. [Personality, Context, Sessions, and Memory](part-2/07-personality-context-sessions-memory.md) — separate `SOUL.md`, project context, sessions, built-in and external memory, profiles, and Bot Mode, including what must never be remembered.
+
+Complete these chapters before connecting real family or business channels. Chapter 5's installation ledger, Chapter 6's route card, and Chapter 7's retention review sheet become the operating evidence used by later workflow chapters.
+
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Part I is complete; later parts remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–7 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

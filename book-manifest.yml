@@ -28,14 +28,20 @@ chapters:
     title: Install Hermes CLI, Desktop, and Web Dashboard
     path: docs/part-2/05-install-hermes-on-mac-mini.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4000–4600
+    status: complete
   - number: 6
     title: Choose Models and Route Work
     path: docs/part-2/06-models-and-routing.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4300–5000
+    status: complete
   - number: 7
     title: Personality, Context, Sessions, and Memory
     path: docs/part-2/07-personality-context-sessions-memory.md
     part: Part II — Build the Mac mini Foundation
+    word_target: 4000–4600
+    status: complete
   - number: 8
     title: Tools, Skills, Plugins, and MCP
     path: docs/part-2/08-tools-skills-plugins-mcp.md
