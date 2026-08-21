@@ -141,7 +141,7 @@ If pairing breaks, update Hermes through the normal maintenance procedure, resta
 
 ### Configure Telegram as a bounded operations console
 
-Create the bot through the official `@BotFather`, record its numeric token as a secret, and place operator IDs in `TELEGRAM_ALLOWED_USERS`. Revoke a leaked token through BotFather and issue a new one. Hermes's interactive route is:
+Create the bot through the official `@BotFather`, record its bot token as a secret, and place operator IDs in `TELEGRAM_ALLOWED_USERS`. Revoke a leaked token through BotFather and issue a new one. Hermes's interactive route is:
 
 ```bash
 hermes gateway setup
