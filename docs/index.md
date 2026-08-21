@@ -4,7 +4,7 @@
 
 This book is for people who can see the promise in AI agents but want a dependable way to use one in everyday life. It follows a Canadian family operating Hermes Agent from a dedicated Apple-silicon Mac mini: first as a supervised assistant, then as a personal chief of staff, then as a carefully bounded partner for career, family, and a small business.
 
-The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. The navigation deliberately grows only as complete chapters are added.
+The first edition is being written in public view inside this private repository. Part I establishes the vocabulary, runtime model, and operating contract used throughout the manuscript. Part II turns that contract into a secured Mac mini installation, a three-lane model policy, inspectable continuity boundaries, a vetted extension stack, safe messaging routes, and controlled background operations. Part III begins by placing those capabilities inside OS-enforced host boundaries and isolated identity and secret lifecycles. The navigation deliberately grows only as complete chapters are added.
 
 ## How to read this book
 
@@ -42,9 +42,16 @@ Read these chapters in order before granting recurring access. Returning readers
 
 Complete these chapters before connecting real family or business channels. Chapter 5's installation ledger, Chapter 6's route card, Chapter 7's retention review sheet, Chapter 8's extension card, Chapter 9's channel card, and Chapter 10's background-operation contract become the operating evidence used by later workflow chapters.
 
+## Part III — Build the Trust Envelope
+
+11. [The Family-Safe Security Architecture](part-3/11-family-safe-security.md) — model threats to the Chen–Patel family, make OS isolation the load-bearing boundary, constrain files, browsers, networks, and automation, and rehearse stop and rebuild.
+12. [Identities, Burner Accounts, and Secrets](part-3/12-identities-burner-accounts-secrets.md) — keep primary identities outside Hermes, isolate family/business/test accounts, operate scoped secret providers, and prove rotation, recovery, offboarding, and quarterly review.
+
+Complete these chapters before giving later workflow chapters sensitive data or external authority. Chapter 11's threat-and-boundary card and Chapter 12's identity register make the trust envelope auditable instead of aspirational.
+
 ## What this edition will cover
 
-The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–10 are complete; later chapters remain unavailable until authored and reviewed.
+The planned manuscript has 22 chapters and four appendices: foundations, Mac mini setup, trust and recovery, chief-of-staff operations, a small-business operating system, and a 90-day capstone. Chapters 1–12 are complete; later chapters remain unavailable until authored and reviewed.
 
 ## Local preview
 

@@ -64,10 +64,14 @@ chapters:
     title: The Family-Safe Security Architecture
     path: docs/part-3/11-family-safe-security.md
     part: Part III — Build the Trust Envelope
+    word_target: 4400–5000
+    status: complete
   - number: 12
     title: Identities, Burner Accounts, and Secrets
     path: docs/part-3/12-identities-burner-accounts-secrets.md
     part: Part III — Build the Trust Envelope
+    word_target: 4200–4800
+    status: complete
   - number: 13
     title: Approvals, Autonomy, Egress, and Audit
     path: docs/part-3/13-approvals-autonomy-egress-audit.md
