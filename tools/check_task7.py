@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import re
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 from check_book import markdown_words
 
@@ -93,64 +95,310 @@ OFFICIAL_REFERENCE_URLS = (
     "https://www.linkedin.com/help/linkedin/answer/a1341387/prohibited-software-and-extensions",
     "https://antifraudcentre-centreantifraude.ca/scams-fraudes/job-emploi-eng.htm",
 )
-AFFIRMATIVE_MODAL = r"(?:may|can|should|must|will|is\s+allowed\s+to)"
-UNSAFE_AUTHORIZATION_PATTERNS = (
-    (
-        "primary-inbox access",
-        re.compile(
-            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+(?:directly\s+)?"
-            r"(?:access|read|manage|connect\s+to)\s+"
-            r"(?:(?:Priya|Alex)(?:['’]s)\s+|the\s+)?primary\s+inbox\b",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "account sharing",
-        re.compile(
-            rf"\b(?:Priya|Alex|the\s+candidate|the\s+user|users?)\s+"
-            rf"{AFFIRMATIVE_MODAL}\s+(?:share|give|provide)\s+"
-            r"(?:(?:her|his|their|the)\s+)?"
-            r"(?:(?:Job\s+Bank|LinkedIn|job[- ]platform)\s+)?"
-            r"(?:account(?:\s+credentials)?|credentials?|password|sign[- ]in)\s+"
-            r"(?:with|to)\s+Hermes\b",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "Job Bank or LinkedIn automation/scraping",
-        re.compile(
-            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
-            r"(?:automate|scrape|crawl|screen[- ]scrape)\b"
-            r"[^.\n]*(?:Job\s+Bank|LinkedIn)\b",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "bulk/spam outreach",
-        re.compile(
-            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
-            r"(?:send|generate|automate)\b[^.\n]*"
-            r"(?:bulk|spam)\b[^.\n]*(?:outreach|messages?|emails?)\b",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "fabricated claims",
-        re.compile(
-            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+"
-            r"(?:fabricate|invent|make\s+up)\b[^.\n]*"
-            r"(?:claims?|credentials?|experience|relationships?|results?)\b",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "submission without approval",
-        re.compile(
-            rf"\bHermes\s+{AFFIRMATIVE_MODAL}\s+submit\b[^.\n]*"
-            r"(?:without|before)\s+[^.\n]*approval\b",
-            re.IGNORECASE,
-        ),
-    ),
+Phrase = tuple[str, ...]
+AUTHORIZATION_MARKERS: tuple[Phrase, ...] = (
+    ("may",),
+    ("can",),
+    ("should",),
+    ("must",),
+    ("will",),
+    ("allowed", "to"),
+    ("permitted", "to"),
+    ("authorized", "to"),
+    ("permission", "to"),
+    ("let",),
+    ("allow",),
+    ("permit",),
+    ("enable",),
+)
+NEGATION_TOKENS = {"not", "never", "cannot", "prohibited", "forbidden"}
+KNOWN_ACTORS = {"hermes", "priya", "alex", "candidate", "user", "users", "person", "human"}
+HUMAN_ACTORS = KNOWN_ACTORS - {"hermes"}
+TOKEN_ALIASES = {
+    "accesses": "access",
+    "allows": "allow",
+    "applies": "apply",
+    "automates": "automate",
+    "blasts": "blast",
+    "controls": "control",
+    "crawls": "crawl",
+    "embellishes": "embellish",
+    "emails": "email",
+    "enables": "enable",
+    "exaggerates": "exaggerate",
+    "fabricates": "fabricate",
+    "files": "file",
+    "generates": "generate",
+    "gives": "give",
+    "invents": "invent",
+    "lets": "let",
+    "mailboxes": "mailboxes",
+    "manages": "manage",
+    "manufactures": "manufacture",
+    "messages": "messages",
+    "monitors": "monitor",
+    "operates": "operate",
+    "permits": "permit",
+    "provides": "provide",
+    "queries": "query",
+    "reads": "read",
+    "scrapes": "scrape",
+    "searches": "search",
+    "sends": "send",
+    "shares": "share",
+    "submits": "submit",
+    "submitted": "submit",
+    "uses": "use",
+}
+
+
+def phrases(*values: str) -> tuple[Phrase, ...]:
+    return tuple(tuple(value.split()) for value in values)
+
+
+@dataclass(frozen=True)
+class SentenceView:
+    """Normalized sentence used by the prose-policy scanner."""
+
+    source: str
+    tokens: tuple[str, ...]
+
+    @classmethod
+    def parse(cls, source: str) -> SentenceView:
+        normalized = (
+            source.casefold()
+            .replace("’", "'")
+            .replace("can't", "cannot")
+            .replace("won't", "will not")
+            .replace("n't", " not")
+        )
+        raw_tokens = re.findall(r"[a-z0-9]+(?:'[a-z]+)?", normalized)
+        tokens = []
+        for token in raw_tokens:
+            if token.endswith("'s"):
+                token = token[:-2]
+            tokens.append(TOKEN_ALIASES.get(token, token))
+        return cls(source=source.strip(), tokens=tuple(tokens))
+
+    def positions(self, candidates: tuple[Phrase, ...]) -> list[tuple[int, int]]:
+        matches: list[tuple[int, int]] = []
+        for phrase in candidates:
+            width = len(phrase)
+            for start in range(len(self.tokens) - width + 1):
+                if self.tokens[start : start + width] == phrase:
+                    matches.append((start, start + width))
+        return sorted(matches)
+
+    def has(self, candidates: tuple[Phrase, ...]) -> bool:
+        return bool(self.positions(candidates))
+
+    def has_after(self, candidates: tuple[Phrase, ...], start: int) -> bool:
+        return any(position >= start for position, _end in self.positions(candidates))
+
+    def nearest_actor_before(self, position: int) -> str | None:
+        actors = [token for token in self.tokens[:position] if token in KNOWN_ACTORS]
+        return actors[-1] if actors else None
+
+    def is_negated(self, marker_start: int, action_end: int) -> bool:
+        window_start = max(0, marker_start - 3)
+        return bool(NEGATION_TOKENS.intersection(self.tokens[window_start:action_end]))
+
+    def authorized_actions(
+        self,
+        actions: tuple[Phrase, ...],
+        *,
+        actors: set[str] | None = None,
+        direct_actions: tuple[Phrase, ...] = (),
+        automatic_is_authorization: bool = False,
+    ) -> list[tuple[int, int]]:
+        """Return actions asserted or affirmatively authorized for the selected actor."""
+        authorized: list[tuple[int, int]] = []
+        marker_positions = self.positions(AUTHORIZATION_MARKERS)
+        automatic_positions = self.positions(phrases("automatic", "automatically"))
+        direct_positions = set(self.positions(direct_actions))
+        for action_start, action_end in self.positions(actions):
+            actor = self.nearest_actor_before(action_start)
+            if actors is not None and actor not in actors:
+                continue
+            candidates = [
+                marker
+                for marker in marker_positions
+                if marker[0] <= action_start and action_start - marker[0] <= 12
+            ]
+            if automatic_is_authorization:
+                candidates.extend(
+                    marker
+                    for marker in automatic_positions
+                    if marker[0] <= action_start and action_start - marker[0] <= 4
+                )
+            if (action_start, action_end) in direct_positions and not candidates:
+                candidates.append((action_start, action_start))
+            if any(not self.is_negated(marker_start, action_end) for marker_start, _ in candidates):
+                authorized.append((action_start, action_end))
+        return authorized
+
+
+def has_unsafe_primary_inbox_access(sentence: SentenceView) -> bool:
+    actions = phrases("access", "read", "manage", "monitor", "open", "triage", "connect to")
+    objects = phrases(
+        "primary inbox",
+        "primary inboxes",
+        "primary mailbox",
+        "primary mailboxes",
+        "personal inbox",
+        "personal mailbox",
+    )
+    return any(
+        sentence.has_after(objects, action_end)
+        for _action_start, action_end in sentence.authorized_actions(actions, actors={"hermes"})
+    )
+
+
+def has_unsafe_account_sharing(sentence: SentenceView) -> bool:
+    account_objects = phrases(
+        "job bank account",
+        "linkedin account",
+        "job platform account",
+        "platform account",
+        "job bank credentials",
+        "linkedin credentials",
+        "account credentials",
+        "login credentials",
+        "password",
+        "sign in",
+    )
+    hermes_actions = phrases("access", "control", "use", "operate", "manage", "log in", "sign in")
+    if any(
+        sentence.has_after(account_objects, action_end)
+        for _action_start, action_end in sentence.authorized_actions(
+            hermes_actions, actors={"hermes"}
+        )
+    ):
+        return True
+
+    sharing_actions = phrases("share", "give", "provide", "hand over")
+    return any(
+        sentence.has_after(account_objects, action_end)
+        and sentence.has_after(phrases("hermes"), action_end)
+        for _action_start, action_end in sentence.authorized_actions(
+            sharing_actions, actors=HUMAN_ACTORS
+        )
+    )
+
+
+def has_unsafe_platform_automation(sentence: SentenceView) -> bool:
+    actions = phrases("automate", "query", "search", "access", "scrape", "crawl", "harvest")
+    direct_actions = phrases("automate", "scrape", "crawl", "harvest")
+    platforms = phrases("job bank", "linkedin")
+    return any(
+        sentence.has_after(platforms, action_end)
+        for _action_start, action_end in sentence.authorized_actions(
+            actions,
+            actors={"hermes"},
+            direct_actions=direct_actions,
+            automatic_is_authorization=True,
+        )
+    )
+
+
+def has_unsafe_mass_outreach(sentence: SentenceView) -> bool:
+    actions = phrases("send", "generate", "automate", "blast", "message", "email", "contact")
+    objects = phrases("outreach", "message", "messages", "email", "emails", "contacts")
+    mass_markers = phrases(
+        "mass",
+        "bulk",
+        "spam",
+        "blanket",
+        "high volume",
+        "hundreds",
+        "thousands",
+        "identical",
+        "indiscriminate",
+        "unsolicited",
+    )
+    return sentence.has(mass_markers) and any(
+        sentence.has_after(objects, action_end)
+        for _action_start, action_end in sentence.authorized_actions(
+            actions, actors={"hermes"}, direct_actions=phrases("blast")
+        )
+    )
+
+
+def has_unsafe_fabricated_claims(sentence: SentenceView) -> bool:
+    actions = phrases("fabricate", "invent", "make up", "embellish", "exaggerate", "manufacture", "falsify")
+    objects = phrases(
+        "claim",
+        "claims",
+        "credential",
+        "credentials",
+        "experience",
+        "qualification",
+        "qualifications",
+        "achievement",
+        "achievements",
+        "reference",
+        "references",
+        "result",
+        "results",
+        "relationship",
+        "relationships",
+        "work history",
+    )
+    return any(
+        sentence.has_after(objects, action_end)
+        for _action_start, action_end in sentence.authorized_actions(
+            actions, actors={"hermes"}, direct_actions=actions
+        )
+    )
+
+
+def has_unsafe_submission(sentence: SentenceView) -> bool:
+    actions = phrases("submit", "file", "send", "apply")
+    applications = phrases(
+        "application",
+        "applications",
+        "application package",
+        "application materials",
+        "candidate materials",
+        "form",
+    )
+    bypass_cues = phrases("without", "before", "no", "skip", "bypass")
+    approval_terms = phrases("approval", "consent", "sign off", "authorization", "review")
+    independent_bypasses = phrases(
+        "independently",
+        "autonomously",
+        "unilaterally",
+        "on its own",
+    )
+    defaults = phrases("by default", "automatically", "unless priya opts out", "unless the candidate opts out")
+    action_positions = sentence.positions(actions)
+    if not action_positions or not sentence.has(applications):
+        return False
+
+    # Default or opt-out submission is unsafe even when written in passive voice.
+    if sentence.has(defaults):
+        return any(
+            not sentence.is_negated(max(0, action_start - 4), action_end)
+            for action_start, action_end in action_positions
+        )
+
+    cue_before_approval = any(
+        0 < approval_start - cue_start <= 5
+        for cue_start, _cue_end in sentence.positions(bypass_cues)
+        for approval_start, _approval_end in sentence.positions(approval_terms)
+    )
+    if not cue_before_approval and not sentence.has(independent_bypasses):
+        return False
+    return bool(sentence.authorized_actions(actions, actors={"hermes"}))
+
+
+POLICY_SCANNERS: tuple[tuple[str, Callable[[SentenceView], bool]], ...] = (
+    ("primary-inbox access", has_unsafe_primary_inbox_access),
+    ("account sharing", has_unsafe_account_sharing),
+    ("Job Bank or LinkedIn automation/scraping", has_unsafe_platform_automation),
+    ("bulk/spam outreach", has_unsafe_mass_outreach),
+    ("fabricated claims", has_unsafe_fabricated_claims),
+    ("submission without approval", has_unsafe_submission),
 )
 
 
@@ -178,12 +426,24 @@ def extract_state_vocabulary(text: str, label: str, failures: list[str]) -> set[
     return set(re.findall(r"`([^`]+)`", match.group("states")))
 
 
+def find_unsafe_authorizations(text: str) -> list[tuple[str, str]]:
+    """Return policy labels and sentences containing affirmative unsafe authority."""
+    findings: list[tuple[str, str]] = []
+    sentence_sources = re.split(r"(?<=[.!?;])(?:\s+|$)|\n+", text)
+    for source in sentence_sources:
+        sentence = SentenceView.parse(source)
+        if not sentence.tokens:
+            continue
+        for label, scanner in POLICY_SCANNERS:
+            if scanner(sentence):
+                findings.append((label, sentence.source))
+    return findings
+
+
 def reject_unsafe_authorizations(text: str, failures: list[str]) -> None:
     """Reject affirmative unsafe permissions without matching explicit negations."""
-    for label, pattern in UNSAFE_AUTHORIZATION_PATTERNS:
-        match = pattern.search(text)
-        if match is not None:
-            failures.append(f"unsafe authorization: {label}: {match.group(0)}")
+    for label, sentence in find_unsafe_authorizations(text):
+        failures.append(f"unsafe authorization: {label}: {sentence}")
 
 
 def validate_official_references(text: str, failures: list[str]) -> None:
