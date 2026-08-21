@@ -44,20 +44,28 @@ No term reduces to another. A better model cannot recover a credential it was ne
 
 ```mermaid
 flowchart TB
-    U["Objective and authority contract"] --> H["Hermes harness"]
-    H --> C["Assembled context"]
-    C --> M["Model proposes text or tool call"]
-    M --> D{"Tool call?"}
-    D -->|Yes| T["Harness validates and dispatches tool"]
-    T --> O["Observation or error"]
-    O --> S["Conversation and external state change"]
-    S --> C
-    D -->|No| V["Verify completion evidence"]
-    V -->|Insufficient| C
-    V -->|Sufficient| R["Handback"]
+    subgraph BuiltIn["Built-in Hermes agent loop"]
+        H["Hermes harness"] --> C["Assembled context"]
+        C --> M["Model proposes text or tool call"]
+        M --> D{"Tool call?"}
+        D -->|Yes| T["Validate and dispatch tool"]
+        T --> O["Observation or error"]
+        O --> S["Append observation to conversation"]
+        S --> C
+        D -->|No: final text| F["Persist turn and return final text"]
+    end
+    T -. "effectful tools only" .-> X["Possible external state change"]
     P["Permissions and host boundary"] -. constrain .-> T
     B["Budgets and stop controls"] -. constrain .-> H
+    F --> R["Caller receives final text"]
+    subgraph Governance["Separate operator or optional persistent-goal governance"]
+        R --> V{"Human/task contract or /goal judge satisfied?"}
+        V -->|Accept or blocked handback| Z["Close the task"]
+        V -->|Human follow-up or /goal continuation| H
+    end
 ```
+
+The solid built-in path ends when Hermes persists and returns final text. A read-only tool changes the conversation by adding an observation but need not change any external state. Verification against a human task contract—or the optional persistent-goal judge that may enqueue another turn—is a separate governance layer, not an automatic step in every ordinary Hermes turn.
 
 ## Hermes in practice
 

@@ -42,25 +42,31 @@ The high-level loop is simple enough to hold in memory:
 
 ```mermaid
 flowchart TD
-    A["Receive Priya's research request"] --> B["Load session history"]
-    B --> C["Build or reuse system prompt"]
-    C --> D{"Context pressure?"}
-    D -->|Yes| E["Flush memory and compress older middle turns"]
-    E --> F["Format messages and tool schemas"]
-    D -->|No| F
-    F --> G["Interruptible model call"]
-    G --> H{"Model output"}
-    H -->|Tool calls| I["Validate and dispatch permitted tools"]
-    I --> J["Append ordered observations or errors"]
-    J --> D
-    H -->|Final text| K["Check job contract and evidence"]
-    K -->|Missing proof| L["Continue, clarify, or stop as blocked"]
-    L --> D
-    K -->|Satisfied| M["Persist and hand back"]
-    N["Human interrupt / budget / approval boundary"] -.-> L
+    subgraph BuiltIn["Built-in Hermes turn"]
+        A["Receive Priya's research request"] --> B["Load session history"]
+        B --> C["Build or reuse system prompt"]
+        C --> D{"Context pressure?"}
+        D -->|Yes| E["Flush memory and compress older middle turns"]
+        E --> F["Format messages and tool schemas"]
+        D -->|No| F
+        F --> G["Interruptible model call"]
+        G --> H{"Model output"}
+        H -->|Tool calls| I["Validate and dispatch permitted tools"]
+        I --> J["Append ordered observations or errors"]
+        J --> D
+        H -->|Final text| K["Persist turn and return final text"]
+    end
+    K --> M["Caller receives final text"]
+    subgraph Governance["Separate governance after the ordinary return"]
+        M --> N{"Human/task contract, or optional /goal judge"}
+        N -->|Accept or blocked handback| O["Close the task"]
+        N -->|Human follow-up or /goal continuation| A
+    end
+    P["Human interrupt / budget / approval boundary"] -. "interrupts or limits" .-> G
+    P -. "approval constrains dispatch" .-> I
 ```
 
-This diagram omits implementation detail but preserves the operational truth: the model never leaps directly from intention to effect. It proposes a call; the harness dispatches it; a tool produces an observation; the model receives that observation on the next iteration.
+This diagram separates runtime from governance. In the ordinary built-in loop, final text is persisted and returned. A human can compare that return with the task contract, or an active persistent goal can have its judge enqueue a continuation turn. Neither gate is an automatic verification branch inside every ordinary Hermes turn. During tool use, the model never leaps directly from intention to effect: it proposes a call; the harness dispatches it; a tool produces an observation; and the model receives that observation on the next iteration.
 
 ### Stage 1: intake becomes a task contract
 
@@ -310,7 +316,16 @@ Trace a hypothetical Hermes trajectory for “compare two internet plans for the
 
 ## Answer or rubric
 
-A strong trace begins with the two official provider pages and a household requirements file. A failed page fetch is preserved as an error; it is not converted to “plan unavailable.” A promotional page and terms page may conflict on price, so the current terms or checkout preview is treated as more authoritative while purchase remains prohibited. The durable artifact records dated prices, contract length, data limits, source URLs, and unknowns. Session history keeps the tool path. Persistent memory may keep a stable preference such as “no multi-year contract,” after family confirmation, but not a temporary promotion.
+A strong trace begins with the two official provider pages and a household requirements file. One acceptable four-iteration answer is:
+
+| Iteration | Model proposed | Tool/response | Observation | State changed | Continue because |
+| ---: | --- | --- | --- | --- | --- |
+| 1 | Read the household requirements and both official plan pages. | File read succeeds; Provider A succeeds; Provider B times out. | Requirements and Provider A terms are available; Provider B is unknown, not unavailable. | Session history gains all three results; no external state changes. | One bounded retry of the failed read is safe. |
+| 2 | Retry Provider B and open each provider's official promotion page. | Retry succeeds; both promotion pages load. | Both plans can be compared, but Provider B's promotion conflicts with its official terms on the monthly price. | Session history records both sources; the draft artifact records a conflict rather than choosing a price. | The conflict needs a more authoritative current source. |
+| 3 | Read Provider B's official fee schedule or non-submitting checkout preview. | Current terms load, but an activation fee remains unstated. | The recurring price is resolved; the one-time fee remains unverified. Long unrelated history would risk losing this qualifier during lossy compression. | The bounded task session and draft preserve the qualifier; nothing is promoted to persistent memory. | One final official-source check is allowed by the contract. |
+| 4 | Search the provider's official support pages for the activation fee. | No authoritative fee is found. | Required sources were checked; the remaining unknown cannot be resolved inside scope. | The durable comparison records dated terms, URLs, the unknown fee, and no external effect. | Stop with **Complete with uncertainty**; purchase remains prohibited. |
+
+A failed page fetch is preserved as an error; it is not converted to “plan unavailable.” A promotional page and terms page may conflict on price, so the current terms or non-submitting checkout preview is treated as more authoritative while purchase remains prohibited. The durable artifact records dated prices, contract length, data limits, source URLs, and unknowns. Session history keeps the tool path. Persistent memory may keep a stable preference such as “no multi-year contract,” after family confirmation, but not a temporary promotion.
 
 Compression risk appears if unrelated household research shares the session; recovery is a fresh session and reconstruction from sources. The loop stops with “Complete with uncertainty” if a current fee cannot be verified, or “Blocked” if both official sources are unavailable. Award two points each for correct loop mechanics, observation handling, state placement, authority separation, and evidence-based stopping. Eight of ten indicates mastery.
 
