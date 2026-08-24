@@ -81,6 +81,21 @@ A colour without scope is decoration. Build a policy row for each repeated task 
 
 Add negative authority in plain language. Harbourlight's policy says: no payment-card entry, no primary credentials, no child dossier, no production deletion, no autonomous external message, and no retry while a prior effect is uncertain. Negative rows make improvisation visible when a tool fails.
 
+### Use the proactivity ladder as an authority pattern
+
+The sequence **Observe → Explain → Recommend → Prepare → Approve → Execute and reconcile** makes anticipation inspectable without confusing it with authority. The interview that popularizes this framing is useful for workflow vocabulary, but an autonomous flight-booking anecdote is not evidence that a household or Harbourlight agent should book flights on its own. In this book, the ladder is governed by the policy row, exact approval, capability limits, and audit evidence—not by how confident or helpful the agent sounds.
+
+Stages 1–4 can be Green only inside approved read and draft boundaries:
+
+1. **Observe:** read the named, authorized source and record freshness, scope, and source identity.
+2. **Explain:** state the evidence, gap, uncertainty, and why the trigger matters; this is an internal artifact, not a claim of permission.
+3. **Recommend:** compare bounded options and surface cost, target, deadline, and unresolved assumptions.
+4. **Prepare:** make a stable draft, preview, or local plan without sending, reserving, purchasing, changing an account, or otherwise creating the consequence.
+
+Stage 5 is not “the agent approved its plan.” It is the human's exact action approval: the immutable object, target, identity, quantity or ceiling, time, and required evidence must match. Stage 6 is permitted only when the intent is stable and the execution design can prevent or detect duplication: retain an intent/action ID, use an idempotency key where the provider supports one, and reconcile authoritative remote state before any retry. If the outcome is unknown, the ladder stops at reconciliation; it does not advance through optimism.
+
+A bounded standing policy can reduce repeated, low-consequence action prompts, but it must be deliberately earned and written as a policy row. Name the task family and version, authorized trigger and sources, exact identities and destinations, effect and cost/quantity ceiling, time window, required intent key and evidence, notification threshold, stop/revocation rule, owner, and review date. Prove it first with representative supervised runs and synthetic allow/deny tests, then review samples and exceptions. Repeated one-time approvals do not infer standing authority; nor does a Hermes command allowlist, which has no business-purpose or recipient boundary. A standing policy never overrides the Red prohibitions or converts booking, payments, terms acceptance, customer promises, or family-consent decisions into ambient autonomy.
+
 ### Separate plan approval from action approval
 
 A plan is provisional reasoning. Approving it means “continue within these preparation boundaries,” not “execute every step if later possible.” Use two gates:
@@ -328,6 +343,7 @@ Expansion might reduce repeated formatting approvals or allow a narrowly tested 
 ## Mastery checklist
 
 - [ ] I classify authority by effect, target, and data—not by tool name.
+- [ ] I use Observe → Explain → Recommend → Prepare → Approve → Execute and reconcile without mistaking anticipation for authority.
 - [ ] I separate approval of a plan from approval of an exact action.
 - [ ] Every Amber approval names an object, target, identity, scope, expiry, and evidence.
 - [ ] Silence, timeout, changed state, and changed object all deny or invalidate approval.
@@ -353,4 +369,5 @@ Expansion might reduce repeated formatting approvals or allow a narrowly tested 
 - Nous Research, [Session persistence and management](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/sessions.md).
 - Nous Research, [Cron execution history](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/cron.md).
 - Nous Research, [Trajectory format](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/developer-guide/trajectory-format.md).
+- [Video interview, advanced-workflow framing at 23:32](https://www.youtube.com/watch?v=UWjh5Z4s8jY) (attributed framing, not Hermes implementation evidence).
 - National Institute of Standards and Technology, [AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) (accessed 2026-08-21).

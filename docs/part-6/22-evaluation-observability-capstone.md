@@ -334,6 +334,40 @@ Run the full regression set, restore drill, credential-revocation drill, missed-
 
 The ninety-day outcome is not maximum autonomy. It is a role whose useful behaviour and failure handling are evidenced well enough to operate inside a known envelope.
 
+### Optional personal moonshot: build a small niche-expertise flywheel
+
+The 90-day capstone remains the primary track. This optional track is for a personally meaningful, bounded subject that makes you want to learn the discipline: a community archive, tabletop scenario kit, accessible recipe collection, local-history exhibit, hobby-game modification, or another small body of work. It is inspired by an interview anecdote in which a Hermes user described revisiting a childhood-game modification project with agent help. That is a story about motivation and iterative craft, not evidence of a general capability or performance result.
+
+The aim is not to make Hermes an unquestioned expert. Build a flywheel: primary documentation defines the subject; lawful representative examples show the shape of real work; controlled experiments test one change at a time; recorded failures prevent repeated guesses; reusable skills encode a proven procedure; deterministic or observable tests make claims checkable; and a human curator decides what is accurate, safe, tasteful, and ready to share. A non-coder can use a source table, a comparison checklist, a rendered page, and curator annotations as observable tests. A technical reader may additionally use a fixture, lint rule, build, emulator, or regression suite.
+
+Start with this **PERSONAL MOONSHOT CONTRACT**:
+
+```text
+PERSONAL SUBJECT / CURATOR / TIME WINDOW:
+One concrete outcome and audience:
+Primary documentation and lawful representative examples:
+Copyright, licence, attribution, privacy, platform-rule, and data checks:
+Permitted inputs, tools, accounts, write roots, and external effects:
+Explicit exclusions: secrets, scraping beyond permission, impersonation,
+  paid services, publication, uploads, or distribution without curator approval.
+Milestones, evidence for each, and acceptance rule:
+Cost cap / time cap / experiment and retry cap:
+Fallback if a tool, source, build, or example is unavailable:
+Rollback: local files to preserve, checkpoint/backup location, and how to
+  reconcile any external effect before retrying.
+Final retrospective owner, review date, and keep/redesign/retire decision:
+```
+
+Run incremental milestones rather than attempting the finished dream in one prompt:
+
+1. **Scope and rights check.** Write the outcome, exclusions, approved sources, licensing/data findings, budget, and rollback path. If rights, terms, or data permission are unclear, switch to original or synthetic material and keep the project private.
+2. **Reference packet.** Build a small claim-to-source table from primary documents and lawful examples. Have the curator mark what counts as representative, what is uncertain, and what must not be copied or published.
+3. **One reversible experiment.** Make the smallest useful draft, comparison, configuration, prototype, or asset variation in an isolated folder. Record the hypothesis, inputs, method, output, observed result, cost, and failure if it does not work.
+4. **Prove and package one repeatable procedure.** Turn the successful path into a narrow reusable skill or checklist. Demonstrate it on a fresh, representative input with a deterministic check or an observable before/after review. A failure becomes a regression example, not a reason to silently rewrite history.
+5. **Curator review and retrospective.** The curator compares the result against the original contract, source table, rights checks, and acceptance evidence. Decide whether to keep it private, revise it, publish only an approved derivative, or retire it. Record what the agent could not establish, time and cost actually used, failures that informed the next version, and the exact rollback/offboarding state.
+
+Keep external effects off until the evidence gate is met. If an editor, build, source, or skill fails, preserve the failure record, stop after the cap, and use the planned fallback—manual review, a smaller deliverable, an original substitute, or a return to the last good local version. The result can be a careful learning artifact rather than a release, and that is a successful capstone outcome.
+
 ## Professional example
 
 The business content pipeline records twelve attempts. Eleven finish, ten are reviewed, nine are accepted, and eight are published manually. Verified correctness is nine of ten reviewed attempts; false completion is one of ten reviewed completed claims; the eleventh completed output is unreviewed and therefore not observable for correctness. Effect fidelity is eight of eight published items with matching approval, receipt, and read-back. The rejected draft contains an unsupported comparison; its escalation score is three because Hermes named uncertainty but did not contain the scheduled campaign.
@@ -474,6 +508,9 @@ Award two points each for unit definitions, balanced metrics, risk-weighted samp
 - Nous Research, [Checkpoints and rollback](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/checkpoints-and-rollback.md).
 - Nous Research, [Fallback providers](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/fallback-providers.md).
 - Nous Research, [Subagent delegation](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/delegation.md).
+- Nous Research, [Kanban multi-agent board](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/kanban.md).
+- Nous Research, [Skills](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md).
+- Peter Yang, [Hermes Agent interview](https://www.youtube.com/watch?v=UWjh5Z4s8jY) (accessed 2026-08-24).
 - OpenAI, [Webhooks](https://developers.openai.com/api/docs/guides/webhooks) (accessed 2026-08-21).
 - OpenAI, [Webhook events](https://developers.openai.com/api/reference/resources/webhooks) (accessed 2026-08-21).
 - NIST, [AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) (accessed 2026-08-21).

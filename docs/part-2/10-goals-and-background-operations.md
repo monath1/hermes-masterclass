@@ -97,6 +97,25 @@ The control plane is layered because one stop command does not cover every mecha
 
 Do not use cron when conversational context is essential and cannot be expressed in a self-contained artifact. Do not use a heartbeat for a briefing that must run when no interactive session is open. Do not use a loop as an unlimited substitute for a clear goal. Do not use a hook as a hidden workflow engine.
 
+### Make proactivity bounded and observable
+
+The advanced-workflow interview frames a useful sequence as **Observe → Explain → Recommend → Prepare → Approve → Execute and reconcile**. Treat that as an operating model, not a claim that Hermes has a reliable spontaneous-autonomy feature. Anticipation means noticing a permitted, observable condition and preparing a useful next step. Authority means permission to cause an effect. The first does not imply the second. [The interview](https://www.youtube.com/watch?v=UWjh5Z4s8jY) at 23:32 is attributed framing; the controls in this chapter and Chapter 13 set the implementation standard.
+
+A bounded proactive worker has an operator-defined trigger, such as a named calendar feed, a read-only ledger, an inbox label, or a cron schedule. It records the source identifier, observation time, freshness limit, and last processed watermark. It then explains the evidence and any uncertainty, recommends an option, and prepares a reviewable artifact. It does not treat a plausible model inference, an old conversation detail, or a casual “you should probably” as a reliable trigger. An informal or *emergent* suggestion may start a conversation; it is not durable automation and must not silently acquire tools, credentials, or effect authority.
+
+Use this small contract before promotion:
+
+1. **Observe:** read only the named source; reject missing, stale, conflicting, or out-of-scope input.
+2. **Explain:** preserve the source IDs, timestamps, gap, and freshness decision so an owner can see why the work woke up.
+3. **Recommend:** compare bounded options and state assumptions, cost or time sensitivity, and what still needs a person.
+4. **Prepare:** create a draft, local artifact, or checkout-ready plan without causing the effect.
+5. **Approve:** obtain the applicable exact action approval or confirm that a documented standing policy covers this exact class.
+6. **Execute and reconcile:** use a stable intent key where an effect is allowed, obtain authoritative evidence, and freeze retries if the outcome is uncertain.
+
+Notify by exception, not on every quiet poll. A healthy job records routine observations locally and interrupts an owner only for a new gap, a material change, stale or missing evidence, a blocked preparation, an approaching decision deadline, or an uncertain outcome. The recipient and channel are part of the policy; do not let a “helpful” alert fan out beyond its approved route.
+
+For example, a family travel-gap watch may compare a named, delegated itinerary feed with the Chen–Patels' travel ledger. If it sees a confirmed outbound leg without an approved return window, it records the source timestamps, checks that fares are current, and prepares a checkout-ready plan: a small set of fare snapshots, change/refund terms, traveller constraints supplied by the adults, and direct booking links or a provider draft only when that draft creates neither a reservation nor a charge. It can explain the gap and recommend an option. It may not purchase, hold inventory, enter payment-card data, accept terms, or book merely because the gap looks obvious. In this household, every purchase or booking requires a fresh, exact human action approval and is excluded from standing policy; the flight-booking anecdote in the interview is not a safe default.
+
 ### Drive bounded work with goals
 
 Set a goal when one task needs several turns:
@@ -500,6 +519,7 @@ For the incident, `unknown` plus one visible alert is evidence that delivery may
 ## Mastery checklist
 
 - [ ] I can choose among goals, heartbeats, loops, cron, and hooks.
+- [ ] I can turn anticipation into an observable, fresh, stateful workflow without granting effect authority.
 - [ ] I know cron runs fresh sessions and job-critical context must be explicit.
 - [ ] I can explain continuity, `context_from`, artifacts, and watermarks.
 - [ ] I verify the host time zone and `next_run` rather than assuming wall-clock behaviour.
@@ -521,6 +541,7 @@ For the incident, `unknown` plus one visible alert is evidence that delivery may
 - Nous Research, [Event hooks](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/hooks.md).
 - Nous Research, [Checkpoints and rollback](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/checkpoints-and-rollback.md).
 - Nous Research, [Automation blueprints](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/automation-blueprints.md).
+- [Video interview, advanced-workflow framing at 23:32](https://www.youtube.com/watch?v=UWjh5Z4s8jY) (attributed framing, not Hermes implementation evidence).
 - Nous Research, [Daily briefing bot](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/guides/daily-briefing-bot.md).
 - Nous Research, [Profiles and the global `-p` selector](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/profiles.md).
 - Nous Research, [Provider reference](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/integrations/providers.md).

@@ -309,8 +309,8 @@ def check_site(site: Path, failures: list[str]) -> None:
                     f"external page-load resource in {html_path.relative_to(site)}: "
                     f"{tag}[{attribute}]={value}"
                 )
-    if raw_diagrams != 24:
-        failures.append(f"built site must contain 24 Mermaid blocks; found {raw_diagrams}")
+    if raw_diagrams != 25:
+        failures.append(f"built site must contain 25 Mermaid blocks; found {raw_diagrams}")
 
     for css_path in site.rglob("*.css"):
         contents = css_path.read_text(encoding="utf-8", errors="replace")

@@ -209,6 +209,14 @@ Use a separate board when a hard project or domain boundary matters. Tenant tags
 
 Set low work-in-progress limits. A two-person company rarely benefits from ten simultaneous agent jobs. Manual triage and `auto_promote_children: false` make a good probation baseline: an owner reviews decomposition before workers start. A card that needs customer contact, a commercial decision, or professional judgment must stop at an Amber handoff. Completion metadata should answer what changed, how it was checked, what receipt exists, and what risk remains.
 
+### Keep the card stable while the workforce changes
+
+A useful board can coordinate a mixed workforce: an owner may do the first pass, a Hermes profile or Bot may prepare an internal draft, a temporary subagent may investigate one bounded question, and a Codex specialist may change an isolated repository artifact. The card need not be rewritten to make that transfer look tidy. Its **outcome, authority row, required evidence, acceptance condition, and sensitivity classification** stay stable. Its lifecycle state may change only through the permitted transition supported by handoff evidence; the current executor, bounded assignment, workspace, and handoff record may also change.
+
+Treat those stable fields as handoff invariants. A new worker receives the same approved outcome and exclusions, the authoritative inputs, the prior artifact and raw verification evidence, any failed check, and the next permitted state transition. It cannot convert a draft into an approved promise, reinterpret a missing source as a fact, or use a change of worker to widen access. If a handoff is incomplete, blocked, or may have produced an external effect, record that truth on the card and reconcile before reassignment.
+
+The board is coordination evidence: it shows who held the work, what was attempted, and why a state changed. It is not the business source of truth for a customer promise, decision, contract, payment, or professional judgment. Link the card to the authoritative record and record the evidence that was checked; when they conflict, freeze the card's closure and follow the authoritative record. This makes the board useful across people and agents without allowing its convenience to manufacture business reality.
+
 ### Make meetings produce evidence without inventing consensus
 
 Not every conversation deserves a meeting. Use a **MEETING CONTRACT**:
@@ -416,3 +424,4 @@ Finance work indexes receipts, reconciles supplied facts, and creates questions 
 - Nous Research, [Hooks](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/hooks.md).
 - Nous Research, [Deliverable Mode](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/deliverable-mode.md).
 - Nous Research, [Meeting Action Items bundled skill](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/skills/bundled/productivity/productivity-meeting-action-items.md).
+- Peter Yang, [Hermes Agent interview (framing source)](https://www.youtube.com/watch?v=UWjh5Z4s8jY) (accessed 2026-08-24).

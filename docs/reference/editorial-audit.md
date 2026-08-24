@@ -40,29 +40,31 @@ for a dated source and human or professional decision owner.
 | --- | ---: |
 | Numbered chapters | 22 |
 | Appendices | 4 |
-| Chapter words | 99,654 |
+| Chapter words | 102,833 |
 | Appendix words | 10,599 |
-| Total measured Markdown words | 110,253 |
+| Total measured Markdown words | 113,432 |
 | Required chapter-section checks | 264 of 264 |
-| Mermaid blocks in numbered chapters | 24 |
-| Chapter reference URL occurrences | 261 |
-| Deduplicated external source-ledger rows | 168 |
-| Explicit pinned Hermes links in the source map | 137 |
+| Mermaid blocks in numbered chapters | 25 |
+| Chapter reference URL occurrences | 270 |
+| Deduplicated external source-ledger rows | 170 |
+| Explicit pinned Hermes links in the source map | 138 |
 | Version-labelled manuscript units | 26 of 26 |
 | Chapters containing Green, Amber, and Red boundaries | 22 of 22 |
-| Narrative cross-chapter references | 36 |
-| ISO date occurrences in numbered chapters | 122 |
+| Narrative cross-chapter references | 37 |
+| ISO date occurrences in numbered chapters | 125 |
 | Provenanced local image assets | 8 |
 
 The validator excludes fenced code blocks from manuscript word counts. The source
-ledger is fenced so its 168 repetitive CSV records remain copyable without
+ledger is fenced so its 170 repetitive CSV records remain copyable without
 distorting Appendix D's prose contract.
 
 ## Editorial findings and corrections
 
 - Replaced the temporary MkDocs navigation with the canonical Home, six-part,
   22-chapter, four-appendix, About order and corrected the stale home-page count.
-- Expanded all 137 pinned Hermes source-map paths into direct, clickable tag URLs.
+- Expanded all 138 pinned Hermes source-map paths into direct, clickable tag URLs.
+- Added the pinned Curator evidence and clearly labelled the Peter Yang interview
+  as an editorial framing source rather than product-behaviour documentation.
 - Added the missing agent-loop, prompt-assembly, and session-storage evidence to
   Chapter 1 and updated Appendix D's affected-unit mappings.
 - Standardized Chapter 2's **Evidence check** capitalization.

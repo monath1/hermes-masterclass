@@ -105,6 +105,16 @@ Do not put API keys, personal histories, customer records, temporary deadlines, 
 
 Changes take effect cleanly in a new session. Test with a harmless prompt, then inspect whether the style changed without assuming every old session rebuilt its prompt. Use `/personality teacher` or another documented overlay for a temporary teaching conversation, and `/personality none` to return to the base. A playful overlay should never be active in a serious health, employment, or customer incident review.
 
+### Treat continuity as a context system, not a model property
+
+The attractive phrase “an employee that stays with you” is a useful product image, but operationally it is a simplification. Hermes's durable continuity is distributed: `SOUL.md` supplies identity and communication limits; `USER.md` and `MEMORY.md` hold small, reviewed facts; project instructions supply local rules; skills supply reusable procedures; and sessions retain case history. The selected model reads some of that material and produces the next response. It is an important component, but it is not the single place where the employee-like continuity lives.
+
+That distinction helps during a model change. Moving from one provider or model to another does not automatically discard the files, skills, or sessions in a profile, but neither is it operationally free. Different models can follow `SOUL.md` differently, choose different tools, interpret a skill's procedure differently, expose different privacy routes through their providers, consume a different amount of context, and produce different cost, latency, and output quality. A model with a larger context window may still retrieve or prioritize the wrong evidence; a cheaper model may need more retries; a tool-capable route may send prompts to a different service. Treat a switch as a controlled configuration change, not as swapping an interchangeable brain.
+
+For a consequential workflow, keep the continuity stores stable while evaluating the candidate model on a small, representative suite: a style and refusal case, a project-instruction conflict, an allowed tool task, a forbidden-action test, a memory provenance check in a fresh session, and a citation or artifact-quality review. Record provider, model name, toolsets, routes, prompt/context use, latency, token cost, and human corrections. Compare the candidate with the existing model against the same fixtures, then approve a limited-profile rollout with an easy reversal. Re-run the suite after a provider update or a material change to tools, skills, memory, or privacy configuration.
+
+This is deliberately non-anthropomorphic. Good continuity comes from maintained instructions, bounded retention, evidence, and evaluation—not from a claim that a model is loyal, remembers everything, or becomes capable merely by forming a relationship. The owner remains responsible for the operating contract and for deciding when observed performance is sufficient.
+
 ### Put project truth in the project
 
 The pinned context-file guide documents a first-match priority among project context types: `.hermes.md`/`HERMES.md`, `AGENTS.override.md`, `AGENTS.md`, `CLAUDE.md`, then `.cursorrules`. `SOUL.md` loads independently. Do not create three project files and assume they merge.

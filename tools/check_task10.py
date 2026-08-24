@@ -13,8 +13,8 @@ from check_book import markdown_words
 
 PINNED_COMMIT = "fcbd1076a93841fa88855acce810e342a5b78101"
 CHAPTERS = {
-    "docs/part-5/21-hermes-as-manager.md": (4400, 5000),
-    "docs/part-6/22-evaluation-observability-capstone.md": (4800, 5300),
+    "docs/part-5/21-hermes-as-manager.md": (4800, 5400),
+    "docs/part-6/22-evaluation-observability-capstone.md": (5600, 6200),
 }
 REQUIRED_PINNED_PATHS = {
     "website/docs/developer-guide/subagent-lifecycle-api.md",

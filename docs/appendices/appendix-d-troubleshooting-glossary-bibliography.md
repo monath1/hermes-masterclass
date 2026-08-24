@@ -209,6 +209,7 @@ url,title,publisher,verified,affected,version_sensitive
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/context-files.md","Context files","Nous Research","2026-08-21","7","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/credential-pools.md","Credential pools","Nous Research","2026-08-21","12","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/cron.md","Scheduled tasks","Nous Research","2026-08-21","10, 13, 14, 15, 16, 18, 19, 22, B","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/curator.md","The pinned Curator guide","Nous Research","2026-08-24","8","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/delegation.md","Subagent delegation","Nous Research","2026-08-21","4, 21, 22","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/deliverable-mode.md","Deliverable Mode","Nous Research","2026-08-21","19, 20","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/document-extraction.md","Document extraction","Nous Research","2026-08-21","16, 17, 18, 20","Yes—pinned"
@@ -216,7 +217,7 @@ url,title,publisher,verified,affected,version_sensitive
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/goals.md","Persistent goals","Nous Research","2026-08-21","2, 3, 4, 10, 19, 22, B","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/heartbeat.md","Session heartbeats","Nous Research","2026-08-21","10","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/hooks.md","Event hooks","Nous Research","2026-08-21","10, 13, 19","Yes—pinned"
-"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/kanban.md","Kanban multi-agent board","Nous Research","2026-08-21","19, 20","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/kanban.md","Kanban multi-agent board","Nous Research","2026-08-21","19, 20, 22","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/loops.md","Recurring loops","Nous Research","2026-08-21","10","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mcp.md","MCP client and server support","Nous Research","2026-08-21","8, 16, C","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/memory-providers.md","Memory providers","Nous Research","2026-08-21","7","Yes—pinned"
@@ -226,7 +227,7 @@ url,title,publisher,verified,affected,version_sensitive
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/personality.md","Personality and SOUL.md","Nous Research","2026-08-21","4, 7","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/plugins.md","Plugins","Nous Research","2026-08-21","8, C","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/provider-routing.md","Provider routing","Nous Research","2026-08-21","6, 21","Yes—pinned"
-"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md","Skills system and Skills Hub","Nous Research","2026-08-21","8, 16, 19, C","Yes—pinned"
+"https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md","Skills system and Skills Hub","Nous Research","2026-08-21","8, 16, 19, 22, C","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/tools.md","Tools and toolsets","Nous Research","2026-08-21","8, 16, 18, 20","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/voice-mode.md","Voice mode","Nous Research","2026-08-21","9, 17","Yes—pinned"
 "https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/web-dashboard.md","Web dashboard","Nous Research","2026-08-21","5","Yes—pinned"
@@ -312,6 +313,7 @@ url,title,publisher,verified,affected,version_sensitive
 "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/p_principle/principles/p_use/","Limiting use, disclosure, and retention","Office of the Privacy Commissioner of Canada","2026-08-21","7","Yes—mutable"
 "https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/r_o_p/prov-pipeda/","Provincial laws that may apply instead of PIPEDA","Office of the Privacy Commissioner of Canada","2026-08-21","14","Yes—mutable"
 "https://www.twilio.com/en-us/sms/pricing/ca","SMS pricing in Canada","Twilio","2026-08-21","9","Yes—mutable"
+"https://www.youtube.com/watch?v=UWjh5Z4s8jY","Hermes Agent interview (framing source)","Peter Yang","2026-08-24","8, 10, 13, 19, 21, 22","Yes—mutable"
 ```
 
 ## Screenshot provenance
