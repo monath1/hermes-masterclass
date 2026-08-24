@@ -42,7 +42,7 @@ def test_task11_appendix_source_contract() -> None:
 
     assert result.returncode == 0, result.stdout + result.stderr
     assert "check_task11: OK" in result.stdout
-    assert "168 external URLs" in result.stdout
+    assert "170 external URLs" in result.stdout
 
 
 def test_source_map_includes_chapter_6_for_the_cli_reference() -> None:

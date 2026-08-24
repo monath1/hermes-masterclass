@@ -13,7 +13,7 @@ from check_book import markdown_words
 
 PINNED_COMMIT = "fcbd1076a93841fa88855acce810e342a5b78101"
 CHAPTERS = {
-    "docs/part-3/13-approvals-autonomy-egress-audit.md": (4200, 4800),
+    "docs/part-3/13-approvals-autonomy-egress-audit.md": (4800, 5400),
     "docs/part-3/14-sensitive-data-backups-recovery.md": (4400, 5000),
 }
 REQUIRED_PINNED_PATHS = {

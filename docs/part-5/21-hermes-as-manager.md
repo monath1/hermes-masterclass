@@ -220,6 +220,37 @@ When evidence fails, classify before retrying:
 
 Use one focused correction at a time. “Try again and be better” erases the diagnostic. “The mobile navigation test still fails at this assertion; change only the menu-state implementation, rerun these two commands, and return their raw exit status” creates a testable fix loop.
 
+### Use a fresh critic, not a polite second opinion
+
+An implementer should hand back an artifact, its assumptions, raw acceptance evidence, and residual risk. Then give a fresh reviewer the artifact, contract, authoritative inputs, and checks—but no prior conversational framing, progress narrative, or request to validate the implementer's conclusion. The review assignment is to look for unsupported claims, weak assumptions, missing evidence, unmet acceptance criteria, unsafe effects, and a trajectory that is solving the wrong problem. Agreement is not evaluation; a pass needs its own observed evidence.
+
+Fresh means independently briefed, not magically independent. A Hermes child starts without the parent conversation, and a separate profile, subagent, or Codex review can reduce inherited framing. But reviewers can still share source gaps, tool limits, training/model biases, or a mistaken acceptance test. Record the reviewer and route, diversify evidence or methods when the risk warrants it, and keep the accountable human responsible for the release decision.
+
+Use this reusable assignment after every consequential or difficult implementation:
+
+```text
+FRESH-CRITIC REVIEW
+You are reviewing a completed bounded assignment. Do not assume the
+implementer's conclusion is correct. You were not given its conversation.
+
+Approved outcome and acceptance criteria:
+Authority and data/effect boundaries:
+Authoritative inputs and source locations:
+Artifact and exact version/path to inspect:
+Implementer's assumptions, evidence, and residual-risk statement:
+Independent checks you may run / budget / write permissions:
+
+Test the artifact against the contract. Identify unsupported claims, weak or
+unstated assumptions, missing or non-reproducible evidence, unmet acceptance
+criteria, unsafe or unapproved effects, and signs that the work followed the
+wrong trajectory. Run or sample the named checks where possible. Return:
+verdict [accept / changes required / blocked / not observable]; findings with
+evidence; checks actually run and raw results; residual risks; and the smallest
+safe next step. Do not approve external effects or broaden authority.
+```
+
+For example, a fresh reviewer of the checkout fix reads the failing test, the specified acceptance conditions, the diff, and raw command outputs before it sees the implementer's summary. It confirms the defect is fixed and checks that the change did not violate the no-dependency or accessibility conditions. If the reviewer merely says “looks good,” Hermes treats the result as unreviewed.
+
 ### Hand back accountability, not activity
 
 Hermes’s final answer should not dump three specialist summaries on the owner. It should reconcile them into one management record:
@@ -386,3 +417,4 @@ Award two points each for mechanism selection, complete brief, context minimizat
 - OpenAI, [Sandbox](https://learn.chatgpt.com/docs/sandboxing) (accessed 2026-08-21).
 - OpenAI, [Build skills for ChatGPT and Codex](https://learn.chatgpt.com/docs/build-skills) (accessed 2026-08-21).
 - OpenAI, [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (accessed 2026-08-21).
+- Peter Yang, [Hermes Agent interview (framing source)](https://www.youtube.com/watch?v=UWjh5Z4s8jY) (accessed 2026-08-24).

@@ -40,13 +40,13 @@ chapters:
     title: Personality, Context, Sessions, and Memory
     path: docs/part-2/07-personality-context-sessions-memory.md
     part: Part II — Build the Mac mini Foundation
-    word_target: 4000–4600
+    word_target: 4400–5000
     status: complete
   - number: 8
     title: Tools, Skills, Plugins, and MCP
     path: docs/part-2/08-tools-skills-plugins-mcp.md
     part: Part II — Build the Mac mini Foundation
-    word_target: 4300–5000
+    word_target: 5000–5600
     status: complete
   - number: 9
     title: Message Hermes Everywhere
@@ -58,7 +58,7 @@ chapters:
     title: Goals and Background Operations
     path: docs/part-2/10-goals-and-background-operations.md
     part: Part II — Build the Mac mini Foundation
-    word_target: 4300–5000
+    word_target: 5000–5600
     status: complete
   - number: 11
     title: The Family-Safe Security Architecture
@@ -76,7 +76,7 @@ chapters:
     title: Approvals, Autonomy, Egress, and Audit
     path: docs/part-3/13-approvals-autonomy-egress-audit.md
     part: Part III — Build the Trust Envelope
-    word_target: 4200–4800
+    word_target: 4800–5400
     status: complete
   - number: 14
     title: Sensitive Data, Backups, and Recovery
@@ -124,13 +124,13 @@ chapters:
     title: Hermes as Manager
     path: docs/part-5/21-hermes-as-manager.md
     part: Part V — Your First Digital Employee
-    word_target: 4400–5000
+    word_target: 4800–5400
     status: complete
   - number: 22
     title: Evaluation, Observability, and the 90-Day Capstone
     path: docs/part-6/22-evaluation-observability-capstone.md
     part: Part VI — Advanced Operations
-    word_target: 4800–5300
+    word_target: 5600–6200
     status: complete
 appendices:
   - letter: A

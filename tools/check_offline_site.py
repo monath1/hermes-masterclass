@@ -29,7 +29,7 @@ CSP = (
     "script-src 'self' 'unsafe-inline'; "
     "style-src 'self' 'unsafe-inline'"
 )
-EXPECTED_DIAGRAMS = 24
+EXPECTED_DIAGRAMS = 25
 
 
 class OfflineHandler(http.server.SimpleHTTPRequestHandler):

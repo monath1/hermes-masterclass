@@ -100,6 +100,47 @@ Skills can contain scripts and setup instructions, so “text file” does not m
 
 Turn on `skills.write_approval` when Hermes may create or revise procedures. Then skill mutations are staged for `/skills diff` and `/skills approve` rather than written immediately. A learned workflow can encode a mistake for every later session; procedural memory deserves change control.
 
+### Maintain learned skills with the Curator
+
+Self-improvement needs housekeeping. A system that saves a new procedure after every novel success eventually presents a crowded catalog of overlapping, narrow, or obsolete skills. That wastes prompt space and makes the right procedure harder to select. Hermes's **Curator** is a maintenance pass for the skills it is allowed to manage; it tracks views, uses, and patches, then applies a conservative lifecycle. The interview framing of this feature is useful but simplified: Curator is **not** a standalone cron daemon. Hermes checks eligibility when a CLI session starts and from the gateway's cron-ticker thread; it runs only when both the configured interval has elapsed (seven days by default) and the agent has been idle long enough (two hours by default). A new installation first records the time and waits a full interval, giving the owner time to inspect or pin the library. [The pinned Curator guide](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/curator.md) is the authority for these defaults and commands.
+
+```mermaid
+flowchart LR
+    A[active] -->|30 days unused| S[stale]
+    S -->|90 days unused| R[archived: recoverable]
+    S -->|used or restored| A
+    P[pinned or cron-referenced] -. excluded from automatic transitions .-> X[lifecycle unchanged]
+```
+
+The automatic phase is deterministic and does not call an LLM. By default it marks eligible skills stale after 30 days without use and moves them to `~/.hermes/skills/.archive/` after 90 days. It is prune-only: it does not merge, rewrite, or auto-delete a skill. Archival is recoverable with `hermes curator restore <skill>`. Never-used skills receive a grace floor rather than being treated as automatically disposable. Hub-installed skills are outside Curator's reach. Bundled built-ins can be archived under the default `curator.prune_builtins: true`, but setting it to `false` keeps those built-ins out of automatic pruning. Protected built-ins remain exempt.
+
+The more opinionated operation—an auxiliary-model review that may patch or consolidate overlapping agent-created skills—is off by default. It can cost many auxiliary-model calls and can change a skill package's structure, so enable it only after review with `curator.consolidate: true`, or request it once with `hermes curator run --consolidate`. A sound consolidation preserves the whole package: `SKILL.md` plus its references, templates, scripts, assets, and working relative paths. It is not safe to paste one instruction file into another and assume its support material followed. Use the same review standards as any other procedural change, including `skills.write_approval` where appropriate; consolidation offers no zero-risk mutation guarantee.
+
+Curator's scope is deliberately based on policy markers, not a guess about authorship. Background self-improvement can mark a skill agent-created, but a foreground `skill_manage(create)` operation requested during a conversation is unmanaged by design. Hand-written, external, Hub-installed, and foreground-created skills therefore remain outside automatic lifecycle changes until the owner explicitly adopts an eligible one. Inspect the boundary first:
+
+```bash
+hermes curator status
+hermes curator list-unmanaged
+hermes curator adopt <skill>
+hermes curator adopt --all-unmanaged --dry-run
+```
+
+`adopt` changes the “may autonomous curation touch this?” policy; it does not prove who wrote the skill or reset its inactivity clock. An old adopted skill can become stale or archived on the next eligible pass. Do not use bulk adoption until every entry has an owner and a recovery plan. Pin a managed skill that must never auto-transition with `hermes curator pin <skill>`; unpin only after review. Skills named by any cron job's `skills:` list are also skipped by automatic transitions, including if that job is paused or disabled, so a slow schedule is not silently broken. Prefer an explicit pin when deletion through the agent's skill-management tool must be refused too.
+
+Preview before changing anything and make recovery evidence part of the routine:
+
+```bash
+hermes curator run --dry-run
+hermes curator backup --reason "before-first-curation"
+hermes curator run
+hermes curator list-archived
+hermes curator ledger
+```
+
+Before a real mutating pass, Curator creates a whole-library snapshot (unless backups have been disabled). `hermes curator rollback` restores the newest snapshot; `rollback --list` and `rollback --id <timestamp>` select an earlier one. The rollback itself takes a safety snapshot first, so an erroneous rollback can be reversed. Separately, the append-only ledger records Curator, foreground-agent, and user mutations with before/after file hashes and retained blobs. `hermes curator rollback <entry-id>` reverses one recorded edit without replacing the rest of the library. These controls reduce damage and make changes auditable; they do not make mutation risk-free. A ledger-write failure does not itself block a mutation, so inspect reports and backups rather than treating logging as a permission gate.
+
+For a beginner, use this operating playbook: leave consolidation off; immediately after installation or update, run `status` and a dry run; read the report and pin any procedure tied to an important job before the first seven-day interval expires; take a named backup; run prune-only once; and test one restored archive plus one rollback in a disposable profile before trusting recovery in production. Repeat the preview during the first week as real usage evidence accumulates. Review archive contents before any explicit purge. Archived skills are retained indefinitely by default; a TTL only permits a later, explicit, confirmed purge, never an automatic deletion policy. Keep the report, snapshot identifier, and any ledger entry with the workflow's extension ledger. If a needed skill is unexpectedly absent, stop the workflow, restore it, inspect the report and provenance boundary, and only then change thresholds, adoption, or pinning.
+
 ### Treat Skills Hub sources as different shelves
 
 The Hub can search official optional skills, `skills.sh`, well-known web endpoints, direct URLs, GitHub repositories, and other community indexes. That convenience collapses discovery, not provenance. For the Chen–Patels' production profiles, this edition curates only skills bundled with Hermes or official optional skills in the pinned Hermes repository.
@@ -338,10 +379,12 @@ Each answer should include an explicit forbidden case: no Harbourlight data in c
 - Nous Research, [Tools and toolsets](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/tools.md).
 - Nous Research, [Toolsets reference](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/toolsets-reference.md).
 - Nous Research, [Skills system and Skills Hub](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/skills.md).
+- Nous Research, [Curator](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/curator.md).
 - Nous Research, [Bundled skills catalog](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/skills-catalog.md).
 - Nous Research, [Official optional skills catalog](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/reference/optional-skills-catalog.md).
 - Nous Research, [Plugins](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/plugins.md).
 - Nous Research, [Built-in plugins](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/built-in-plugins.md).
 - Nous Research, [MCP client and server support](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/features/mcp.md).
 - Nous Research, [Security](https://github.com/NousResearch/hermes-agent/blob/v2026.8.19/website/docs/user-guide/security.md).
+- Nous Research, [Hermes Agent interview (framing source)](https://www.youtube.com/watch?v=UWjh5Z4s8jY).
 - Model Context Protocol, [Specification](https://modelcontextprotocol.io/specification/2025-06-18) (accessed 2026-08-21).
